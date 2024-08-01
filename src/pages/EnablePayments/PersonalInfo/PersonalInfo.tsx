@@ -102,7 +102,7 @@ function PersonalInfoPage({walletAdditionalDetails, walletAdditionalDetailsDraft
                 title={translate('personalInfoStep.personalInfo')}
                 onBackButtonPress={handleBackButtonPress}
             />
-            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.BANK_ACCOUNT.STEPS_HEADER_HEIGHT}]}>
+            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.USD_BANK_ACCOUNT.STEPS_HEADER_HEIGHT}]}>
                 <InteractiveStepSubHeader
                     startStepIndex={1}
                     stepNames={CONST.WALLET.STEP_NAMES}

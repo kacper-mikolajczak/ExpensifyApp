@@ -62,7 +62,7 @@ function ReviewFields<K extends keyof ReviewDuplicates>({stepNames, label, optio
             style={styles.flex1}
         >
             {stepNames.length > 1 && (
-                <View style={[styles.w100, styles.ph5, styles.mb5, styles.mt3, {height: CONST.BANK_ACCOUNT.STEPS_HEADER_HEIGHT}]}>
+                <View style={[styles.w100, styles.ph5, styles.mb5, styles.mt3, {height: CONST.USD_BANK_ACCOUNT.STEPS_HEADER_HEIGHT}]}>
                     <InteractiveStepSubHeader
                         stepNames={stepNames}
                         startStepIndex={index}

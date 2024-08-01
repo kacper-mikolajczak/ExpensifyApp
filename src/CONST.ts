@@ -254,7 +254,7 @@ const CONST = {
     SMS: {
         DOMAIN: '@expensify.sms',
     },
-    BANK_ACCOUNT: {
+    USD_BANK_ACCOUNT: {
         BENEFICIAL_OWNER_INFO_STEP: {
             SUBSTEP: {
                 IS_USER_UBO: 1,
@@ -350,6 +350,19 @@ const CONST = {
             BUSINESS: 'BUSINESS',
             PERSONAL: 'PERSONAL',
         },
+    },
+    NON_USD_BANK_ACCOUNT: {
+        STEP: {
+            COUNTRY: 'CountryStep',
+            BANK_INFO: 'BankInfoStep',
+            BUSINESS_INFO: 'BusinessInfoStep',
+            OWNERSHIP_INFO: 'OwnershipInfoStep',
+            SIGNER_INFO: 'SignerInfoStep',
+            AGREEMENTS: 'AgreementsStep',
+            FINISH: 'FinishStep',
+        },
+        STEP_NAMES: ['1', '2', '3', '4', '5', '6'],
+        STEP_HEADER_HEIGHT: 40,
     },
     INCORPORATION_TYPES: {
         LLC: 'LLC',

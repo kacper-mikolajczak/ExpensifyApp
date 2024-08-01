@@ -50,12 +50,12 @@ function RequestorOnfidoStep({onBackButtonPress, reimbursementAccount, onfidoTok
         // In case of any unexpected error we log it to the server, show a growl, and return the user back to the requestor step so they can try again.
         Growl.error(translate('onfidoStep.genericError'), ONFIDO_ERROR_DISPLAY_DURATION);
         BankAccounts.clearOnfidoToken();
-        BankAccounts.goToWithdrawalAccountSetupStep(CONST.BANK_ACCOUNT.STEP.REQUESTOR);
+        BankAccounts.goToWithdrawalAccountSetupStep(CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR);
     };
 
     const handleOnfidoUserExit = () => {
         BankAccounts.clearOnfidoToken();
-        BankAccounts.goToWithdrawalAccountSetupStep(CONST.BANK_ACCOUNT.STEP.REQUESTOR);
+        BankAccounts.goToWithdrawalAccountSetupStep(CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR);
     };
 
     return (

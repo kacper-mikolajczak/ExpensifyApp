@@ -49,9 +49,9 @@ function WorkspaceExpensifyCardPageEmptyState({route, policy}: WorkspaceExpensif
     const reimbursementAccountStatus = reimbursementAccount?.achData?.state ?? '';
     const isSetupUnfinished =
         isEmptyObject(bankAccountList) &&
-        (reimbursementAccountStatus === CONST.BANK_ACCOUNT.STATE.VERIFYING ||
-            reimbursementAccountStatus === CONST.BANK_ACCOUNT.STATE.SETUP ||
-            reimbursementAccountStatus === CONST.BANK_ACCOUNT.STATE.VALIDATING);
+        (reimbursementAccountStatus === CONST.USD_BANK_ACCOUNT.STATE.VERIFYING ||
+            reimbursementAccountStatus === CONST.USD_BANK_ACCOUNT.STATE.SETUP ||
+            reimbursementAccountStatus === CONST.USD_BANK_ACCOUNT.STATE.VALIDATING);
 
     const startFlow = useCallback(() => {
         if (isEmptyObject(bankAccountList) || isSetupUnfinished) {

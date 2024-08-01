@@ -9,7 +9,7 @@ type WalletLinkedAccountType = 'debitCard' | 'bankAccount';
 type ErrorCode = 'ssnError' | 'kbaNeeded' | 'kycFailed';
 
 /** Type of setup that the user follows to link an account to his wallet */
-type SetupType = ValueOf<typeof CONST.BANK_ACCOUNT.SETUP_TYPE>;
+type SetupType = ValueOf<typeof CONST.USD_BANK_ACCOUNT.SETUP_TYPE>;
 
 /** Model of user wallet */
 type UserWallet = {

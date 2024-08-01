@@ -171,7 +171,7 @@ function KYCWall({
 
             // Check to see if user has a valid payment method on file and display the add payment popover if they don't
             if (
-                (isExpenseReport && reimbursementAccount?.achData?.state !== CONST.BANK_ACCOUNT.STATE.OPEN) ||
+                (isExpenseReport && reimbursementAccount?.achData?.state !== CONST.USD_BANK_ACCOUNT.STATE.OPEN) ||
                 (!isExpenseReport && bankAccountList !== null && !PaymentUtils.hasExpensifyPaymentMethod(paymentCardList, bankAccountList, shouldIncludeDebitCard))
             ) {
                 Log.info('[KYC Wallet] User does not have valid payment method');

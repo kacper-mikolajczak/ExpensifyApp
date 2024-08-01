@@ -39,7 +39,7 @@ type BeneficialOwnersStepProps = BeneficialOwnerInfoOnyxProps & {
 
 type BeneficialOwnerSubStepProps = SubStepProps & {beneficialOwnerBeingModifiedID: string; setBeneficialOwnerBeingModifiedID?: (id: string) => void};
 
-const SUBSTEP = CONST.BANK_ACCOUNT.BENEFICIAL_OWNER_INFO_STEP.SUBSTEP;
+const SUBSTEP = CONST.USD_BANK_ACCOUNT.BENEFICIAL_OWNER_INFO_STEP.SUBSTEP;
 const MAX_NUMBER_OF_UBOS = 4;
 const bodyContent: Array<React.ComponentType<BeneficialOwnerSubStepProps>> = [LegalNameUBO, DateOfBirthUBO, SocialSecurityNumberUBO, AddressUBO, ConfirmationUBO];
 
@@ -226,10 +226,10 @@ function BeneficialOwnersStep({reimbursementAccount, reimbursementAccountDraft, 
                 title={translate('beneficialOwnerInfoStep.companyOwner')}
                 onBackButtonPress={handleBackButtonPress}
             />
-            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.BANK_ACCOUNT.STEPS_HEADER_HEIGHT}]}>
+            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.USD_BANK_ACCOUNT.STEPS_HEADER_HEIGHT}]}>
                 <InteractiveStepSubHeader
                     startStepIndex={4}
-                    stepNames={CONST.BANK_ACCOUNT.STEP_NAMES}
+                    stepNames={CONST.USD_BANK_ACCOUNT.STEP_NAMES}
                 />
             </View>
 

@@ -5,10 +5,10 @@ import type {BankName} from './Bank';
 import type * as OnyxCommon from './OnyxCommon';
 
 /** Steps to setup a reimbursement bank account */
-type BankAccountStep = ValueOf<typeof CONST.BANK_ACCOUNT.STEP>;
+type BankAccountStep = ValueOf<typeof CONST.USD_BANK_ACCOUNT.STEP>;
 
 /** Substeps to setup a reimbursement bank account */
-type BankAccountSubStep = ValueOf<typeof CONST.BANK_ACCOUNT.SUBSTEP>;
+type BankAccountSubStep = ValueOf<typeof CONST.USD_BANK_ACCOUNT.SUBSTEP>;
 
 /** Model of ACH data */
 type ACHData = Partial<BeneficialOwnersStepProps & CompanyStepProps & RequestorStepProps & ACHContractStepProps & ReimbursementAccountProps> & {

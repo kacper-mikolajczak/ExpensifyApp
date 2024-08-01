@@ -12,6 +12,7 @@ import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import ReimbursementAccountLoadingIndicator from '@components/ReimbursementAccountLoadingIndicator';
 import ScreenWrapper from '@components/ScreenWrapper';
 import Text from '@components/Text';
+import useEnvironment from '@hooks/useEnvironment';
 import useLocalize from '@hooks/useLocalize';
 import useNetwork from '@hooks/useNetwork';
 import usePrevious from '@hooks/usePrevious';
@@ -40,6 +41,13 @@ import CompanyStep from './CompanyStep';
 import ConnectBankAccount from './ConnectBankAccount/ConnectBankAccount';
 import ContinueBankAccountSetup from './ContinueBankAccountSetup';
 import EnableBankAccount from './EnableBankAccount/EnableBankAccount';
+import Agreements from './NonUSD/Agreements';
+import BankInfo from './NonUSD/BankInfo';
+import BusinessInfo from './NonUSD/BusinessInfo';
+import Country from './NonUSD/Country';
+import Finish from './NonUSD/Finish';
+import OwnershipInfo from './NonUSD/OwnershipInfo';
+import SignerInfo from './NonUSD/SignerInfo';
 import RequestorStep from './RequestorStep';
 
 type ReimbursementAccountOnyxProps = {
@@ -86,19 +94,19 @@ const ROUTE_NAMES = {
 function getStepToOpenFromRouteParams(route: RouteProp<ReimbursementAccountNavigatorParamList, typeof SCREENS.REIMBURSEMENT_ACCOUNT_ROOT>): TBankAccountStep | '' {
     switch (route.params.stepToOpen) {
         case ROUTE_NAMES.NEW:
-            return CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT;
+            return CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT;
         case ROUTE_NAMES.COMPANY:
-            return CONST.BANK_ACCOUNT.STEP.COMPANY;
+            return CONST.USD_BANK_ACCOUNT.STEP.COMPANY;
         case ROUTE_NAMES.PERSONAL_INFORMATION:
-            return CONST.BANK_ACCOUNT.STEP.REQUESTOR;
+            return CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR;
         case ROUTE_NAMES.BENEFICIAL_OWNERS:
-            return CONST.BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS;
+            return CONST.USD_BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS;
         case ROUTE_NAMES.CONTRACT:
-            return CONST.BANK_ACCOUNT.STEP.ACH_CONTRACT;
+            return CONST.USD_BANK_ACCOUNT.STEP.ACH_CONTRACT;
         case ROUTE_NAMES.VALIDATE:
-            return CONST.BANK_ACCOUNT.STEP.VALIDATION;
+            return CONST.USD_BANK_ACCOUNT.STEP.VALIDATION;
         case ROUTE_NAMES.ENABLE:
-            return CONST.BANK_ACCOUNT.STEP.ENABLE;
+            return CONST.USD_BANK_ACCOUNT.STEP.ENABLE;
         default:
             return '';
     }
@@ -106,19 +114,19 @@ function getStepToOpenFromRouteParams(route: RouteProp<ReimbursementAccountNavig
 
 function getRouteForCurrentStep(currentStep: TBankAccountStep): ValueOf<typeof ROUTE_NAMES> {
     switch (currentStep) {
-        case CONST.BANK_ACCOUNT.STEP.COMPANY:
+        case CONST.USD_BANK_ACCOUNT.STEP.COMPANY:
             return ROUTE_NAMES.COMPANY;
-        case CONST.BANK_ACCOUNT.STEP.REQUESTOR:
+        case CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR:
             return ROUTE_NAMES.PERSONAL_INFORMATION;
-        case CONST.BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS:
+        case CONST.USD_BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS:
             return ROUTE_NAMES.BENEFICIAL_OWNERS;
-        case CONST.BANK_ACCOUNT.STEP.ACH_CONTRACT:
+        case CONST.USD_BANK_ACCOUNT.STEP.ACH_CONTRACT:
             return ROUTE_NAMES.CONTRACT;
-        case CONST.BANK_ACCOUNT.STEP.VALIDATION:
+        case CONST.USD_BANK_ACCOUNT.STEP.VALIDATION:
             return ROUTE_NAMES.VALIDATE;
-        case CONST.BANK_ACCOUNT.STEP.ENABLE:
+        case CONST.USD_BANK_ACCOUNT.STEP.ENABLE:
             return ROUTE_NAMES.ENABLE;
-        case CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT:
+        case CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT:
         default:
             return ROUTE_NAMES.NEW;
     }
@@ -155,9 +163,9 @@ function ReimbursementAccountPage({
      */
     function getFieldsForStep(step: TBankAccountStep): InputID[] {
         switch (step) {
-            case CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT:
+            case CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT:
                 return ['routingNumber', 'accountNumber', 'bankName', 'plaidAccountID', 'plaidAccessToken', 'isSavings'];
-            case CONST.BANK_ACCOUNT.STEP.COMPANY:
+            case CONST.USD_BANK_ACCOUNT.STEP.COMPANY:
                 return [
                     'companyName',
                     'addressStreet',
@@ -171,7 +179,7 @@ function ReimbursementAccountPage({
                     'incorporationDate',
                     'incorporationState',
                 ];
-            case CONST.BANK_ACCOUNT.STEP.REQUESTOR:
+            case CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR:
                 return ['firstName', 'lastName', 'dob', 'ssnLast4', 'requestorAddressStreet', 'requestorAddressCity', 'requestorAddressState', 'requestorAddressZipCode'];
             default:
                 return [];
@@ -193,7 +201,7 @@ function ReimbursementAccountPage({
             // Since there is no VBBA in progress, we won't need to show the component ContinueBankAccountSetup
             return false;
         }
-        return achData?.state === BankAccount.STATE.PENDING || [CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT, ''].includes(getStepToOpenFromRouteParams(route));
+        return achData?.state === BankAccount.STATE.PENDING || [CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT, ''].includes(getStepToOpenFromRouteParams(route));
     }
 
     /**
@@ -207,9 +215,60 @@ function ReimbursementAccountPage({
 
     const [shouldShowContinueSetupButton, setShouldShowContinueSetupButton] = useState(hasACHDataBeenLoaded ? getShouldShowContinueSetupButtonInitialValue() : false);
     const [isReimbursementAccountLoading, setIsReimbursementAccountLoading] = useState(true);
+    const [nonUSDBankAccountStep, setNonUSDBankAccountStep] = useState<string>(CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY);
+
+    const handleNextNonUSDBankAccountStep = () => {
+        switch (nonUSDBankAccountStep) {
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.BANK_INFO);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.BANK_INFO:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.BUSINESS_INFO);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.BUSINESS_INFO:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.OWNERSHIP_INFO);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.OWNERSHIP_INFO:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.SIGNER_INFO);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.SIGNER_INFO:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.AGREEMENTS);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.AGREEMENTS:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.FINISH);
+                break;
+            default:
+                return null;
+        }
+    };
+
+    const nonUSDBankAccountsGoBack = () => {
+        switch (nonUSDBankAccountStep) {
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY:
+                Navigation.goBack();
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.BANK_INFO:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.BUSINESS_INFO:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.BANK_INFO);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.OWNERSHIP_INFO:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.BUSINESS_INFO);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.SIGNER_INFO:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.OWNERSHIP_INFO);
+                break;
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.AGREEMENTS:
+                setNonUSDBankAccountStep(CONST.NON_USD_BANK_ACCOUNT.STEP.SIGNER_INFO);
+                break;
+            default:
+                return null;
+        }
+    };
 
     // eslint-disable-next-line  @typescript-eslint/prefer-nullish-coalescing
-    const currentStep = achData?.currentStep || CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT;
+    const currentStep = achData?.currentStep || CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT;
     const policyName = policy?.name ?? '';
     const policyIDParam = route.params?.policyID ?? '-1';
     const styles = useThemeStyles();
@@ -219,6 +278,7 @@ function ReimbursementAccountPage({
     const prevIsReimbursementAccountLoading = usePrevious(reimbursementAccount?.isLoading);
     const prevReimbursementAccount = usePrevious(reimbursementAccount);
     const prevIsOffline = usePrevious(isOffline);
+    const {isDevelopment} = useEnvironment();
 
     /**
      * Retrieve verified business bank account currently being set up.
@@ -285,7 +345,7 @@ function ReimbursementAccountPage({
             const currentStepRouteParam = getStepToOpenFromRouteParams(route);
             if (currentStepRouteParam === currentStep) {
                 // If the user is connecting online with plaid, reset any bank account errors so we don't persist old data from a potential previous connection
-                if (currentStep === CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT && achData?.subStep === CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID) {
+                if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT && achData?.subStep === CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID) {
                     BankAccounts.hideBankAccountErrors();
                 }
 
@@ -316,7 +376,7 @@ function ReimbursementAccountPage({
     );
 
     const setManualStep = () => {
-        BankAccounts.setBankAccountSubStep(CONST.BANK_ACCOUNT.SETUP_TYPE.MANUAL).then(() => {
+        BankAccounts.setBankAccountSubStep(CONST.USD_BANK_ACCOUNT.SETUP_TYPE.MANUAL).then(() => {
             setShouldShowContinueSetupButton(false);
         });
         fetchData(true);
@@ -327,7 +387,7 @@ function ReimbursementAccountPage({
         const shouldShowOnfido = onfidoToken && !achData?.isOnfidoSetupComplete;
 
         switch (currentStep) {
-            case CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT:
+            case CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT:
                 if (hasInProgressVBBA()) {
                     setShouldShowContinueSetupButton(true);
                 }
@@ -339,30 +399,30 @@ function ReimbursementAccountPage({
                 }
                 break;
 
-            case CONST.BANK_ACCOUNT.STEP.COMPANY:
+            case CONST.USD_BANK_ACCOUNT.STEP.COMPANY:
                 BankAccounts.clearOnfidoToken();
-                BankAccounts.goToWithdrawalAccountSetupStep(CONST.BANK_ACCOUNT.STEP.REQUESTOR);
+                BankAccounts.goToWithdrawalAccountSetupStep(CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR);
                 break;
 
-            case CONST.BANK_ACCOUNT.STEP.REQUESTOR:
+            case CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR:
                 if (shouldShowOnfido) {
                     BankAccounts.clearOnfidoToken();
                 } else {
-                    BankAccounts.goToWithdrawalAccountSetupStep(CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT);
+                    BankAccounts.goToWithdrawalAccountSetupStep(CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT);
                 }
                 break;
 
-            case CONST.BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS:
-                BankAccounts.goToWithdrawalAccountSetupStep(CONST.BANK_ACCOUNT.STEP.COMPANY);
+            case CONST.USD_BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS:
+                BankAccounts.goToWithdrawalAccountSetupStep(CONST.USD_BANK_ACCOUNT.STEP.COMPANY);
                 break;
 
-            case CONST.BANK_ACCOUNT.STEP.ACH_CONTRACT:
-                BankAccounts.goToWithdrawalAccountSetupStep(CONST.BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS);
+            case CONST.USD_BANK_ACCOUNT.STEP.ACH_CONTRACT:
+                BankAccounts.goToWithdrawalAccountSetupStep(CONST.USD_BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS);
                 break;
 
-            case CONST.BANK_ACCOUNT.STEP.VALIDATION:
+            case CONST.USD_BANK_ACCOUNT.STEP.VALIDATION:
                 if ([BankAccount.STATE.VERIFYING, BankAccount.STATE.SETUP].some((value) => value === achData?.state)) {
-                    BankAccounts.goToWithdrawalAccountSetupStep(CONST.BANK_ACCOUNT.STEP.ACH_CONTRACT);
+                    BankAccounts.goToWithdrawalAccountSetupStep(CONST.USD_BANK_ACCOUNT.STEP.ACH_CONTRACT);
                 } else if (!isOffline && achData?.state === BankAccount.STATE.PENDING) {
                     setShouldShowContinueSetupButton(true);
                 } else {
@@ -375,16 +435,17 @@ function ReimbursementAccountPage({
         }
     };
 
-    const isLoading = (!!isLoadingApp || !!account?.isLoading || isReimbursementAccountLoading) && (!plaidCurrentEvent || plaidCurrentEvent === CONST.BANK_ACCOUNT.PLAID.EVENTS_NAME.EXIT);
+    const isLoading =
+        (!!isLoadingApp || !!account?.isLoading || isReimbursementAccountLoading) && (!plaidCurrentEvent || plaidCurrentEvent === CONST.USD_BANK_ACCOUNT.PLAID.EVENTS_NAME.EXIT);
 
     const shouldShowOfflineLoader = !(
         isOffline &&
         [
-            CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT,
-            CONST.BANK_ACCOUNT.STEP.COMPANY,
-            CONST.BANK_ACCOUNT.STEP.REQUESTOR,
-            CONST.BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS,
-            CONST.BANK_ACCOUNT.STEP.ACH_CONTRACT,
+            CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT,
+            CONST.USD_BANK_ACCOUNT.STEP.COMPANY,
+            CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR,
+            CONST.USD_BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS,
+            CONST.USD_BANK_ACCOUNT.STEP.ACH_CONTRACT,
         ].some((value) => value === currentStep)
     );
 
@@ -421,6 +482,57 @@ function ReimbursementAccountPage({
         errorText = translate('bankAccount.hasCurrencyError');
     }
 
+    if (hasUnsupportedCurrency && isDevelopment) {
+        switch (nonUSDBankAccountStep) {
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY:
+                return (
+                    <Country
+                        onBackButtonPress={nonUSDBankAccountsGoBack}
+                        onSubmit={handleNextNonUSDBankAccountStep}
+                    />
+                );
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.BANK_INFO:
+                return (
+                    <BankInfo
+                        onBackButtonPress={nonUSDBankAccountsGoBack}
+                        onSubmit={handleNextNonUSDBankAccountStep}
+                    />
+                );
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.BUSINESS_INFO:
+                return (
+                    <BusinessInfo
+                        onBackButtonPress={nonUSDBankAccountsGoBack}
+                        onSubmit={handleNextNonUSDBankAccountStep}
+                    />
+                );
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.OWNERSHIP_INFO:
+                return (
+                    <OwnershipInfo
+                        onBackButtonPress={nonUSDBankAccountsGoBack}
+                        onSubmit={handleNextNonUSDBankAccountStep}
+                    />
+                );
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.SIGNER_INFO:
+                return (
+                    <SignerInfo
+                        onBackButtonPress={nonUSDBankAccountsGoBack}
+                        onSubmit={handleNextNonUSDBankAccountStep}
+                    />
+                );
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.AGREEMENTS:
+                return (
+                    <Agreements
+                        onBackButtonPress={nonUSDBankAccountsGoBack}
+                        onSubmit={handleNextNonUSDBankAccountStep}
+                    />
+                );
+            case CONST.NON_USD_BANK_ACCOUNT.STEP.FINISH:
+                return <Finish />;
+            default:
+                return null;
+        }
+    }
+
     if (errorText) {
         return (
             <ScreenWrapper testID={ReimbursementAccountPage.displayName}>
@@ -447,7 +559,7 @@ function ReimbursementAccountPage({
         );
     }
 
-    if (currentStep === CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT) {
+    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT) {
         return (
             <BankAccountStep
                 reimbursementAccount={reimbursementAccount}
@@ -460,11 +572,11 @@ function ReimbursementAccountPage({
         );
     }
 
-    if (currentStep === CONST.BANK_ACCOUNT.STEP.COMPANY) {
+    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.COMPANY) {
         return <CompanyStep onBackButtonPress={goBack} />;
     }
 
-    if (currentStep === CONST.BANK_ACCOUNT.STEP.REQUESTOR) {
+    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR) {
         const shouldShowOnfido = onfidoToken && !achData?.isOnfidoSetupComplete;
         return (
             <RequestorStep
@@ -475,19 +587,19 @@ function ReimbursementAccountPage({
         );
     }
 
-    if (currentStep === CONST.BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS) {
+    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS) {
         return <BeneficialOwnersStep onBackButtonPress={goBack} />;
     }
 
-    if (currentStep === CONST.BANK_ACCOUNT.STEP.ACH_CONTRACT) {
+    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.ACH_CONTRACT) {
         return <ACHContractStep onBackButtonPress={goBack} />;
     }
 
-    if (currentStep === CONST.BANK_ACCOUNT.STEP.VALIDATION) {
+    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.VALIDATION) {
         return <ConnectBankAccount onBackButtonPress={goBack} />;
     }
 
-    if (currentStep === CONST.BANK_ACCOUNT.STEP.ENABLE) {
+    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.ENABLE) {
         return (
             <EnableBankAccount
                 reimbursementAccount={reimbursementAccount}

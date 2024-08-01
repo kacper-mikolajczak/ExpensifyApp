@@ -57,7 +57,7 @@ function Confirmation({reimbursementAccount, reimbursementAccountDraft, onNext, 
                 >
                     <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5]}>{translate('bankAccount.letsDoubleCheck')}</Text>
                     <Text style={[styles.mt3, styles.mb3, styles.ph5, styles.textSupporting]}>{translate('bankAccount.thisBankAccount')}</Text>
-                    {setupType === CONST.BANK_ACCOUNT.SUBSTEP.MANUAL && (
+                    {setupType === CONST.USD_BANK_ACCOUNT.SUBSTEP.MANUAL && (
                         <View style={[styles.mb5]}>
                             <MenuItemWithTopDescription
                                 description={translate('bankAccount.routingNumber')}
@@ -74,7 +74,7 @@ function Confirmation({reimbursementAccount, reimbursementAccountDraft, onNext, 
                             />
                         </View>
                     )}
-                    {setupType === CONST.BANK_ACCOUNT.SUBSTEP.PLAID && (
+                    {setupType === CONST.USD_BANK_ACCOUNT.SUBSTEP.PLAID && (
                         <MenuItemWithTopDescription
                             description={values[BANK_INFO_STEP_KEYS.BANK_NAME]}
                             title={`${translate('bankAccount.accountEnding')} ${(values[BANK_INFO_STEP_KEYS.ACCOUNT_NUMBER] ?? '').slice(-4)}`}

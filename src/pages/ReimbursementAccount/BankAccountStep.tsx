@@ -80,9 +80,9 @@ function BankAccountStep({
     const styles = useThemeStyles();
     const {translate} = useLocalize();
     let subStep = reimbursementAccount?.achData?.subStep ?? '';
-    const shouldReinitializePlaidLink = plaidLinkOAuthToken && receivedRedirectURI && subStep !== CONST.BANK_ACCOUNT.SUBSTEP.MANUAL;
+    const shouldReinitializePlaidLink = plaidLinkOAuthToken && receivedRedirectURI && subStep !== CONST.USD_BANK_ACCOUNT.SUBSTEP.MANUAL;
     if (shouldReinitializePlaidLink) {
-        subStep = CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID;
+        subStep = CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID;
     }
     const plaidDesktopMessage = getPlaidDesktopMessage();
     const bankAccountRoute = `${ROUTES.BANK_ACCOUNT_WITH_STEP_TO_OPEN.getRoute('new', policyID, ROUTES.WORKSPACE_INITIAL.getRoute(policyID))}`;
@@ -101,7 +101,7 @@ function BankAccountStep({
         ReimbursementAccount.updateReimbursementAccountDraft(bankAccountData);
     };
 
-    if (subStep === CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID || subStep === CONST.BANK_ACCOUNT.SETUP_TYPE.MANUAL) {
+    if (subStep === CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID || subStep === CONST.USD_BANK_ACCOUNT.SETUP_TYPE.MANUAL) {
         return (
             <BankInfo
                 onBackButtonPress={onBackButtonPress}
@@ -161,7 +161,7 @@ function BankAccountStep({
                                 disabled={!user?.validated}
                                 onPress={() => {
                                     removeExistingBankAccountDetails();
-                                    BankAccounts.setBankAccountSubStep(CONST.BANK_ACCOUNT.SETUP_TYPE.MANUAL);
+                                    BankAccounts.setBankAccountSubStep(CONST.USD_BANK_ACCOUNT.SETUP_TYPE.MANUAL);
                                 }}
                                 shouldShowRightIcon
                                 wrapperStyle={[styles.cardMenuItem]}

@@ -16,8 +16,8 @@ import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import type {ReimbursementAccountForm} from '@src/types/form';
 
-const SSN_LAST_4 = CONST.BANK_ACCOUNT.BENEFICIAL_OWNER_INFO_STEP.BENEFICIAL_OWNER_DATA.SSN_LAST_4;
-const BENEFICIAL_OWNER_PREFIX = CONST.BANK_ACCOUNT.BENEFICIAL_OWNER_INFO_STEP.BENEFICIAL_OWNER_DATA.PREFIX;
+const SSN_LAST_4 = CONST.USD_BANK_ACCOUNT.BENEFICIAL_OWNER_INFO_STEP.BENEFICIAL_OWNER_DATA.SSN_LAST_4;
+const BENEFICIAL_OWNER_PREFIX = CONST.USD_BANK_ACCOUNT.BENEFICIAL_OWNER_INFO_STEP.BENEFICIAL_OWNER_DATA.PREFIX;
 
 type SocialSecurityNumberUBOOnyxProps = {
     /** The draft values of the bank account being setup */
@@ -69,7 +69,7 @@ function SocialSecurityNumberUBO({reimbursementAccountDraft, onNext, isEditing, 
                         containerStyles={[styles.mt6]}
                         inputMode={CONST.INPUT_MODE.NUMERIC}
                         defaultValue={defaultSsnLast4}
-                        maxLength={CONST.BANK_ACCOUNT.MAX_LENGTH.SSN}
+                        maxLength={CONST.USD_BANK_ACCOUNT.MAX_LENGTH.SSN}
                         shouldSaveDraft={!isEditing}
                     />
                 </View>

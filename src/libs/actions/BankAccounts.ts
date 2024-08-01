@@ -67,7 +67,7 @@ function clearPlaid(): Promise<void | void[]> {
 }
 
 function openPlaidView() {
-    clearPlaid().then(() => ReimbursementAccount.setBankAccountSubStep(CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID));
+    clearPlaid().then(() => ReimbursementAccount.setBankAccountSubStep(CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID));
 }
 
 function setPlaidEvent(eventName: string | null) {
@@ -94,7 +94,7 @@ function openPersonalBankAccountSetupWithPlaid(exitReportID?: string) {
         if (exitReportID) {
             Onyx.merge(ONYXKEYS.PERSONAL_BANK_ACCOUNT, {exitReportID});
         }
-        Onyx.merge(ONYXKEYS.FORMS.PERSONAL_BANK_ACCOUNT_FORM_DRAFT, {setupType: CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID});
+        Onyx.merge(ONYXKEYS.FORMS.PERSONAL_BANK_ACCOUNT_FORM_DRAFT, {setupType: CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID});
     });
 }
 
@@ -298,7 +298,7 @@ function updatePersonalInformationForBankAccount(bankAccountID: number, params: 
             policyID,
             confirm: isConfirmPage,
         },
-        getVBBADataForOnyx(CONST.BANK_ACCOUNT.STEP.REQUESTOR),
+        getVBBADataForOnyx(CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR),
     );
 }
 
@@ -410,7 +410,7 @@ function updateCompanyInformationForBankAccount(bankAccountID: number, params: P
             policyID,
             confirm: isConfirmPage,
         },
-        getVBBADataForOnyx(CONST.BANK_ACCOUNT.STEP.COMPANY),
+        getVBBADataForOnyx(CONST.USD_BANK_ACCOUNT.STEP.COMPANY),
     );
 }
 
@@ -462,7 +462,7 @@ function connectBankAccountManually(bankAccountID: number, bankAccount: PlaidBan
         policyID,
     };
 
-    API.write(WRITE_COMMANDS.CONNECT_BANK_ACCOUNT_MANUALLY, parameters, getVBBADataForOnyx(CONST.BANK_ACCOUNT.STEP.BANK_ACCOUNT));
+    API.write(WRITE_COMMANDS.CONNECT_BANK_ACCOUNT_MANUALLY, parameters, getVBBADataForOnyx(CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT));
 }
 
 /**

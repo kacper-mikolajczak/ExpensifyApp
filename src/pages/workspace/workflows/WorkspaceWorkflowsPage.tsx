@@ -11,6 +11,7 @@ import MenuItem from '@components/MenuItem';
 import OfflineWithFeedback from '@components/OfflineWithFeedback';
 import Section from '@components/Section';
 import Text from '@components/Text';
+import useEnvironment from '@hooks/useEnvironment';
 import useLocalize from '@hooks/useLocalize';
 import useNetwork from '@hooks/useNetwork';
 import useTheme from '@hooks/useTheme';
@@ -78,6 +79,7 @@ function WorkspaceWorkflowsPage({policy, betas, route}: WorkspaceWorkflowsPagePr
 
     const {isOffline} = useNetwork({onReconnect: fetchData});
     const isPolicyAdmin = PolicyUtils.isPolicyAdmin(policy);
+    const {isDevelopment} = useEnvironment();
 
     useFocusEffect(
         useCallback(() => {
@@ -209,6 +211,11 @@ function WorkspaceWorkflowsPage({policy, betas, route}: WorkspaceWorkflowsPagePr
                                 shouldGreyOutWhenDisabled={!policy?.pendingFields?.reimbursementChoice}
                                 onPress={() => {
                                     if (!Policy.isCurrencySupportedForDirectReimbursement(policy?.outputCurrency ?? '')) {
+                                        if (isDevelopment) {
+                                            navigateToBankAccountRoute(route.params.policyID, ROUTES.WORKSPACE_WORKFLOWS.getRoute(route.params.policyID));
+                                            return;
+                                        }
+
                                         setIsCurrencyModalOpen(true);
                                         return;
                                     }

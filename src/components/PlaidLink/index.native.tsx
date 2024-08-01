@@ -11,7 +11,7 @@ function PlaidLink({token, onSuccess = () => {}, onExit = () => {}, onEvent}: Pl
         onEvent(event.eventName, event.metadata);
     });
     useEffect(() => {
-        onEvent(CONST.BANK_ACCOUNT.PLAID.EVENTS_NAME.OPEN);
+        onEvent(CONST.USD_BANK_ACCOUNT.PLAID.EVENTS_NAME.OPEN);
         openLink({
             tokenConfig: {
                 token,

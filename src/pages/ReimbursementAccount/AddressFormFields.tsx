@@ -1,5 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
+import type {StyleProp, ViewStyle} from 'react-native';
 import AddressSearch from '@components/AddressSearch';
 import InputWrapper from '@components/Form/InputWrapper';
 import type {State} from '@components/StateSelector';
@@ -34,14 +35,17 @@ type AddressFormProps = {
 
     /** Saves a draft of the input value when used in a form */
     shouldSaveDraft?: boolean;
+
+    /** Additional styles to apply to container */
+    containerStyles?: StyleProp<ViewStyle>;
 };
 
-function AddressFormFields({shouldSaveDraft = false, defaultValues, values, errors, inputKeys, onFieldChange, streetTranslationKey}: AddressFormProps) {
+function AddressFormFields({shouldSaveDraft = false, defaultValues, values, errors, inputKeys, onFieldChange, streetTranslationKey, containerStyles}: AddressFormProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
     return (
-        <>
+        <View style={containerStyles}>
             <View>
                 <InputWrapper
                     InputComponent={AddressSearch}
@@ -95,11 +99,11 @@ function AddressFormFields({shouldSaveDraft = false, defaultValues, values, erro
                 defaultValue={defaultValues?.zipCode}
                 onChangeText={(value) => onFieldChange?.({zipCode: value})}
                 errorText={errors?.zipCode ? translate('bankAccount.error.zipCode') : ''}
-                maxLength={CONST.BANK_ACCOUNT.MAX_LENGTH.ZIP_CODE}
+                maxLength={CONST.USD_BANK_ACCOUNT.MAX_LENGTH.ZIP_CODE}
                 hint={translate('common.zipCodeExampleFormat', {zipSampleFormat: CONST.COUNTRY_ZIP_REGEX_DATA.US.samples})}
                 containerStyles={styles.mt3}
             />
-        </>
+        </View>
     );
 }
 
