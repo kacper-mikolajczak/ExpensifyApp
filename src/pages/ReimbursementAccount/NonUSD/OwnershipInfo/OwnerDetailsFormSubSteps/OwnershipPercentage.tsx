@@ -10,11 +10,11 @@ import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
-type NameProps = SubStepProps;
+type OwnershipPercentageProps = SubStepProps & {isUserEnteringHisOwnData: boolean};
 
-const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
+const OWNERSHIP_INFO_STEP_KEY = INPUT_IDS.OWNERSHIP_INFO_STEP;
 
-function Name({onNext, isEditing}: NameProps) {
+function OwnershipPercentage({onNext, isEditing, isUserEnteringHisOwnData}: OwnershipPercentageProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
@@ -29,13 +29,13 @@ function Name({onNext, isEditing}: NameProps) {
             onSubmit={handleSubmit}
             style={[styles.mh5, styles.flexGrow1]}
         >
-            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate('businessInfoStep.whatsTheBusinessName')}</Text>
+            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate(isUserEnteringHisOwnData ? 'ownershipInfoStep.whatsYoursPercentage' : 'ownershipInfoStep.whatPercentage')}</Text>
             <InputWrapper
                 InputComponent={TextInput}
-                label={translate('businessInfoStep.businessName')}
-                aria-label={translate('businessInfoStep.businessName')}
+                label={translate('ownershipInfoStep.ownership')}
+                aria-label={translate('ownershipInfoStep.ownership')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={BUSINESS_INFO_STEP_KEY.NAME}
+                inputID={OWNERSHIP_INFO_STEP_KEY.OWNED_PERCENTAGE}
                 containerStyles={[styles.mt6]}
                 shouldSaveDraft={!isEditing}
             />
@@ -43,6 +43,6 @@ function Name({onNext, isEditing}: NameProps) {
     );
 }
 
-Name.displayName = 'Name';
+OwnershipPercentage.displayName = 'OwnershipPercentage';
 
-export default Name;
+export default OwnershipPercentage;

@@ -10,11 +10,11 @@ import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
-type NameProps = SubStepProps;
+type NameProps = SubStepProps & {isUserEnteringHisOwnData: boolean};
 
-const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
+const OWNERSHIP_INFO_STEP_KEY = INPUT_IDS.OWNERSHIP_INFO_STEP;
 
-function Name({onNext, isEditing}: NameProps) {
+function Name({onNext, isEditing, isUserEnteringHisOwnData}: NameProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
@@ -29,13 +29,22 @@ function Name({onNext, isEditing}: NameProps) {
             onSubmit={handleSubmit}
             style={[styles.mh5, styles.flexGrow1]}
         >
-            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate('businessInfoStep.whatsTheBusinessName')}</Text>
+            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate(isUserEnteringHisOwnData ? 'ownershipInfoStep.whatsYourName' : 'ownershipInfoStep.whatsTheOwnersName')}</Text>
             <InputWrapper
                 InputComponent={TextInput}
-                label={translate('businessInfoStep.businessName')}
-                aria-label={translate('businessInfoStep.businessName')}
+                label={translate('ownershipInfoStep.legalFirstName')}
+                aria-label={translate('ownershipInfoStep.legalFirstName')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={BUSINESS_INFO_STEP_KEY.NAME}
+                inputID={OWNERSHIP_INFO_STEP_KEY.FIRST_NAME}
+                containerStyles={[styles.mt6]}
+                shouldSaveDraft={!isEditing}
+            />
+            <InputWrapper
+                InputComponent={TextInput}
+                label={translate('ownershipInfoStep.legalLastName')}
+                aria-label={translate('ownershipInfoStep.legalLastName')}
+                role={CONST.ROLE.PRESENTATION}
+                inputID={OWNERSHIP_INFO_STEP_KEY.LAST_NAME}
                 containerStyles={[styles.mt6]}
                 shouldSaveDraft={!isEditing}
             />

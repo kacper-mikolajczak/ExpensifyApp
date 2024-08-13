@@ -6,61 +6,65 @@ import SelectionList from '@components/SelectionList';
 import RadioListItem from '@components/SelectionList/RadioListItem';
 import useLocalize from '@hooks/useLocalize';
 import CONST from '@src/CONST';
-import type {Country} from '@src/CONST';
+
+type PushRowModalProps = {
+    /** Whether the modal is visible */
+    isVisible: boolean;
+
+    /** The currently selected option */
+    selectedOption: string;
+
+    /** Function to call when the user selects an option */
+    onOptionChange: (option: string) => void;
+
+    /** Function to call when the user closes the modal */
+    onClose: () => void;
+
+    /** The list of items to render */
+    optionsList: Record<string, string>;
+
+    /** The title of the modal */
+    headerTitle: string;
+
+    /** The title of the search input */
+    searchInputTitle?: string;
+};
 
 type ListItemType = {
-    value: Country;
+    value: string;
     text: string;
     keyForList: string;
     isSelected: boolean;
 };
 
-type CountryModalProps = {
-    /** Whether the modal is visible */
-    isVisible: boolean;
-
-    /** The currently selected country */
-    selectedCountry: Country;
-
-    /** Function to call when the user selects a country */
-    onCountryChange: (country: Country) => void;
-
-    /** Function to call when the user closes the modal */
-    onClose: () => void;
-
-    /** List of countries */
-    countryList: Record<string, string>;
-};
-
-function CountryModal({isVisible, onCountryChange, onClose, selectedCountry, countryList}: CountryModalProps) {
+function PushRowModal({isVisible, selectedOption, onOptionChange, onClose, optionsList, headerTitle, searchInputTitle}: PushRowModalProps) {
     const {translate} = useLocalize();
 
+    const allOptions = Object.entries(optionsList).map(([key, value]) => ({
+        value: key,
+        text: value,
+        keyForList: key,
+        isSelected: key === selectedOption,
+    }));
     const [searchbarInputText, setSearchbarInputText] = useState('');
-    const [countryListItems, setCountryListItems] = useState(
-        Object.entries(countryList).map(([key, value]) => ({
-            value: key as Country,
-            text: value,
-            keyForList: key,
-            isSelected: key === selectedCountry,
-        })),
-    );
+    const [optionListItems, setOptionListItems] = useState(allOptions);
 
     useEffect(() => {
-        setCountryListItems((prevCountryListItems) =>
-            prevCountryListItems.map((country) => ({
-                ...country,
-                isSelected: country.value === selectedCountry,
+        setOptionListItems((prevOptionListItems) =>
+            prevOptionListItems.map((option) => ({
+                ...option,
+                isSelected: option.value === selectedOption,
             })),
         );
-    }, [selectedCountry]);
+    }, [selectedOption]);
 
-    const filterShownCountries = (searchText: string) => {
+    const filterShownOptions = (searchText: string) => {
         setSearchbarInputText(searchText);
         const searchWords = searchText.toLowerCase().match(/[a-z0-9]+/g) ?? [];
-        setCountryListItems(
-            countryListItems.filter((country) =>
+        setOptionListItems(
+            allOptions.filter((option) =>
                 searchWords.every((word) =>
-                    country.text
+                    option.text
                         .toLowerCase()
                         .replace(/[^a-z0-9]/g, ' ')
                         .includes(word),
@@ -69,8 +73,8 @@ function CountryModal({isVisible, onCountryChange, onClose, selectedCountry, cou
         );
     };
 
-    const handleSelectRow = (country: ListItemType) => {
-        onCountryChange(country.value);
+    const handleSelectRow = (option: ListItemType) => {
+        onOptionChange(option.value);
         onClose();
     };
 
@@ -84,21 +88,21 @@ function CountryModal({isVisible, onCountryChange, onClose, selectedCountry, cou
         >
             <ScreenWrapper
                 includeSafeAreaPaddingBottom={false}
-                testID={CountryModal.displayName}
+                testID={PushRowModal.displayName}
             >
                 <HeaderWithBackButton
-                    title={translate('countryStep.selectCountry')}
+                    title={headerTitle}
                     onBackButtonPress={onClose}
                 />
                 <SelectionList
                     headerMessage={searchbarInputText.trim() && !searchbarInputText.length ? translate('common.noResultsFound') : ''}
-                    textInputLabel={translate('countryStep.selectCountry')}
+                    textInputLabel={searchInputTitle}
                     textInputValue={searchbarInputText}
-                    onChangeText={filterShownCountries}
+                    onChangeText={filterShownOptions}
                     onSelectRow={handleSelectRow}
                     shouldDebounceRowSelect
-                    sections={[{data: countryListItems}]}
-                    initiallyFocusedOptionKey={countryListItems.find((country) => country.value === selectedCountry)?.keyForList}
+                    sections={[{data: optionListItems}]}
+                    initiallyFocusedOptionKey={optionListItems.find((option) => option.value === selectedOption)?.keyForList}
                     showScrollIndicator
                     shouldShowTooltips={false}
                     ListItem={RadioListItem}
@@ -108,8 +112,8 @@ function CountryModal({isVisible, onCountryChange, onClose, selectedCountry, cou
     );
 }
 
-CountryModal.displayName = 'CountryModal';
+PushRowModal.displayName = 'PushRowModal';
 
 export type {ListItemType};
 
-export default CountryModal;
+export default PushRowModal;

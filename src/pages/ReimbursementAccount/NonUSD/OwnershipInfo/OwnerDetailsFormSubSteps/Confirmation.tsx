@@ -20,69 +20,45 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     style={styles.pt0}
                     contentContainerStyle={[styles.flexGrow1, safeAreaPaddingBottomStyle]}
                 >
-                    <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5, styles.mb3]}>{translate('businessInfoStep.letsDoubleCheck')}</Text>
+                    <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5, styles.mb3]}>{translate('ownershipInfoStep.letsDoubleCheck')}</Text>
                     <MenuItemWithTopDescription
-                        description={translate('businessInfoStep.legalBusinessName')}
-                        title="Company co."
+                        description={translate('ownershipInfoStep.legalName')}
+                        title="Mr XYZ"
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(0);
                         }}
                     />
                     <MenuItemWithTopDescription
-                        description={translate('businessInfoStep.registrationNumber')}
-                        title="123456789"
-                        shouldShowRightIcon
-                        onPress={() => {
-                            onMove(3);
-                        }}
-                    />
-                    <MenuItemWithTopDescription
-                        description={translate('businessInfoStep.businessAddress')}
-                        title="224 Pixley Street, San Francisco CA 94123"
+                        description={translate('ownershipInfoStep.ownershipPercentage')}
+                        title="25%"
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);
                         }}
                     />
                     <MenuItemWithTopDescription
-                        description={translate('common.phoneNumber')}
-                        title="+22123456789"
+                        description={translate('common.dob')}
+                        title="2001-01-01"
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(2);
                         }}
                     />
                     <MenuItemWithTopDescription
-                        description={translate('businessInfoStep.businessType')}
-                        title="Corporation"
-                        shouldShowRightIcon
-                        onPress={() => {
-                            onMove(5);
-                        }}
-                    />
-                    <MenuItemWithTopDescription
-                        description={translate('businessInfoStep.incorporation')}
-                        title="Alberta, Canada"
+                        description={translate('ownershipInfoStep.last4')}
+                        title="1234"
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(4);
                         }}
                     />
                     <MenuItemWithTopDescription
-                        description={translate('businessInfoStep.businessCategory')}
-                        title="Information and communcation technologies"
+                        description={translate('ownershipInfoStep.address')}
+                        title="123 Beach Street, Beach Town, FL 12345"
                         shouldShowRightIcon
                         onPress={() => {
-                            onMove(5);
-                        }}
-                    />
-                    <MenuItemWithTopDescription
-                        description={translate('businessInfoStep.annualPaymentVolume')}
-                        title="25,000 - 50,000"
-                        shouldShowRightIcon
-                        onPress={() => {
-                            onMove(6);
+                            onMove(3);
                         }}
                     />
                     <View style={[styles.ph5, styles.pb5, styles.flexGrow1, styles.justifyContentEnd]}>

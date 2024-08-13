@@ -10,17 +10,17 @@ import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
-type NameProps = SubStepProps;
+type NameProps = SubStepProps & {isUserEnteringHisOwnData: boolean};
 
-const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
+const OWNERSHIP_INFO_STEP_KEY = INPUT_IDS.OWNERSHIP_INFO_STEP;
 
 const INPUT_KEYS = {
-    street: BUSINESS_INFO_STEP_KEY.STREET,
-    city: BUSINESS_INFO_STEP_KEY.CITY,
-    state: BUSINESS_INFO_STEP_KEY.STATE,
-    zipCode: BUSINESS_INFO_STEP_KEY.ZIP_CODE,
+    street: OWNERSHIP_INFO_STEP_KEY.STREET,
+    city: OWNERSHIP_INFO_STEP_KEY.CITY,
+    state: OWNERSHIP_INFO_STEP_KEY.STATE,
+    zipCode: OWNERSHIP_INFO_STEP_KEY.ZIP_CODE,
 };
-function Name({onNext, isEditing}: NameProps) {
+function Name({onNext, isEditing, isUserEnteringHisOwnData}: NameProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const [selectedCountry, setSelectedCountry] = useState('PL');
@@ -37,7 +37,9 @@ function Name({onNext, isEditing}: NameProps) {
             style={[styles.flexGrow1]}
             submitButtonStyles={[styles.mh5]}
         >
-            <Text style={[styles.textHeadlineLineHeightXXL, styles.mh5]}>{translate('businessInfoStep.enterTheNameOfYourBusiness')}</Text>
+            <Text style={[styles.textHeadlineLineHeightXXL, styles.mh5]}>
+                {translate(isUserEnteringHisOwnData ? 'ownershipInfoStep.whatsYourAddress' : 'ownershipInfoStep.whatsTheOwnersAddress')}
+            </Text>
             <AddressFormFields
                 inputKeys={INPUT_KEYS}
                 shouldSaveDraft={!isEditing}
@@ -49,8 +51,8 @@ function Name({onNext, isEditing}: NameProps) {
                 selectedOption={selectedCountry}
                 onOptionChange={setSelectedCountry}
                 description={translate('common.country')}
-                modalHeaderTitle={translate('countryStep.selectCountry')}
-                searchInputTitle={translate('countryStep.findCountry')}
+                modalHeaderTitle={translate('ownershipInfoStep.selectCountry')}
+                searchInputTitle={translate('ownershipInfoStep.findCountry')}
             />
         </FormProvider>
     );

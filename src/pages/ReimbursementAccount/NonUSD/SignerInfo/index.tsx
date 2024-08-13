@@ -1,5 +1,5 @@
 import type {ComponentType} from 'react';
-import React from 'react';
+import React, {useState} from 'react';
 import {View} from 'react-native';
 import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import InteractiveStepSubHeader from '@components/InteractiveStepSubHeader';
@@ -8,8 +8,16 @@ import useLocalize from '@hooks/useLocalize';
 import useSubStep from '@hooks/useSubStep';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import Navigation from '@navigation/Navigation';
 import CONST from '@src/CONST';
+import DirectorCheck from './DirectorCheck';
+import EnterEmail from './EnterEmail';
+import HangTight from './HangTight';
 import Confirmation from './substeps/Confirmation';
+import DateOfBirth from './substeps/DateOfBirth';
+import JobTitle from './substeps/JobTitle';
+import Name from './substeps/Name';
+import UploadDocuments from './substeps/UploadDocuments';
 
 type SignerInfoProps = {
     /** Handles back button press */
@@ -19,17 +27,43 @@ type SignerInfoProps = {
     onSubmit: () => void;
 };
 
-const bodyContent: Array<ComponentType<SubStepProps>> = [Confirmation];
+const SUBSTEP = CONST.NON_USD_BANK_ACCOUNT.SIGNER_INFO_STEP.SUBSTEP;
+
+const bodyContent: Array<ComponentType<SubStepProps>> = [Name, JobTitle, DateOfBirth, UploadDocuments, Confirmation];
 
 function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
+    const currency = 'AUD';
+
+    const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_DIRECTOR);
+    const [isUserDirector, setIsUserDirector] = useState(false);
 
     const submit = () => {
-        onSubmit();
+        if (currency === 'AUD') {
+            setCurrentSubStep(SUBSTEP.ENTER_EMAIL);
+        } else {
+            onSubmit();
+        }
     };
 
-    const {componentToRender: SubStep, isEditing, screenIndex, nextScreen, prevScreen, moveTo, goToTheLastStep} = useSubStep({bodyContent, startFrom: 0, onFinished: submit});
+    const handleNextSubStep = (value: boolean) => {
+        if (currentSubStep !== SUBSTEP.IS_DIRECTOR) {
+            return;
+        }
+
+        // user is director
+        if (value) {
+            setIsUserDirector(value);
+            setCurrentSubStep(SUBSTEP.SIGNER_DETAILS_FORM);
+            return;
+        }
+
+        setIsUserDirector(value);
+        setCurrentSubStep(SUBSTEP.ENTER_EMAIL);
+    };
+
+    const {componentToRender: SignerDetailsForm, isEditing, screenIndex, nextScreen, prevScreen, moveTo, goToTheLastStep} = useSubStep({bodyContent, startFrom: 0, onFinished: submit});
 
     const handleBackButtonPress = () => {
         if (isEditing) {
@@ -37,11 +71,21 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
             return;
         }
 
-        if (screenIndex === 0) {
+        if (currentSubStep === SUBSTEP.IS_DIRECTOR) {
             onBackButtonPress();
-        } else {
+        } else if (currentSubStep === SUBSTEP.ENTER_EMAIL && isUserDirector) {
+            setCurrentSubStep(SUBSTEP.SIGNER_DETAILS_FORM);
+        } else if (currentSubStep === SUBSTEP.SIGNER_DETAILS_FORM && screenIndex > 0) {
             prevScreen();
+        } else if (currentSubStep === SUBSTEP.HANG_TIGHT) {
+            Navigation.goBack();
+        } else {
+            setCurrentSubStep((subStep) => subStep - 1);
         }
+    };
+
+    const handleEmailSubmit = () => {
+        setCurrentSubStep(SUBSTEP.HANG_TIGHT);
     };
 
     return (
@@ -53,7 +97,7 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
         >
             <HeaderWithBackButton
                 onBackButtonPress={handleBackButtonPress}
-                title={translate('bankAccount.bankInfo')}
+                title={translate('signerInfoStep.signerInfo')}
             />
             <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.NON_USD_BANK_ACCOUNT.STEP_HEADER_HEIGHT}]}>
                 <InteractiveStepSubHeader
@@ -61,11 +105,26 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
                     stepNames={CONST.NON_USD_BANK_ACCOUNT.STEP_NAMES}
                 />
             </View>
-            <SubStep
-                isEditing={isEditing}
-                onNext={nextScreen}
-                onMove={moveTo}
-            />
+
+            {currentSubStep === SUBSTEP.IS_DIRECTOR && (
+                <DirectorCheck
+                    title={translate('signerInfoStep.areYouDirector')}
+                    defaultValue={isUserDirector}
+                    onSelectedValue={handleNextSubStep}
+                />
+            )}
+
+            {currentSubStep === SUBSTEP.SIGNER_DETAILS_FORM && (
+                <SignerDetailsForm
+                    isEditing={isEditing}
+                    onNext={nextScreen}
+                    onMove={moveTo}
+                />
+            )}
+
+            {currentSubStep === SUBSTEP.ENTER_EMAIL && <EnterEmail onSubmit={handleEmailSubmit} />}
+
+            {currentSubStep === SUBSTEP.HANG_TIGHT && <HangTight tempSubmit={onSubmit} />}
         </ScreenWrapper>
     );
 }

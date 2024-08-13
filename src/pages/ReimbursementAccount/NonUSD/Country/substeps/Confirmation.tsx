@@ -2,9 +2,9 @@ import React, {useState} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import Button from '@components/Button';
-import CountryPicker from '@components/CountryPicker';
 import MenuItemWithTopDescription from '@components/MenuItemWithTopDescription';
 import PressableWithoutFeedback from '@components/Pressable/PressableWithoutFeedback';
+import PushRowWithModal from '@components/PushRowWithModal';
 import SafeAreaConsumer from '@components/SafeAreaConsumer';
 import ScrollView from '@components/ScrollView';
 import Text from '@components/Text';
@@ -12,7 +12,6 @@ import useLocalize from '@hooks/useLocalize';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import Navigation from '@libs/Navigation/Navigation';
-import type {Country} from '@src/CONST';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import ROUTES from '@src/ROUTES';
@@ -20,7 +19,7 @@ import ROUTES from '@src/ROUTES';
 function Confirmation({onNext}: SubStepProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const [selectedCountry, setSelectedCountry] = useState<Country>('PL');
+    const [selectedCountry, setSelectedCountry] = useState('PL');
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
 
@@ -57,11 +56,14 @@ function Confirmation({onNext}: SubStepProps) {
                         </PressableWithoutFeedback>
                         .
                     </Text>
-                    <CountryPicker
-                        selectedCountry={selectedCountry}
-                        onCountryChange={setSelectedCountry}
-                        isEditable={shouldAllowChange}
-                        countryList={CONST.ALL_COUNTRIES}
+                    <PushRowWithModal
+                        optionsList={CONST.ALL_COUNTRIES}
+                        selectedOption={selectedCountry}
+                        onOptionChange={setSelectedCountry}
+                        description={translate('common.country')}
+                        modalHeaderTitle={translate('countryStep.selectCountry')}
+                        searchInputTitle={translate('countryStep.findCountry')}
+                        shouldAllowChange={shouldAllowChange}
                     />
                     <View style={[styles.ph5, styles.pb5, styles.flexGrow1, styles.justifyContentEnd]}>
                         <Button

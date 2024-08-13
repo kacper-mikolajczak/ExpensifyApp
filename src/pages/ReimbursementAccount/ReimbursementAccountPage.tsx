@@ -215,6 +215,7 @@ function ReimbursementAccountPage({
 
     const [shouldShowContinueSetupButton, setShouldShowContinueSetupButton] = useState(hasACHDataBeenLoaded ? getShouldShowContinueSetupButtonInitialValue() : false);
     const [isReimbursementAccountLoading, setIsReimbursementAccountLoading] = useState(true);
+
     const [nonUSDBankAccountStep, setNonUSDBankAccountStep] = useState<string>(CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY);
 
     const handleNextNonUSDBankAccountStep = () => {

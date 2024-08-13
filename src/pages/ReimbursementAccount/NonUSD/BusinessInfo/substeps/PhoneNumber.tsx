@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
+import PushRowWithModal from '@components/PushRowWithModal';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
@@ -17,6 +18,7 @@ const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
 function PhoneNumber({onNext, isEditing}: PhoneNumberProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
+    const [selectedCountryCode, setSelectedCountryCode] = useState('PL');
 
     const handleSubmit = () => {
         onNext();
@@ -24,12 +26,21 @@ function PhoneNumber({onNext, isEditing}: PhoneNumberProps) {
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
-            style={[styles.mh5, styles.flexGrow1]}
+            style={[styles.flexGrow1]}
+            submitButtonStyles={[styles.mh5]}
         >
-            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate('businessInfoStep.whatsTheBusinessPhone')}</Text>
+            <Text style={[styles.textHeadlineLineHeightXXL, styles.mh5, styles.mb3]}>{translate('businessInfoStep.whatsTheBusinessPhone')}</Text>
+            <PushRowWithModal
+                optionsList={CONST.COUNTRY_PHONE_NUMBER_CODES}
+                selectedOption={selectedCountryCode}
+                onOptionChange={setSelectedCountryCode}
+                description={translate('businessInfoStep.countryCode')}
+                modalHeaderTitle={translate('businessInfoStep.selectCountryCode')}
+                searchInputTitle={translate('businessInfoStep.findCountryCode')}
+            />
             <InputWrapper
                 InputComponent={TextInput}
                 label={translate('common.phoneNumber')}
@@ -37,7 +48,7 @@ function PhoneNumber({onNext, isEditing}: PhoneNumberProps) {
                 role={CONST.ROLE.PRESENTATION}
                 inputMode={CONST.INPUT_MODE.TEL}
                 inputID={BUSINESS_INFO_STEP_KEY.PHONE}
-                containerStyles={[styles.mt6]}
+                containerStyles={[styles.mt5, styles.mh5]}
             />
         </FormProvider>
     );

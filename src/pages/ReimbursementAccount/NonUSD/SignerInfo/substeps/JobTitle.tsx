@@ -12,7 +12,7 @@ import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
 type NameProps = SubStepProps;
 
-const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
+const SIGNER_INFO_STEP_KEY = INPUT_IDS.SIGNER_INFO_STEP;
 
 function Name({onNext, isEditing}: NameProps) {
     const {translate} = useLocalize();
@@ -29,13 +29,13 @@ function Name({onNext, isEditing}: NameProps) {
             onSubmit={handleSubmit}
             style={[styles.mh5, styles.flexGrow1]}
         >
-            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate('businessInfoStep.whatsTheBusinessName')}</Text>
+            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate('signerInfoStep.whatsYourJobTitle')}</Text>
             <InputWrapper
                 InputComponent={TextInput}
-                label={translate('businessInfoStep.businessName')}
-                aria-label={translate('businessInfoStep.businessName')}
+                label={translate('signerInfoStep.jobTitle')}
+                aria-label={translate('signerInfoStep.jobTitle')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={BUSINESS_INFO_STEP_KEY.NAME}
+                inputID={SIGNER_INFO_STEP_KEY.JOB_TITLE}
                 containerStyles={[styles.mt6]}
                 shouldSaveDraft={!isEditing}
             />
