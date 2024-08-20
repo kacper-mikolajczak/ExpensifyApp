@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {View} from 'react-native';
+import {useOnyx} from 'react-native-onyx';
 import Button from '@components/Button';
 import MenuItemWithTopDescription from '@components/MenuItemWithTopDescription';
 import SafeAreaConsumer from '@components/SafeAreaConsumer';
@@ -8,10 +9,19 @@ import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import getSubStepValues from '@pages/ReimbursementAccount/NonUSD/utils/getSubStepValues';
+import CONST from '@src/CONST';
+import ONYXKEYS from '@src/ONYXKEYS';
+import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+
+const BUSINESS_INFO_STEP_KEYS = INPUT_IDS.BUSINESS_INFO_STEP;
 
 function Confirmation({onNext, onMove}: SubStepProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+
+    const values = useMemo(() => getSubStepValues(BUSINESS_INFO_STEP_KEYS, nonUSDReimbursementAccountDraft), [nonUSDReimbursementAccountDraft]);
 
     return (
         <SafeAreaConsumer>
@@ -23,7 +33,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5, styles.mb3]}>{translate('businessInfoStep.letsDoubleCheck')}</Text>
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.legalBusinessName')}
-                        title="Company co."
+                        title={values[BUSINESS_INFO_STEP_KEYS.NAME]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(0);
@@ -31,7 +41,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.registrationNumber')}
-                        title="123456789"
+                        title={values[BUSINESS_INFO_STEP_KEYS.REGISTRATION_NUMBER]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);
@@ -39,7 +49,9 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.businessAddress')}
-                        title="224 Pixley Street, San Francisco CA 94123"
+                        title={`${values[BUSINESS_INFO_STEP_KEYS.STREET]}, ${values[BUSINESS_INFO_STEP_KEYS.CITY]}, ${values[BUSINESS_INFO_STEP_KEYS.STATE]}, ${
+                            values[BUSINESS_INFO_STEP_KEYS.ZIP_CODE]
+                        }, ${values[BUSINESS_INFO_STEP_KEYS.COUNTRY]}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);
@@ -47,7 +59,8 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('common.phoneNumber')}
-                        title="+22123456789"
+                        // TODO default value for country code
+                        title={`${CONST.COUNTRY_PHONE_NUMBER_CODES.AF}${values[BUSINESS_INFO_STEP_KEYS.PHONE]}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(2);
@@ -55,7 +68,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.businessType')}
-                        title="Corporation"
+                        title={values[BUSINESS_INFO_STEP_KEYS.BUSINESS_TYPE]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(5);
@@ -63,7 +76,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.incorporation')}
-                        title="Alberta, Canada"
+                        title={values[BUSINESS_INFO_STEP_KEYS.INCORPORATION_COUNTRY]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(4);
@@ -71,7 +84,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.businessCategory')}
-                        title="Information and communcation technologies"
+                        title={values[BUSINESS_INFO_STEP_KEYS.BUSINESS_CATEGORY]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(5);
@@ -79,7 +92,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.annualPaymentVolume')}
-                        title="25,000 - 50,000"
+                        title={values[BUSINESS_INFO_STEP_KEYS.PAYMENT_VOLUME]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(6);

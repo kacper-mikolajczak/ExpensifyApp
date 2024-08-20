@@ -38,9 +38,22 @@ type AddressFormProps = {
 
     /** Additional styles to apply to container */
     containerStyles?: StyleProp<ViewStyle>;
+
+    /** Indicates if state selector should be displayed */
+    shouldDisplayStateSelector?: boolean;
 };
 
-function AddressFormFields({shouldSaveDraft = false, defaultValues, values, errors, inputKeys, onFieldChange, streetTranslationKey, containerStyles}: AddressFormProps) {
+function AddressFormFields({
+    shouldSaveDraft = false,
+    defaultValues,
+    values,
+    errors,
+    inputKeys,
+    onFieldChange,
+    streetTranslationKey,
+    containerStyles,
+    shouldDisplayStateSelector = true,
+}: AddressFormProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
@@ -76,17 +89,19 @@ function AddressFormFields({shouldSaveDraft = false, defaultValues, values, erro
                 containerStyles={styles.mt6}
             />
 
-            <View style={[styles.mt3, styles.mhn5]}>
-                <InputWrapper
-                    InputComponent={StateSelector}
-                    inputID={inputKeys.state ?? 'stateInput'}
-                    shouldSaveDraft={shouldSaveDraft}
-                    value={values?.state as State}
-                    defaultValue={defaultValues?.state}
-                    onInputChange={(value) => onFieldChange?.({state: value})}
-                    errorText={errors?.state ? translate('bankAccount.error.addressState') : ''}
-                />
-            </View>
+            {shouldDisplayStateSelector && (
+                <View style={[styles.mt3, styles.mhn5]}>
+                    <InputWrapper
+                        InputComponent={StateSelector}
+                        inputID={inputKeys.state ?? 'stateInput'}
+                        shouldSaveDraft={shouldSaveDraft}
+                        value={values?.state as State}
+                        defaultValue={defaultValues?.state}
+                        onInputChange={(value) => onFieldChange?.({state: value})}
+                        errorText={errors?.state ? translate('bankAccount.error.addressState') : ''}
+                    />
+                </View>
+            )}
             <InputWrapper
                 InputComponent={TextInput}
                 inputID={inputKeys.zipCode ?? 'zipCodeInput'}

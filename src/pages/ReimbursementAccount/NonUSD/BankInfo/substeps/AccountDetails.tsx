@@ -1,10 +1,12 @@
 import React from 'react';
 import {View} from 'react-native';
+import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
+import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import CONST from '@src/CONST';
@@ -14,14 +16,23 @@ import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 type AccountDetailsProps = SubStepProps;
 
 const ACCOUNT_DETAILS_STEP_KEY = INPUT_IDS.BANK_INFO_STEP;
+const STEP_FIELDS = [ACCOUNT_DETAILS_STEP_KEY.ACCOUNT_NUMBER, ACCOUNT_DETAILS_STEP_KEY.ROUTING_CODE];
 
 function AccountDetails({onNext, isEditing}: AccountDetailsProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
-    const handleSubmit = () => {
-        onNext();
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const defaultValues = {
+        [ACCOUNT_DETAILS_STEP_KEY.ACCOUNT_NUMBER]: nonUSDReimbursementAccountDraft?.[ACCOUNT_DETAILS_STEP_KEY.ACCOUNT_NUMBER] ?? '',
+        [ACCOUNT_DETAILS_STEP_KEY.ROUTING_CODE]: nonUSDReimbursementAccountDraft?.[ACCOUNT_DETAILS_STEP_KEY.ROUTING_CODE] ?? '',
     };
+
+    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
+        fieldIds: STEP_FIELDS,
+        onNext,
+        shouldSaveDraft: isEditing,
+    });
 
     return (
         <FormProvider
@@ -40,6 +51,7 @@ function AccountDetails({onNext, isEditing}: AccountDetailsProps) {
                         aria-label={translate('bankInfoStep.accountNumber')}
                         role={CONST.ROLE.PRESENTATION}
                         shouldSaveDraft={!isEditing}
+                        defaultValue={defaultValues[ACCOUNT_DETAILS_STEP_KEY.ACCOUNT_NUMBER]}
                     />
                 </View>
                 <View style={[styles.flex2, styles.mb6]}>
@@ -50,6 +62,7 @@ function AccountDetails({onNext, isEditing}: AccountDetailsProps) {
                         aria-label={translate('bankInfoStep.routingNumber')}
                         role={CONST.ROLE.PRESENTATION}
                         shouldSaveDraft={!isEditing}
+                        defaultValue={defaultValues[ACCOUNT_DETAILS_STEP_KEY.ROUTING_CODE]}
                     />
                 </View>
             </View>

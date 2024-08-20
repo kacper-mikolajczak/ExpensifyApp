@@ -29,11 +29,14 @@ const INPUT_IDS = {
         STATE: 'state',
         ZIP_CODE: 'zipCode',
         COUNTRY: 'country',
+        COUNTRY_CODE: 'businessCountryCode',
         PHONE: 'businessContactNumber',
         REGISTRATION_NUMBER: 'businessRegistrationIncorporationNumber',
         BUSINESS_TYPE: 'applicantType',
         BUSINESS_CATEGORY: 'natureOfBusiness',
         PAYMENT_VOLUME: 'annualVolume',
+        INCORPORATION_COUNTRY: 'incorporationCountry',
+        INCORPORATION_STATE: 'incorporationState',
     },
     OWNERSHIP_INFO_STEP: {
         OWNS_MORE_THAN_25_PERCENT: 'ownsMoreThan25Percent',
@@ -101,10 +104,13 @@ type BusinessInfoStep = {
     [INPUT_IDS.BUSINESS_INFO_STEP.ZIP_CODE]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.COUNTRY]: Country;
     [INPUT_IDS.BUSINESS_INFO_STEP.PHONE]: string;
+    [INPUT_IDS.BUSINESS_INFO_STEP.COUNTRY_CODE]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.REGISTRATION_NUMBER]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.BUSINESS_TYPE]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.BUSINESS_CATEGORY]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.PAYMENT_VOLUME]: string;
+    [INPUT_IDS.BUSINESS_INFO_STEP.INCORPORATION_COUNTRY]: Country;
+    [INPUT_IDS.BUSINESS_INFO_STEP.INCORPORATION_STATE]: string;
 };
 
 type OwnershipInfoStep = {
