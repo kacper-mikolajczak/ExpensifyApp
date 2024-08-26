@@ -1,4 +1,5 @@
 import React from 'react';
+import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
 import Text from '@components/Text';
@@ -11,16 +12,23 @@ import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
 type EnterEmailProps = {
     onSubmit: () => void;
+
+    isUserDirector: boolean;
 };
 
 const SIGNER_INFO_STEP_KEY = INPUT_IDS.SIGNER_INFO_STEP;
 
-function EnterEmail({onSubmit}: EnterEmailProps) {
+function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
-    const currency = 'AUD';
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
+    const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
+    const currency = policy?.outputCurrency ?? '';
+
     const isAUDAccount = currency === 'AUD';
+    const shouldGatherBothEmails = isAUDAccount && !isUserDirector;
 
     return (
         <FormProvider
@@ -32,13 +40,13 @@ function EnterEmail({onSubmit}: EnterEmailProps) {
             <Text style={[styles.textHeadlineLineHeightXXL]}>{translate(isAUDAccount ? 'signerInfoStep.enterTwoEmails' : 'signerInfoStep.enterOneEmail')}</Text>
             <InputWrapper
                 InputComponent={TextInput}
-                label={isAUDAccount ? `${translate('common.email')} 1` : translate('common.email')}
-                aria-label={isAUDAccount ? `${translate('common.email')} 1` : translate('common.email')}
+                label={shouldGatherBothEmails ? `${translate('common.email')} 1` : translate('common.email')}
+                aria-label={shouldGatherBothEmails ? `${translate('common.email')} 1` : translate('common.email')}
                 role={CONST.ROLE.PRESENTATION}
                 inputID={SIGNER_INFO_STEP_KEY.DIRECTOR_EMAIL_ADDRESS}
                 containerStyles={[styles.mt6]}
             />
-            {isAUDAccount && (
+            {shouldGatherBothEmails && (
                 <InputWrapper
                     InputComponent={TextInput}
                     label={`${translate('common.email')} 2`}

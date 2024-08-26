@@ -2,6 +2,7 @@ import {Str} from 'expensify-common';
 import type {ComponentType} from 'react';
 import React, {useState} from 'react';
 import {View} from 'react-native';
+import {useOnyx} from 'react-native-onyx';
 import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import InteractiveStepSubHeader from '@components/InteractiveStepSubHeader';
 import ScreenWrapper from '@components/ScreenWrapper';
@@ -10,6 +11,8 @@ import useSubStep from '@hooks/useSubStep';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import CONST from '@src/CONST';
+import ONYXKEYS from '@src/ONYXKEYS';
+import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 import OwnerCheck from './OwnerCheck';
 import Address from './OwnerDetailsFormSubSteps/Address';
 import Confirmation from './OwnerDetailsFormSubSteps/Confirmation';
@@ -38,6 +41,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const [ownerKeys, setOwnerKeys] = useState<string[]>([]);
     const [ownerBeingModifiedID, setOwnerBeingModifiedID] = useState('');
     const [isEditingCreatedOwner, setIsEditingCreatedOwner] = useState(false);
@@ -45,8 +49,14 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const [isUserOwner, setIsUserOwner] = useState(false);
     const [isAnyoneElseOwner, setIsAnyoneElseOwner] = useState(false);
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_USER_OWNER);
+    const companyName = nonUSDReimbursementAccountDraft?.[INPUT_IDS.BUSINESS_INFO_STEP.NAME] ?? '';
+
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
+    const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
+    const currency = policy?.outputCurrency ?? '';
+
     const canAddMoreOwners = true;
-    const currency = 'AUD';
 
     const submit = () => {
         onSubmit();
@@ -59,7 +69,9 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     };
 
     const handleOwnerDetailsFormSubmit = () => {
-        if (canAddMoreOwners) {
+        const shouldAddMoreOwners = !ownerKeys.find((ownerID) => ownerID === ownerBeingModifiedID) && canAddMoreOwners;
+
+        if (shouldAddMoreOwners) {
             addOwner(ownerBeingModifiedID);
         }
 
@@ -89,12 +101,16 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const handleOwnerEdit = (ownerID: string) => {
         setOwnerBeingModifiedID(ownerID);
         setIsEditingCreatedOwner(true);
-        setCurrentSubStep(SUBSTEP.OWNERS_LIST);
+        setCurrentSubStep(SUBSTEP.OWNER_DETAILS_FORM);
     };
 
     const handleOwnershipChartSubmit = () => {
         // upload chart
         setCurrentSubStep(SUBSTEP.OWNERS_LIST);
+    };
+
+    const handleOwnershipChartEdit = () => {
+        setCurrentSubStep(SUBSTEP.OWNERSHIP_CHART);
     };
 
     const handleBackButtonPress = () => {
@@ -161,6 +177,11 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
 
             // User is not an owner and no one else is an owner
             if (!isUserOwner && !value) {
+                if (currency === 'AUD') {
+                    setCurrentSubStep(SUBSTEP.OWNERSHIP_CHART);
+                    return;
+                }
+
                 submit();
                 return;
             }
@@ -175,6 +196,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
         // Are there more UBOs
         if (currentSubStep === SUBSTEP.ARE_THERE_MORE_OWNERS) {
             if (value) {
+                setIsAnyoneElseOwner(true);
                 prepareOwnerDetailsForm();
                 return;
             }
@@ -214,7 +236,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
 
             {currentSubStep === SUBSTEP.IS_USER_OWNER && (
                 <OwnerCheck
-                    title={translate('ownershipInfoStep.doYouOwn')}
+                    title={translate('ownershipInfoStep.doYouOwn', {companyName})}
                     defaultValue={isUserOwner}
                     onSelectedValue={handleNextSubStep}
                 />
@@ -222,7 +244,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
 
             {currentSubStep === SUBSTEP.IS_ANYONE_ELSE_OWNER && (
                 <OwnerCheck
-                    title={translate('ownershipInfoStep.doesAnyoneOwn')}
+                    title={translate('ownershipInfoStep.doesAnyoneOwn', {companyName})}
                     defaultValue={isAnyoneElseOwner}
                     onSelectedValue={handleNextSubStep}
                 />
@@ -241,7 +263,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
 
             {currentSubStep === SUBSTEP.ARE_THERE_MORE_OWNERS && (
                 <OwnerCheck
-                    title={translate('ownershipInfoStep.areThereOther')}
+                    title={translate('ownershipInfoStep.areThereOther', {companyName})}
                     defaultValue={isUserOwner}
                     onSelectedValue={handleNextSubStep}
                 />
@@ -253,8 +275,8 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
                 <OwnersList
                     handleConfirmation={submit}
                     handleOwnerEdit={handleOwnerEdit}
+                    handleOwnershipChartEdit={handleOwnershipChartEdit}
                     ownerKeys={ownerKeys}
-                    isUserOwner={isUserOwner}
                     isAnyoneElseOwner={isAnyoneElseOwner}
                 />
             )}

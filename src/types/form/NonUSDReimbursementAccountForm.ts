@@ -56,15 +56,14 @@ const INPUT_IDS = {
     },
     SIGNER_INFO_STEP: {
         IS_DIRECTOR: 'isDirector',
-        FIRST_NAME: 'firstName',
-        LAST_NAME: 'lastName',
-        JOB_TITLE: 'jobTitle',
-        DOB: 'dob',
-        ID: 'id',
-        PROOF_OF_ADDRESS: 'proofOfAddress',
         DIRECTOR_EMAIL_ADDRESS: 'directorEmailAddress',
         SECOND_DIRECTOR_EMAIL_ADDRESS: 'secondDirectorEmailAddress',
-        DIRECTORS: 'directors',
+        FIRST_NAME: 'signerFirstName',
+        LAST_NAME: 'signerLastName',
+        JOB_TITLE: 'signerJobTitle',
+        DOB: 'signerDob',
+        ID: 'signerID',
+        PROOF_OF_ADDRESS: 'signerProofOfAddress',
     },
     AGREEMENT_STEP: {
         AUTHORIZED: 'authorized',
@@ -113,7 +112,14 @@ type BusinessInfoStep = {
     [INPUT_IDS.BUSINESS_INFO_STEP.INCORPORATION_STATE]: string;
 };
 
-type OwnershipInfoStep = {
+type OwnerDataKey = `owner_${string}_${string}`;
+
+type OwnershipInfoStepExtraProps = {
+    [key: OwnerDataKey]: string;
+    ownerKeys?: string[];
+};
+
+type OwnershipInfoStepBaseProps = {
     [INPUT_IDS.OWNERSHIP_INFO_STEP.OWNS_MORE_THAN_25_PERCENT]: boolean;
     [INPUT_IDS.OWNERSHIP_INFO_STEP.HAS_OTHER_BENEFICIAL_OWNERS]: boolean;
     [INPUT_IDS.OWNERSHIP_INFO_STEP.BENEFICIAL_OWNERS]: string;
@@ -131,9 +137,10 @@ type OwnershipInfoStep = {
     [INPUT_IDS.OWNERSHIP_INFO_STEP.SSN_LAST_4]: string;
 };
 
+type OwnershipInfoStep = OwnershipInfoStepBaseProps & OwnershipInfoStepExtraProps;
+
 type SignerInfoStep = {
     [INPUT_IDS.SIGNER_INFO_STEP.IS_DIRECTOR]: boolean;
-    [INPUT_IDS.SIGNER_INFO_STEP.DIRECTORS]: string;
     [INPUT_IDS.SIGNER_INFO_STEP.DIRECTOR_EMAIL_ADDRESS]: string;
     [INPUT_IDS.SIGNER_INFO_STEP.SECOND_DIRECTOR_EMAIL_ADDRESS]: string;
 

@@ -11,7 +11,7 @@ type UseNonUSDReimbursementAccountStepFormSubmitParams = Pick<SubStepProps, 'onN
 };
 
 /**
- * Hook for handling submit method in ReimbursementAccount substeps.
+ * Hook for handling submit method in NonUSDReimbursementAccount sub steps.
  * When user is in editing mode, we should save values only when user confirms the change
  * @param onNext - callback
  * @param fieldIds - field IDs for particular step

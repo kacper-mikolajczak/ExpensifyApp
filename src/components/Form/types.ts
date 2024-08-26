@@ -12,6 +12,7 @@ import type CurrencySelector from '@components/CurrencySelector';
 import type DatePicker from '@components/DatePicker';
 import type EmojiPickerButtonDropdown from '@components/EmojiPicker/EmojiPickerButtonDropdown';
 import type Picker from '@components/Picker';
+import type PushRowWithModal from '@components/PushRowWithModal';
 import type RadioButtons from '@components/RadioButtons';
 import type RoomNameInput from '@components/RoomNameInput';
 import type SingleChoiceQuestion from '@components/SingleChoiceQuestion';
@@ -55,7 +56,8 @@ type ValidInputs =
     | typeof EmojiPickerButtonDropdown
     | typeof NetSuiteCustomListPicker
     | typeof NetSuiteCustomFieldMappingPicker
-    | typeof NetSuiteMenuWithTopDescriptionForm;
+    | typeof NetSuiteMenuWithTopDescriptionForm
+    | typeof PushRowWithModal;
 
 type ValueTypeKey = 'string' | 'boolean' | 'date' | 'country' | 'reportFields' | 'disabledListValues';
 type ValueTypeMap = {

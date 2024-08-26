@@ -384,8 +384,8 @@ const CONST = {
                 OWNERSHIP_CHART: 5,
                 OWNERS_LIST: 6,
             },
-            BENEFICIAL_OWNER_DATA: {
-                BENEFICIAL_OWNER_KEYS: 'ownerKeys',
+            OWNER_DATA: {
+                OWNER_KEYS: 'ownerKeys',
                 PREFIX: 'owner',
                 FIRST_NAME: 'firstName',
                 LAST_NAME: 'lastName',
@@ -407,6 +407,8 @@ const CONST = {
                 HANG_TIGHT: 4,
             },
         },
+        ALLOWED_FILE_TYPES: ['pdf', 'jpg', 'jpeg', 'png'],
+        MAX_FILE_SIZE_MB: 5,
     },
     INCORPORATION_TYPES: {
         LLC: 'LLC',

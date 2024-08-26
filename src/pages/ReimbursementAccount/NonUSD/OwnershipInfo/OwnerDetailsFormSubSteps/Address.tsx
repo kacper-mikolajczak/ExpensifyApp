@@ -1,32 +1,57 @@
 import React, {useState} from 'react';
+import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
+import InputWrapper from '@components/Form/InputWrapper';
 import PushRowWithModal from '@components/PushRowWithModal';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
+import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import AddressFormFields from '@pages/ReimbursementAccount/AddressFormFields';
+import WhyLink from '@pages/ReimbursementAccount/NonUSD/WhyLink';
+import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
-type NameProps = SubStepProps & {isUserEnteringHisOwnData: boolean};
+type NameProps = SubStepProps & {isUserEnteringHisOwnData: boolean; ownerBeingModifiedID: string};
 
-const OWNERSHIP_INFO_STEP_KEY = INPUT_IDS.OWNERSHIP_INFO_STEP;
+const {STREET, CITY, STATE, ZIP_CODE, COUNTRY, PREFIX} = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INFO_STEP.OWNER_DATA;
 
-const INPUT_KEYS = {
-    street: OWNERSHIP_INFO_STEP_KEY.STREET,
-    city: OWNERSHIP_INFO_STEP_KEY.CITY,
-    state: OWNERSHIP_INFO_STEP_KEY.STATE,
-    zipCode: OWNERSHIP_INFO_STEP_KEY.ZIP_CODE,
-};
-function Name({onNext, isEditing, isUserEnteringHisOwnData}: NameProps) {
+function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID}: NameProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const [selectedCountry, setSelectedCountry] = useState('PL');
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
-    const handleSubmit = () => {
-        onNext();
+    const inputKeys = {
+        street: `${PREFIX}_${ownerBeingModifiedID}_${STREET}`,
+        city: `${PREFIX}_${ownerBeingModifiedID}_${CITY}`,
+        state: `${PREFIX}_${ownerBeingModifiedID}_${STATE}`,
+        zipCode: `${PREFIX}_${ownerBeingModifiedID}_${ZIP_CODE}`,
+    } as const;
+    const countryInputKey: `owner_${string}_${string}` = `${PREFIX}_${ownerBeingModifiedID}_${COUNTRY}`;
+
+    const defaultValues = {
+        street: nonUSDReimbursementAccountDraft?.[inputKeys.street] ?? '',
+        city: nonUSDReimbursementAccountDraft?.[inputKeys.city] ?? '',
+        state: nonUSDReimbursementAccountDraft?.[inputKeys.state] ?? '',
+        zipCode: nonUSDReimbursementAccountDraft?.[inputKeys.zipCode] ?? '',
+    };
+    const countryDefaultValue = nonUSDReimbursementAccountDraft?.[inputKeys.zipCode] ?? '';
+
+    const stepFields = [inputKeys.street, inputKeys.city, inputKeys.state, inputKeys.zipCode, countryInputKey];
+
+    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
+        fieldIds: stepFields,
+        onNext,
+        shouldSaveDraft: isEditing,
+    });
+
+    const [selectedCountry, setSelectedCountry] = useState(countryDefaultValue);
+
+    const handleSelectingCountry = (country: string) => {
+        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[countryInputKey]: country});
+        setSelectedCountry(country);
     };
 
     return (
@@ -41,19 +66,24 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData}: NameProps) {
                 {translate(isUserEnteringHisOwnData ? 'ownershipInfoStep.whatsYourAddress' : 'ownershipInfoStep.whatsTheOwnersAddress')}
             </Text>
             <AddressFormFields
-                inputKeys={INPUT_KEYS}
+                inputKeys={inputKeys}
+                defaultValues={defaultValues}
                 shouldSaveDraft={!isEditing}
                 streetTranslationKey="common.companyAddress"
                 containerStyles={[styles.mh5]}
             />
-            <PushRowWithModal
+            <InputWrapper
+                InputComponent={PushRowWithModal}
                 optionsList={CONST.ALL_COUNTRIES}
                 selectedOption={selectedCountry}
-                onOptionChange={setSelectedCountry}
+                onOptionChange={handleSelectingCountry}
                 description={translate('common.country')}
                 modalHeaderTitle={translate('ownershipInfoStep.selectCountry')}
                 searchInputTitle={translate('ownershipInfoStep.findCountry')}
+                value={selectedCountry}
+                inputID={countryInputKey}
             />
+            <WhyLink containerStyles={[styles.mt6]} />
         </FormProvider>
     );
 }

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
+import InputWrapper from '@components/Form/InputWrapper';
 import PushRowWithModal from '@components/PushRowWithModal';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
@@ -13,7 +14,7 @@ import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
-type NameProps = SubStepProps;
+type AddressProps = SubStepProps;
 
 const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
 
@@ -25,7 +26,7 @@ const INPUT_KEYS = {
 };
 const STEP_FIELDS = [BUSINESS_INFO_STEP_KEY.STREET, BUSINESS_INFO_STEP_KEY.CITY, BUSINESS_INFO_STEP_KEY.STATE, BUSINESS_INFO_STEP_KEY.ZIP_CODE, BUSINESS_INFO_STEP_KEY.COUNTRY];
 
-function Name({onNext, isEditing}: NameProps) {
+function Address({onNext, isEditing}: AddressProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
@@ -73,18 +74,21 @@ function Name({onNext, isEditing}: NameProps) {
                 defaultValues={defaultValues}
                 shouldDisplayStateSelector={shouldDisplayStateSelector}
             />
-            <PushRowWithModal
+            <InputWrapper
+                InputComponent={PushRowWithModal}
                 optionsList={CONST.ALL_COUNTRIES}
                 selectedOption={selectedCountry}
                 onOptionChange={handleSelectingCountry}
                 description={translate('common.country')}
                 modalHeaderTitle={translate('countryStep.selectCountry')}
                 searchInputTitle={translate('countryStep.findCountry')}
+                value={selectedCountry}
+                inputID={BUSINESS_INFO_STEP_KEY.COUNTRY}
             />
         </FormProvider>
     );
 }
 
-Name.displayName = 'Name';
+Address.displayName = 'Address';
 
-export default Name;
+export default Address;

@@ -4,9 +4,7 @@ import type {Choice} from '@components/RadioButtons';
 import RadioButtons from '@components/RadioButtons';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
-import {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
-import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 
 type OwnerCheckProps = {

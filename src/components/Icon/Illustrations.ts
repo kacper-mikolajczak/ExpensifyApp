@@ -82,6 +82,7 @@ import OpenSafe from '@assets/images/simple-illustrations/simple-illustration__o
 import PalmTree from '@assets/images/simple-illustrations/simple-illustration__palmtree.svg';
 import Pencil from '@assets/images/simple-illustrations/simple-illustration__pencil.svg';
 import PiggyBank from '@assets/images/simple-illustrations/simple-illustration__piggybank.svg';
+import Pillow from '@assets/images/simple-illustrations/simple-illustration__pillow.svg';
 import Profile from '@assets/images/simple-illustrations/simple-illustration__profile.svg';
 import QRCode from '@assets/images/simple-illustrations/simple-illustration__qr-code.svg';
 import ReceiptEnvelope from '@assets/images/simple-illustrations/simple-illustration__receipt-envelope.svg';
@@ -199,6 +200,7 @@ export {
     Car,
     Coins,
     Pencil,
+    Pillow,
     Tag,
     CarIce,
     ReceiptLocationMarker,

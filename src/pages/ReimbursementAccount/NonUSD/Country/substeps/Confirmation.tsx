@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useOnyx} from 'react-native-onyx';
-import Button from '@components/Button';
+import FormProvider from '@components/Form/FormProvider';
+import InputWrapper from '@components/Form/InputWrapper';
+import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import MenuItemWithTopDescription from '@components/MenuItemWithTopDescription';
 import PressableWithoutFeedback from '@components/Pressable/PressableWithoutFeedback';
 import PushRowWithModal from '@components/PushRowWithModal';
@@ -12,6 +13,7 @@ import useLocalize from '@hooks/useLocalize';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import Navigation from '@libs/Navigation/Navigation';
+import * as ValidationUtils from '@libs/ValidationUtils';
 import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
@@ -43,14 +45,16 @@ function Confirmation({onNext}: SubStepProps) {
 
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
-
     const currency = policy?.outputCurrency ?? '';
 
     const shouldAllowChange = currency === CONST.CURRENCY.EUR;
     const currencyMappedToCountry = mapCurrencyToCountry(currency);
 
+    // extra check to determine if draft country is european is needed to cover (non EUR => EUR currency change)
     const countryDraftValue = nonUSDReimbursementAccountDraft?.[INPUT_IDS.COUNTRY_STEP.COUNTRY] ?? '';
     const [selectedCountry, setSelectedCountry] = useState(countryDraftValue);
+
+    const disableSubmit = !(currency in CONST.CURRENCY);
 
     const handleSettingsPress = () => {
         Navigation.navigate(ROUTES.WORKSPACE_PROFILE.getRoute(policyID));
@@ -61,13 +65,19 @@ function Confirmation({onNext}: SubStepProps) {
         setSelectedCountry(country);
     };
 
+    const validate = useCallback(
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+            return ValidationUtils.getFieldRequiredErrors(values, [INPUT_IDS.COUNTRY_STEP.COUNTRY]);
+        },
+        [],
+    );
+
     useEffect(() => {
         if (currency === CONST.CURRENCY.EUR) {
             return;
         }
 
         setSelectedCountry(currencyMappedToCountry);
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[INPUT_IDS.COUNTRY_STEP.COUNTRY]: currencyMappedToCountry});
     }, [countryDraftValue, currency, currencyMappedToCountry]);
 
     return (
@@ -96,24 +106,28 @@ function Confirmation({onNext}: SubStepProps) {
                         </PressableWithoutFeedback>
                         .
                     </Text>
-                    <PushRowWithModal
-                        optionsList={CONST.ALL_COUNTRIES}
-                        selectedOption={selectedCountry}
-                        onOptionChange={handleSelectingCountry}
-                        description={translate('common.country')}
-                        modalHeaderTitle={translate('countryStep.selectCountry')}
-                        searchInputTitle={translate('countryStep.findCountry')}
-                        shouldAllowChange={shouldAllowChange}
-                    />
-                    <View style={[styles.ph5, styles.pb5, styles.flexGrow1, styles.justifyContentEnd]}>
-                        <Button
-                            success
-                            style={[styles.w100]}
-                            onPress={onNext}
-                            large
-                            text={translate('common.confirm')}
+                    <FormProvider
+                        formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+                        submitButtonText={translate('common.confirm')}
+                        validate={validate}
+                        onSubmit={onNext}
+                        style={[styles.flexGrow1]}
+                        submitButtonStyles={[styles.mh5]}
+                        isSubmitDisabled={disableSubmit}
+                    >
+                        <InputWrapper
+                            InputComponent={PushRowWithModal}
+                            optionsList={CONST.ALL_COUNTRIES}
+                            selectedOption={selectedCountry}
+                            onOptionChange={handleSelectingCountry}
+                            description={translate('common.country')}
+                            modalHeaderTitle={translate('countryStep.selectCountry')}
+                            searchInputTitle={translate('countryStep.findCountry')}
+                            shouldAllowChange={shouldAllowChange}
+                            value={selectedCountry}
+                            inputID={INPUT_IDS.COUNTRY_STEP.COUNTRY}
                         />
-                    </View>
+                    </FormProvider>
                 </ScrollView>
             )}
         </SafeAreaConsumer>

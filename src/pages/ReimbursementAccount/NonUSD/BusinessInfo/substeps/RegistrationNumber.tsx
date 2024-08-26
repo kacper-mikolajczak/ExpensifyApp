@@ -8,6 +8,7 @@ import useLocalize from '@hooks/useLocalize';
 import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import WhyLink from '@pages/ReimbursementAccount/NonUSD/WhyLink';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
@@ -48,6 +49,7 @@ function RegistrationNumber({onNext, isEditing}: RegistrationNumberProps) {
                 defaultValue={defaultValue}
                 shouldSaveDraft={!isEditing}
             />
+            <WhyLink containerStyles={[styles.mt6]} />
         </FormProvider>
     );
 }

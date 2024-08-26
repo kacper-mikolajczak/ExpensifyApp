@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {View} from 'react-native';
+import {useOnyx} from 'react-native-onyx';
 import Button from '@components/Button';
 import MenuItemWithTopDescription from '@components/MenuItemWithTopDescription';
 import SafeAreaConsumer from '@components/SafeAreaConsumer';
@@ -8,10 +9,18 @@ import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import getSubStepValues from '@pages/ReimbursementAccount/NonUSD/utils/getSubStepValues';
+import ONYXKEYS from '@src/ONYXKEYS';
+import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+
+const SINGER_INFO_STEP_KEYS = INPUT_IDS.SIGNER_INFO_STEP;
 
 function Confirmation({onNext, onMove}: SubStepProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
+
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const values = useMemo(() => getSubStepValues(SINGER_INFO_STEP_KEYS, nonUSDReimbursementAccountDraft), [nonUSDReimbursementAccountDraft]);
 
     return (
         <SafeAreaConsumer>
@@ -23,7 +32,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5, styles.mb3]}>{translate('signerInfoStep.letsDoubleCheck')}</Text>
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.legalName')}
-                        title="Mr XYZ"
+                        title={`${values[SINGER_INFO_STEP_KEYS.FIRST_NAME]} ${values[SINGER_INFO_STEP_KEYS.LAST_NAME]}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(0);
@@ -31,7 +40,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.jobTitle')}
-                        title="CEO"
+                        title={values[SINGER_INFO_STEP_KEYS.JOB_TITLE]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);
@@ -39,7 +48,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('common.dob')}
-                        title="2000-01-01"
+                        title={values[SINGER_INFO_STEP_KEYS.DOB]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(2);
@@ -47,7 +56,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.id')}
-                        title="Jogn Doe license.pdf"
+                        title={values[SINGER_INFO_STEP_KEYS.ID]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);
@@ -55,7 +64,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.proofOf')}
-                        title="John Doe bill.pdf"
+                        title={values[SINGER_INFO_STEP_KEYS.PROOF_OF_ADDRESS]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);

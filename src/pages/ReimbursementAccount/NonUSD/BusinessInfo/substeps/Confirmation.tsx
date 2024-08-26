@@ -51,7 +51,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                         description={translate('businessInfoStep.businessAddress')}
                         title={`${values[BUSINESS_INFO_STEP_KEYS.STREET]}, ${values[BUSINESS_INFO_STEP_KEYS.CITY]}, ${values[BUSINESS_INFO_STEP_KEYS.STATE]}, ${
                             values[BUSINESS_INFO_STEP_KEYS.ZIP_CODE]
-                        }, ${values[BUSINESS_INFO_STEP_KEYS.COUNTRY]}`}
+                        }`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);

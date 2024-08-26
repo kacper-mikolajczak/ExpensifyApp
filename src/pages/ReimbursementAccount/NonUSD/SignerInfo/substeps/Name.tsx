@@ -1,9 +1,11 @@
 import React from 'react';
+import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
+import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import CONST from '@src/CONST';
@@ -12,15 +14,23 @@ import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
 type NameProps = SubStepProps;
 
-const SIGNER_INFO_STEP_KEY = INPUT_IDS.SIGNER_INFO_STEP;
+const {FIRST_NAME, LAST_NAME} = INPUT_IDS.SIGNER_INFO_STEP;
+const STEP_FIELDS = [FIRST_NAME, LAST_NAME];
 
 function Name({onNext, isEditing}: NameProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-
-    const handleSubmit = () => {
-        onNext();
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const defaultValues = {
+        [FIRST_NAME]: nonUSDReimbursementAccountDraft?.[FIRST_NAME] ?? '',
+        [LAST_NAME]: nonUSDReimbursementAccountDraft?.[LAST_NAME] ?? '',
     };
+
+    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
+        fieldIds: STEP_FIELDS,
+        onNext,
+        shouldSaveDraft: isEditing,
+    });
 
     return (
         <FormProvider
@@ -35,8 +45,9 @@ function Name({onNext, isEditing}: NameProps) {
                 label={translate('signerInfoStep.legalFirstName')}
                 aria-label={translate('signerInfoStep.legalFirstName')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={SIGNER_INFO_STEP_KEY.FIRST_NAME}
+                inputID={FIRST_NAME}
                 containerStyles={[styles.mt6]}
+                defaultValue={defaultValues[FIRST_NAME]}
                 shouldSaveDraft={!isEditing}
             />
             <InputWrapper
@@ -44,8 +55,9 @@ function Name({onNext, isEditing}: NameProps) {
                 label={translate('signerInfoStep.legalLastName')}
                 aria-label={translate('signerInfoStep.legalLastName')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={SIGNER_INFO_STEP_KEY.LAST_NAME}
+                inputID={LAST_NAME}
                 containerStyles={[styles.mt6]}
+                defaultValue={defaultValues[LAST_NAME]}
                 shouldSaveDraft={!isEditing}
             />
         </FormProvider>

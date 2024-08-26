@@ -1,6 +1,7 @@
 import type {ComponentType} from 'react';
 import React, {useState} from 'react';
 import {View} from 'react-native';
+import {useOnyx} from 'react-native-onyx';
 import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import InteractiveStepSubHeader from '@components/InteractiveStepSubHeader';
 import ScreenWrapper from '@components/ScreenWrapper';
@@ -10,6 +11,7 @@ import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import Navigation from '@navigation/Navigation';
 import CONST from '@src/CONST';
+import ONYXKEYS from '@src/ONYXKEYS';
 import DirectorCheck from './DirectorCheck';
 import EnterEmail from './EnterEmail';
 import HangTight from './HangTight';
@@ -34,7 +36,11 @@ const bodyContent: Array<ComponentType<SubStepProps>> = [Name, JobTitle, DateOfB
 function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const currency = 'AUD';
+
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
+    const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
+    const currency = policy?.outputCurrency ?? '';
 
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_DIRECTOR);
     const [isUserDirector, setIsUserDirector] = useState(false);
@@ -122,7 +128,12 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
                 />
             )}
 
-            {currentSubStep === SUBSTEP.ENTER_EMAIL && <EnterEmail onSubmit={handleEmailSubmit} />}
+            {currentSubStep === SUBSTEP.ENTER_EMAIL && (
+                <EnterEmail
+                    onSubmit={handleEmailSubmit}
+                    isUserDirector={isUserDirector}
+                />
+            )}
 
             {currentSubStep === SUBSTEP.HANG_TIGHT && <HangTight tempSubmit={onSubmit} />}
         </ScreenWrapper>

@@ -1,5 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
+import {useOnyx} from 'react-native-onyx';
 import Button from '@components/Button';
 import MenuItemWithTopDescription from '@components/MenuItemWithTopDescription';
 import SafeAreaConsumer from '@components/SafeAreaConsumer';
@@ -8,10 +9,17 @@ import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import getValuesForOwner from '@pages/ReimbursementAccount/NonUSD/utils/getValuesForOwner';
+import ONYXKEYS from '@src/ONYXKEYS';
 
-function Confirmation({onNext, onMove}: SubStepProps) {
+type ConfirmationProps = SubStepProps & {ownerBeingModifiedID: string};
+
+function Confirmation({onNext, onMove, ownerBeingModifiedID}: ConfirmationProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
+
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const values = getValuesForOwner(ownerBeingModifiedID, nonUSDReimbursementAccountDraft);
 
     return (
         <SafeAreaConsumer>
@@ -23,7 +31,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5, styles.mb3]}>{translate('ownershipInfoStep.letsDoubleCheck')}</Text>
                     <MenuItemWithTopDescription
                         description={translate('ownershipInfoStep.legalName')}
-                        title="Mr XYZ"
+                        title={`${values.firstName} ${values.lastName}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(0);
@@ -31,7 +39,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('ownershipInfoStep.ownershipPercentage')}
-                        title="25%"
+                        title={values.ownershipPercentage}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);
@@ -39,7 +47,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('common.dob')}
-                        title="2001-01-01"
+                        title={values.dob}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(2);
@@ -47,7 +55,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('ownershipInfoStep.last4')}
-                        title="1234"
+                        title={values.ssnLast4}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(4);
@@ -55,7 +63,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('ownershipInfoStep.address')}
-                        title="123 Beach Street, Beach Town, FL 12345"
+                        title={`${values.street}, ${values.city}, ${values.state} ${values.zipCode}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);
