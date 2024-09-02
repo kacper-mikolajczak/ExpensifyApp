@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import type {StyleProp, ViewStyle} from 'react-native';
 import AddressSearch from '@components/AddressSearch';
 import InputWrapper from '@components/Form/InputWrapper';
+import PushRowWithModal from '@components/PushRowWithModal';
 import type {State} from '@components/StateSelector';
 import StateSelector from '@components/StateSelector';
 import TextInput from '@components/TextInput';
@@ -39,6 +40,9 @@ type AddressFormProps = {
     /** Additional styles to apply to container */
     containerStyles?: StyleProp<ViewStyle>;
 
+    /** Indicates if country selector should be displayed */
+    shouldDisplayCountrySelector?: boolean;
+
     /** Indicates if state selector should be displayed */
     shouldDisplayStateSelector?: boolean;
 };
@@ -52,6 +56,7 @@ function AddressFormFields({
     onFieldChange,
     streetTranslationKey,
     containerStyles,
+    shouldDisplayCountrySelector = false,
     shouldDisplayStateSelector = true,
 }: AddressFormProps) {
     const {translate} = useLocalize();
@@ -72,7 +77,6 @@ function AddressFormFields({
                     errorText={errors?.street ? translate('bankAccount.error.addressStreet') : ''}
                     renamedInputKeys={inputKeys}
                     maxInputLength={CONST.FORM_CHARACTER_LIMIT}
-                    isLimitedToUSA
                 />
             </View>
             <InputWrapper
@@ -118,6 +122,23 @@ function AddressFormFields({
                 hint={translate('common.zipCodeExampleFormat', {zipSampleFormat: CONST.COUNTRY_ZIP_REGEX_DATA.US.samples})}
                 containerStyles={styles.mt3}
             />
+            {shouldDisplayCountrySelector && (
+                <View style={[styles.mt3, styles.mhn5]}>
+                    <InputWrapper
+                        InputComponent={PushRowWithModal}
+                        inputID={inputKeys?.country ?? 'country'}
+                        shouldSaveDraft={shouldSaveDraft}
+                        optionsList={CONST.ALL_COUNTRIES}
+                        selectedOption={defaultValues?.country ?? ''}
+                        onOptionChange={(value) => onFieldChange?.({[inputKeys?.country ?? 'country']: value})}
+                        description={translate('common.country')}
+                        modalHeaderTitle={translate('countryStep.selectCountry')}
+                        searchInputTitle={translate('countryStep.findCountry')}
+                        value={values?.country}
+                        defaultValue={defaultValues?.country}
+                    />
+                </View>
+            )}
         </View>
     );
 }

@@ -100,7 +100,6 @@ function PushRowModal({isVisible, selectedOption, onOptionChange, onClose, optio
                     textInputValue={searchbarInputText}
                     onChangeText={filterShownOptions}
                     onSelectRow={handleSelectRow}
-                    shouldDebounceRowSelect
                     sections={[{data: optionListItems}]}
                     initiallyFocusedOptionKey={optionListItems.find((option) => option.value === selectedOption)?.keyForList}
                     showScrollIndicator

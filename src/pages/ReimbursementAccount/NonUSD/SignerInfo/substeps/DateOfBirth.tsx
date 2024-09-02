@@ -1,14 +1,16 @@
 import {subYears} from 'date-fns';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import DatePicker from '@components/DatePicker';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
+import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import * as ValidationUtils from '@libs/ValidationUtils';
 import WhyLink from '@pages/ReimbursementAccount/NonUSD/WhyLink';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
@@ -25,6 +27,13 @@ function DateOfBirth({onNext, isEditing}: DateOfBirthProps) {
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const defaultValue = nonUSDReimbursementAccountDraft?.[DOB] ?? '';
 
+    const validate = useCallback(
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+            return ValidationUtils.getFieldRequiredErrors(values, [DOB]);
+        },
+        [],
+    );
+
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
         fieldIds: [DOB],
         onNext,
@@ -39,6 +48,7 @@ function DateOfBirth({onNext, isEditing}: DateOfBirthProps) {
             formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
+            validate={validate}
             style={[styles.mh5, styles.flexGrow1]}
         >
             <Text style={[styles.textHeadlineLineHeightXXL]}>{translate('signerInfoStep.whatsYourDOB')}</Text>
@@ -53,7 +63,7 @@ function DateOfBirth({onNext, isEditing}: DateOfBirthProps) {
                 defaultValue={defaultValue}
                 shouldSaveDraft={!isEditing}
             />
-            <WhyLink containerStyles={[styles.mt6]} />
+            <WhyLink containerStyles={[styles.mt6, styles.mh5]} />
         </FormProvider>
     );
 }

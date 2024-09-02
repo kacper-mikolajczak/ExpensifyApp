@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
+import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
 import useThemeStyles from '@hooks/useThemeStyles';
+import * as ValidationUtils from '@libs/ValidationUtils';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
@@ -16,7 +18,7 @@ type EnterEmailProps = {
     isUserDirector: boolean;
 };
 
-const SIGNER_INFO_STEP_KEY = INPUT_IDS.SIGNER_INFO_STEP;
+const {DIRECTOR_EMAIL_ADDRESS, SECOND_DIRECTOR_EMAIL_ADDRESS} = INPUT_IDS.SIGNER_INFO_STEP;
 
 function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
     const {translate} = useLocalize();
@@ -27,14 +29,22 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
 
-    const isAUDAccount = currency === 'AUD';
+    const isAUDAccount = currency === CONST.CURRENCY.AUD;
     const shouldGatherBothEmails = isAUDAccount && !isUserDirector;
+
+    const validate = useCallback(
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+            return ValidationUtils.getFieldRequiredErrors(values, shouldGatherBothEmails ? [DIRECTOR_EMAIL_ADDRESS, SECOND_DIRECTOR_EMAIL_ADDRESS] : [DIRECTOR_EMAIL_ADDRESS]);
+        },
+        [shouldGatherBothEmails],
+    );
 
     return (
         <FormProvider
             formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate('common.next')}
             onSubmit={onSubmit}
+            validate={validate}
             style={[styles.mh5, styles.flexGrow1]}
         >
             <Text style={[styles.textHeadlineLineHeightXXL]}>{translate(isAUDAccount ? 'signerInfoStep.enterTwoEmails' : 'signerInfoStep.enterOneEmail')}</Text>
@@ -43,7 +53,7 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
                 label={shouldGatherBothEmails ? `${translate('common.email')} 1` : translate('common.email')}
                 aria-label={shouldGatherBothEmails ? `${translate('common.email')} 1` : translate('common.email')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={SIGNER_INFO_STEP_KEY.DIRECTOR_EMAIL_ADDRESS}
+                inputID={DIRECTOR_EMAIL_ADDRESS}
                 containerStyles={[styles.mt6]}
             />
             {shouldGatherBothEmails && (
@@ -52,7 +62,7 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
                     label={`${translate('common.email')} 2`}
                     aria-label={`${translate('common.email')} 2`}
                     role={CONST.ROLE.PRESENTATION}
-                    inputID={SIGNER_INFO_STEP_KEY.SECOND_DIRECTOR_EMAIL_ADDRESS}
+                    inputID={SECOND_DIRECTOR_EMAIL_ADDRESS}
                     containerStyles={[styles.mt6]}
                 />
             )}

@@ -28,12 +28,9 @@ type OwnersListProps = {
 
     /** List of owner keys */
     ownerKeys: string[];
-
-    /** Info about other existing owners */
-    isAnyoneElseOwner: boolean;
 };
 
-function OwnersList({isAnyoneElseOwner, handleConfirmation, ownerKeys, handleOwnerEdit, handleOwnershipChartEdit}: OwnersListProps) {
+function OwnersList({handleConfirmation, ownerKeys, handleOwnerEdit, handleOwnershipChartEdit}: OwnersListProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const {isOffline} = useNetwork();
@@ -41,8 +38,12 @@ function OwnersList({isAnyoneElseOwner, handleConfirmation, ownerKeys, handleOwn
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const ownershipChartValue = nonUSDReimbursementAccountDraft?.[INPUT_IDS.OWNERSHIP_INFO_STEP.ENTITY_CHART] ?? '';
 
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
+    const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
+    const currency = policy?.outputCurrency ?? '';
+
     const owners =
-        isAnyoneElseOwner &&
         nonUSDReimbursementAccountDraft &&
         ownerKeys.map((ownerKey) => {
             const ownerData = getValuesForOwner(ownerKey, nonUSDReimbursementAccountDraft);
@@ -82,13 +83,15 @@ function OwnersList({isAnyoneElseOwner, handleConfirmation, ownerKeys, handleOwn
                             {owners}
                         </View>
                     )}
-                    <MenuItemWithTopDescription
-                        description={translate('ownershipInfoStep.certified')}
-                        title={ownershipChartValue}
-                        shouldShowRightIcon
-                        onPress={handleOwnershipChartEdit}
-                        style={[styles.mt8]}
-                    />
+                    {currency === CONST.CURRENCY.AUD && (
+                        <MenuItemWithTopDescription
+                            description={translate('ownershipInfoStep.certified')}
+                            title={ownershipChartValue}
+                            shouldShowRightIcon
+                            onPress={handleOwnershipChartEdit}
+                            style={[styles.mt8]}
+                        />
+                    )}
                     <View style={styles.mtAuto}>
                         <Button
                             success

@@ -1,16 +1,15 @@
-import React, {useState} from 'react';
+import React, {useCallback} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
-import InputWrapper from '@components/Form/InputWrapper';
-import PushRowWithModal from '@components/PushRowWithModal';
+import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import * as ValidationUtils from '@libs/ValidationUtils';
 import AddressFormFields from '@pages/ReimbursementAccount/AddressFormFields';
 import WhyLink from '@pages/ReimbursementAccount/NonUSD/WhyLink';
-import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 
@@ -28,6 +27,7 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
         city: `${PREFIX}_${ownerBeingModifiedID}_${CITY}`,
         state: `${PREFIX}_${ownerBeingModifiedID}_${STATE}`,
         zipCode: `${PREFIX}_${ownerBeingModifiedID}_${ZIP_CODE}`,
+        country: `${PREFIX}_${ownerBeingModifiedID}_${COUNTRY}`,
     } as const;
     const countryInputKey: `owner_${string}_${string}` = `${PREFIX}_${ownerBeingModifiedID}_${COUNTRY}`;
 
@@ -36,10 +36,13 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
         city: nonUSDReimbursementAccountDraft?.[inputKeys.city] ?? '',
         state: nonUSDReimbursementAccountDraft?.[inputKeys.state] ?? '',
         zipCode: nonUSDReimbursementAccountDraft?.[inputKeys.zipCode] ?? '',
+        country: nonUSDReimbursementAccountDraft?.[inputKeys.country] ?? '',
     };
-    const countryDefaultValue = nonUSDReimbursementAccountDraft?.[inputKeys.zipCode] ?? '';
+
+    const shouldDisplayStateSelector = defaultValues.country === CONST.COUNTRY.US || defaultValues.country === CONST.COUNTRY.CA;
 
     const stepFields = [inputKeys.street, inputKeys.city, inputKeys.state, inputKeys.zipCode, countryInputKey];
+    const stepFieldsWithoutState = [inputKeys.street, inputKeys.city, inputKeys.zipCode, countryInputKey];
 
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
         fieldIds: stepFields,
@@ -47,18 +50,25 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
         shouldSaveDraft: isEditing,
     });
 
-    const [selectedCountry, setSelectedCountry] = useState(countryDefaultValue);
+    const validate = useCallback(
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+            const errors = ValidationUtils.getFieldRequiredErrors(values, shouldDisplayStateSelector ? stepFields : stepFieldsWithoutState);
 
-    const handleSelectingCountry = (country: string) => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[countryInputKey]: country});
-        setSelectedCountry(country);
-    };
+            if (values.street && !ValidationUtils.isValidAddress(values.street)) {
+                errors.street = translate('bankAccount.error.addressStreet');
+            }
+
+            return errors;
+        },
+        [shouldDisplayStateSelector, stepFields, stepFieldsWithoutState, translate],
+    );
 
     return (
         <FormProvider
             formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
+            validate={validate}
             style={[styles.flexGrow1]}
             submitButtonStyles={[styles.mh5]}
         >
@@ -71,19 +81,10 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
                 shouldSaveDraft={!isEditing}
                 streetTranslationKey="common.companyAddress"
                 containerStyles={[styles.mh5]}
+                shouldDisplayCountrySelector
+                shouldDisplayStateSelector={shouldDisplayStateSelector}
             />
-            <InputWrapper
-                InputComponent={PushRowWithModal}
-                optionsList={CONST.ALL_COUNTRIES}
-                selectedOption={selectedCountry}
-                onOptionChange={handleSelectingCountry}
-                description={translate('common.country')}
-                modalHeaderTitle={translate('ownershipInfoStep.selectCountry')}
-                searchInputTitle={translate('ownershipInfoStep.findCountry')}
-                value={selectedCountry}
-                inputID={countryInputKey}
-            />
-            <WhyLink containerStyles={[styles.mt6]} />
+            <WhyLink containerStyles={[styles.mt6, styles.mh5]} />
         </FormProvider>
     );
 }

@@ -6,13 +6,11 @@ import * as Expensicons from '@components/Icon/Expensicons';
 import * as Illustrations from '@components/Icon/Illustrations';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
-import useTheme from '@hooks/useTheme';
 import useThemeStyles from '@hooks/useThemeStyles';
 
 function HangTight({tempSubmit}: {tempSubmit: () => void}) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const theme = useTheme();
 
     const handleSendReminder = () => {
         // TODO remove that
@@ -39,7 +37,6 @@ function HangTight({tempSubmit}: {tempSubmit: () => void}) {
                     onPress={handleSendReminder}
                     large
                     icon={Expensicons.Bell}
-                    iconHoverFill={theme.textLight}
                     text={translate('signerInfoStep.sendReminder')}
                 />
             </View>

@@ -495,6 +495,14 @@ function isValidSubscriptionSize(subscriptionSize: string): boolean {
     return !Number.isNaN(parsedSubscriptionSize) && parsedSubscriptionSize > 0 && parsedSubscriptionSize <= CONST.SUBSCRIPTION_SIZE_LIMIT && Number.isInteger(parsedSubscriptionSize);
 }
 
+/**
+ * Validates the given value if it is correct ownership percentage.
+ */
+function isValidOwnershipPercentage(value: string): boolean {
+    const parsedValue = Number(value);
+    return !Number.isNaN(parsedValue) && parsedValue >= 25 && parsedValue <= 100;
+}
+
 export {
     meetsMinimumAgeRequirement,
     meetsMaximumAgeRequirement,
@@ -539,4 +547,5 @@ export {
     isValidSubscriptionSize,
     isExistingTaxCode,
     isPublicDomain,
+    isValidOwnershipPercentage,
 };

@@ -1,55 +1,65 @@
-import React, {useState} from 'react';
+import React, {useCallback} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
-import InputWrapper from '@components/Form/InputWrapper';
-import PushRowWithModal from '@components/PushRowWithModal';
+import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import * as ValidationUtils from '@libs/ValidationUtils';
 import AddressFormFields from '@pages/ReimbursementAccount/AddressFormFields';
-import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
 type AddressProps = SubStepProps;
 
-const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
+const {STREET, CITY, STATE, ZIP_CODE, COUNTRY} = INPUT_IDS.BUSINESS_INFO_STEP;
 
 const INPUT_KEYS = {
-    street: BUSINESS_INFO_STEP_KEY.STREET,
-    city: BUSINESS_INFO_STEP_KEY.CITY,
-    state: BUSINESS_INFO_STEP_KEY.STATE,
-    zipCode: BUSINESS_INFO_STEP_KEY.ZIP_CODE,
+    street: STREET,
+    city: CITY,
+    state: STATE,
+    zipCode: ZIP_CODE,
+    country: COUNTRY,
 };
-const STEP_FIELDS = [BUSINESS_INFO_STEP_KEY.STREET, BUSINESS_INFO_STEP_KEY.CITY, BUSINESS_INFO_STEP_KEY.STATE, BUSINESS_INFO_STEP_KEY.ZIP_CODE, BUSINESS_INFO_STEP_KEY.COUNTRY];
+const STEP_FIELDS = [STREET, CITY, STATE, ZIP_CODE, COUNTRY];
+const STEP_FIELDS_WITHOUT_STATE = [STREET, CITY, ZIP_CODE, COUNTRY];
 
 function Address({onNext, isEditing}: AddressProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
-    const defaultValues = {
-        [BUSINESS_INFO_STEP_KEY.STREET]: nonUSDReimbursementAccountDraft?.[BUSINESS_INFO_STEP_KEY.STREET] ?? '',
-        [BUSINESS_INFO_STEP_KEY.CITY]: nonUSDReimbursementAccountDraft?.[BUSINESS_INFO_STEP_KEY.CITY] ?? '',
-        [BUSINESS_INFO_STEP_KEY.STATE]: nonUSDReimbursementAccountDraft?.[BUSINESS_INFO_STEP_KEY.STATE] ?? '',
-        [BUSINESS_INFO_STEP_KEY.ZIP_CODE]: nonUSDReimbursementAccountDraft?.[BUSINESS_INFO_STEP_KEY.ZIP_CODE] ?? '',
-    };
-
     // TODO look into default country
-    const businessStepCountryDraftValue = nonUSDReimbursementAccountDraft?.[BUSINESS_INFO_STEP_KEY.COUNTRY] ?? '';
+    const businessStepCountryDraftValue = nonUSDReimbursementAccountDraft?.[COUNTRY] ?? '';
     const countryStepCountryDraftValue = nonUSDReimbursementAccountDraft?.[INPUT_IDS.COUNTRY_STEP.COUNTRY] ?? '';
     const countryInitialValue =
         businessStepCountryDraftValue !== '' && businessStepCountryDraftValue !== countryStepCountryDraftValue ? businessStepCountryDraftValue : countryStepCountryDraftValue;
-    const [selectedCountry, setSelectedCountry] = useState(countryInitialValue);
-    const shouldDisplayStateSelector = selectedCountry === 'US' || selectedCountry === 'CA';
 
-    const handleSelectingCountry = (country: string) => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[BUSINESS_INFO_STEP_KEY.COUNTRY]: country});
-        setSelectedCountry(country);
+    const defaultValues = {
+        [STREET]: nonUSDReimbursementAccountDraft?.[STREET] ?? '',
+        [CITY]: nonUSDReimbursementAccountDraft?.[CITY] ?? '',
+        [STATE]: nonUSDReimbursementAccountDraft?.[STATE] ?? '',
+        [ZIP_CODE]: nonUSDReimbursementAccountDraft?.[ZIP_CODE] ?? '',
+        [COUNTRY]: nonUSDReimbursementAccountDraft?.[COUNTRY] ?? countryInitialValue,
     };
+
+    const shouldDisplayStateSelector = defaultValues[COUNTRY] === CONST.COUNTRY.US || defaultValues[COUNTRY] === CONST.COUNTRY.CA || defaultValues[COUNTRY] === '';
+
+    const validate = useCallback(
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+            const errors = ValidationUtils.getFieldRequiredErrors(values, shouldDisplayStateSelector ? STEP_FIELDS : STEP_FIELDS_WITHOUT_STATE);
+
+            if (values.street && !ValidationUtils.isValidAddress(values.street)) {
+                errors.street = translate('bankAccount.error.addressStreet');
+            }
+
+            return errors;
+        },
+        [shouldDisplayStateSelector, translate],
+    );
 
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
         fieldIds: STEP_FIELDS,
@@ -62,6 +72,7 @@ function Address({onNext, isEditing}: AddressProps) {
             formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
+            validate={validate}
             style={[styles.flexGrow1]}
             submitButtonStyles={[styles.mh5]}
         >
@@ -72,18 +83,8 @@ function Address({onNext, isEditing}: AddressProps) {
                 streetTranslationKey="common.companyAddress"
                 containerStyles={[styles.mh5]}
                 defaultValues={defaultValues}
+                shouldDisplayCountrySelector
                 shouldDisplayStateSelector={shouldDisplayStateSelector}
-            />
-            <InputWrapper
-                InputComponent={PushRowWithModal}
-                optionsList={CONST.ALL_COUNTRIES}
-                selectedOption={selectedCountry}
-                onOptionChange={handleSelectingCountry}
-                description={translate('common.country')}
-                modalHeaderTitle={translate('countryStep.selectCountry')}
-                searchInputTitle={translate('countryStep.findCountry')}
-                value={selectedCountry}
-                inputID={BUSINESS_INFO_STEP_KEY.COUNTRY}
             />
         </FormProvider>
     );

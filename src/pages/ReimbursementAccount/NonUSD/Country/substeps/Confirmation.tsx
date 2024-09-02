@@ -37,6 +37,8 @@ const mapCurrencyToCountry = (currency: string): string => {
     }
 };
 
+const {COUNTRY} = INPUT_IDS.COUNTRY_STEP;
+
 function Confirmation({onNext}: SubStepProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
@@ -51,8 +53,8 @@ function Confirmation({onNext}: SubStepProps) {
     const currencyMappedToCountry = mapCurrencyToCountry(currency);
 
     // extra check to determine if draft country is european is needed to cover (non EUR => EUR currency change)
-    const countryDraftValue = nonUSDReimbursementAccountDraft?.[INPUT_IDS.COUNTRY_STEP.COUNTRY] ?? '';
-    const [selectedCountry, setSelectedCountry] = useState(countryDraftValue);
+    const countryDraftValue = nonUSDReimbursementAccountDraft?.[COUNTRY] ?? '';
+    const [selectedCountry, setSelectedCountry] = useState<string>(countryDraftValue);
 
     const disableSubmit = !(currency in CONST.CURRENCY);
 
@@ -61,13 +63,13 @@ function Confirmation({onNext}: SubStepProps) {
     };
 
     const handleSelectingCountry = (country: string) => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[INPUT_IDS.COUNTRY_STEP.COUNTRY]: country});
+        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[COUNTRY]: country});
         setSelectedCountry(country);
     };
 
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
-            return ValidationUtils.getFieldRequiredErrors(values, [INPUT_IDS.COUNTRY_STEP.COUNTRY]);
+            return ValidationUtils.getFieldRequiredErrors(values, [COUNTRY]);
         },
         [],
     );
@@ -125,7 +127,7 @@ function Confirmation({onNext}: SubStepProps) {
                             searchInputTitle={translate('countryStep.findCountry')}
                             shouldAllowChange={shouldAllowChange}
                             value={selectedCountry}
-                            inputID={INPUT_IDS.COUNTRY_STEP.COUNTRY}
+                            inputID={COUNTRY}
                         />
                     </FormProvider>
                 </ScrollView>

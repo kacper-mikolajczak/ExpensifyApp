@@ -9,6 +9,7 @@ import CONST from '@src/CONST';
 import type {FileObject} from './AttachmentModal';
 import AttachmentPicker from './AttachmentPicker';
 import Button from './Button';
+import DotIndicatorMessage from './DotIndicatorMessage';
 import Icon from './Icon';
 import * as Expensicons from './Icon/Expensicons';
 import {PressableWithFeedback} from './Pressable';
@@ -35,14 +36,21 @@ type UploadFileProps = {
 
     /** Styles to be assigned to Container */
     style?: StyleProp<ViewStyle>;
+
+    /** Text to display on error message */
+    errorText?: string;
+
+    /** Function called whenever option changes */
+    onInputChange?: (value: string) => void;
 };
 
-function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedFileTypes, maxFileSize, style}: UploadFileProps) {
+function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedFileTypes, maxFileSize, style, errorText = '', onInputChange = () => {}}: UploadFileProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const theme = useTheme();
 
     const handleFileUpload = (file: FileObject) => {
+        onInputChange(file?.name ?? '');
         onUpload(file?.name ?? '');
     };
 
@@ -86,6 +94,13 @@ function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedF
                         />
                     )}
                 </AttachmentPicker>
+            )}
+            {errorText !== '' && (
+                <DotIndicatorMessage
+                    textStyles={[styles.formError]}
+                    type="error"
+                    messages={{errorText}}
+                />
             )}
         </View>
     );

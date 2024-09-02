@@ -14,12 +14,14 @@ import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
 const SINGER_INFO_STEP_KEYS = INPUT_IDS.SIGNER_INFO_STEP;
+const {FIRST_NAME, LAST_NAME, JOB_TITLE, DOB, ID, PROOF_OF_ADDRESS} = INPUT_IDS.SIGNER_INFO_STEP;
 
 function Confirmation({onNext, onMove}: SubStepProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const isUserOwner = nonUSDReimbursementAccountDraft?.[INPUT_IDS.OWNERSHIP_INFO_STEP.OWNS_MORE_THAN_25_PERCENT] ?? false;
     const values = useMemo(() => getSubStepValues(SINGER_INFO_STEP_KEYS, nonUSDReimbursementAccountDraft), [nonUSDReimbursementAccountDraft]);
 
     return (
@@ -30,33 +32,37 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     contentContainerStyle={[styles.flexGrow1, safeAreaPaddingBottomStyle]}
                 >
                     <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5, styles.mb3]}>{translate('signerInfoStep.letsDoubleCheck')}</Text>
-                    <MenuItemWithTopDescription
-                        description={translate('signerInfoStep.legalName')}
-                        title={`${values[SINGER_INFO_STEP_KEYS.FIRST_NAME]} ${values[SINGER_INFO_STEP_KEYS.LAST_NAME]}`}
-                        shouldShowRightIcon
-                        onPress={() => {
-                            onMove(0);
-                        }}
-                    />
+                    {!isUserOwner && (
+                        <MenuItemWithTopDescription
+                            description={translate('signerInfoStep.legalName')}
+                            title={`${values[FIRST_NAME]} ${values[LAST_NAME]}`}
+                            shouldShowRightIcon
+                            onPress={() => {
+                                onMove(0);
+                            }}
+                        />
+                    )}
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.jobTitle')}
-                        title={values[SINGER_INFO_STEP_KEYS.JOB_TITLE]}
+                        title={values[JOB_TITLE]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);
                         }}
                     />
-                    <MenuItemWithTopDescription
-                        description={translate('common.dob')}
-                        title={values[SINGER_INFO_STEP_KEYS.DOB]}
-                        shouldShowRightIcon
-                        onPress={() => {
-                            onMove(2);
-                        }}
-                    />
+                    {!isUserOwner && (
+                        <MenuItemWithTopDescription
+                            description={translate('common.dob')}
+                            title={values[DOB]}
+                            shouldShowRightIcon
+                            onPress={() => {
+                                onMove(2);
+                            }}
+                        />
+                    )}
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.id')}
-                        title={values[SINGER_INFO_STEP_KEYS.ID]}
+                        title={values[ID]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);
@@ -64,7 +70,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.proofOf')}
-                        title={values[SINGER_INFO_STEP_KEYS.PROOF_OF_ADDRESS]}
+                        title={values[PROOF_OF_ADDRESS]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);

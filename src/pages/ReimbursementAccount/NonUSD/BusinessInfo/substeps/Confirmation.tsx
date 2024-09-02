@@ -9,12 +9,18 @@ import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import {annualVolumeRange, applicantType, natureOfBusiness} from '@pages/ReimbursementAccount/NonUSD/BusinessInfo/mockedCorpayLists';
 import getSubStepValues from '@pages/ReimbursementAccount/NonUSD/utils/getSubStepValues';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
 const BUSINESS_INFO_STEP_KEYS = INPUT_IDS.BUSINESS_INFO_STEP;
+const {NAME, REGISTRATION_NUMBER, STREET, CITY, STATE, ZIP_CODE, PHONE, INCORPORATION_COUNTRY, PAYMENT_VOLUME, BUSINESS_TYPE, BUSINESS_CATEGORY} = INPUT_IDS.BUSINESS_INFO_STEP;
+
+const displayStringValue = (list: Array<{id: string; name: string; stringValue: string}>, matchingName: string) => {
+    return list.find((item) => item.name === matchingName)?.stringValue ?? '';
+};
 
 function Confirmation({onNext, onMove}: SubStepProps) {
     const {translate} = useLocalize();
@@ -22,6 +28,10 @@ function Confirmation({onNext, onMove}: SubStepProps) {
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
     const values = useMemo(() => getSubStepValues(BUSINESS_INFO_STEP_KEYS, nonUSDReimbursementAccountDraft), [nonUSDReimbursementAccountDraft]);
+
+    const paymentVolume = useMemo(() => displayStringValue(annualVolumeRange, values[PAYMENT_VOLUME]), [values]);
+    const businessCategory = useMemo(() => displayStringValue(natureOfBusiness, values[BUSINESS_CATEGORY]), [values]);
+    const businessType = useMemo(() => displayStringValue(applicantType, values[BUSINESS_TYPE]), [values]);
 
     return (
         <SafeAreaConsumer>
@@ -33,7 +43,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5, styles.mb3]}>{translate('businessInfoStep.letsDoubleCheck')}</Text>
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.legalBusinessName')}
-                        title={values[BUSINESS_INFO_STEP_KEYS.NAME]}
+                        title={values[NAME]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(0);
@@ -41,7 +51,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.registrationNumber')}
-                        title={values[BUSINESS_INFO_STEP_KEYS.REGISTRATION_NUMBER]}
+                        title={values[REGISTRATION_NUMBER]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);
@@ -49,9 +59,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.businessAddress')}
-                        title={`${values[BUSINESS_INFO_STEP_KEYS.STREET]}, ${values[BUSINESS_INFO_STEP_KEYS.CITY]}, ${values[BUSINESS_INFO_STEP_KEYS.STATE]}, ${
-                            values[BUSINESS_INFO_STEP_KEYS.ZIP_CODE]
-                        }`}
+                        title={`${values[STREET]}, ${values[CITY]}, ${values[STATE]}, ${values[ZIP_CODE]}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);
@@ -60,7 +68,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     <MenuItemWithTopDescription
                         description={translate('common.phoneNumber')}
                         // TODO default value for country code
-                        title={`${CONST.COUNTRY_PHONE_NUMBER_CODES.AF}${values[BUSINESS_INFO_STEP_KEYS.PHONE]}`}
+                        title={`${CONST.COUNTRY_PHONE_NUMBER_CODES.AF}${values[PHONE]}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(2);
@@ -68,7 +76,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.businessType')}
-                        title={values[BUSINESS_INFO_STEP_KEYS.BUSINESS_TYPE]}
+                        title={businessType}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(5);
@@ -76,7 +84,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.incorporation')}
-                        title={values[BUSINESS_INFO_STEP_KEYS.INCORPORATION_COUNTRY]}
+                        title={values[INCORPORATION_COUNTRY]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(4);
@@ -84,7 +92,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.businessCategory')}
-                        title={values[BUSINESS_INFO_STEP_KEYS.BUSINESS_CATEGORY]}
+                        title={businessCategory}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(5);
@@ -92,7 +100,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.annualPaymentVolume')}
-                        title={values[BUSINESS_INFO_STEP_KEYS.PAYMENT_VOLUME]}
+                        title={paymentVolume}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(6);

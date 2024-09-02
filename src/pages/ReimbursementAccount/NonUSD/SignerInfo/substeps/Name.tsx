@@ -1,13 +1,15 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
+import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
 import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import * as ValidationUtils from '@libs/ValidationUtils';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
@@ -26,6 +28,13 @@ function Name({onNext, isEditing}: NameProps) {
         [LAST_NAME]: nonUSDReimbursementAccountDraft?.[LAST_NAME] ?? '',
     };
 
+    const validate = useCallback(
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+            return ValidationUtils.getFieldRequiredErrors(values, STEP_FIELDS);
+        },
+        [],
+    );
+
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
         fieldIds: STEP_FIELDS,
         onNext,
@@ -37,6 +46,7 @@ function Name({onNext, isEditing}: NameProps) {
             formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
+            validate={validate}
             style={[styles.mh5, styles.flexGrow1]}
         >
             <Text style={[styles.textHeadlineLineHeightXXL]}>{translate('signerInfoStep.whatsYourName')}</Text>

@@ -16,15 +16,15 @@ import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
 type NameProps = SubStepProps;
 
-const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
-const STEP_FIELDS = [BUSINESS_INFO_STEP_KEY.NAME];
+const {NAME} = INPUT_IDS.BUSINESS_INFO_STEP;
+const STEP_FIELDS = [NAME];
 
 function Name({onNext, isEditing}: NameProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
-    const defaultValue = nonUSDReimbursementAccountDraft?.[BUSINESS_INFO_STEP_KEY.NAME] ?? '';
+    const defaultValue = nonUSDReimbursementAccountDraft?.[NAME] ?? '';
 
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
@@ -59,7 +59,7 @@ function Name({onNext, isEditing}: NameProps) {
                 label={translate('businessInfoStep.businessName')}
                 aria-label={translate('businessInfoStep.businessName')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={BUSINESS_INFO_STEP_KEY.NAME}
+                inputID={NAME}
                 containerStyles={[styles.mt6]}
                 defaultValue={defaultValue}
                 shouldSaveDraft={!isEditing}

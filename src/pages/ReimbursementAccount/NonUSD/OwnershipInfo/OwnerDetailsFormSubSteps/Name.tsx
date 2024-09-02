@@ -1,13 +1,15 @@
-import React from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
+import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
 import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import * as ValidationUtils from '@libs/ValidationUtils';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 
@@ -22,9 +24,16 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
 
     const firstNameInputID = `${PREFIX}_${ownerBeingModifiedID}_${FIRST_NAME}` as const;
     const lastNameInputID = `${PREFIX}_${ownerBeingModifiedID}_${LAST_NAME}` as const;
-    const stepFields = [firstNameInputID, lastNameInputID];
+    const stepFields = useMemo(() => [firstNameInputID, lastNameInputID], [firstNameInputID, lastNameInputID]);
     const defaultFirstName = nonUSDReimbursementAccountDraft?.[firstNameInputID] ?? '';
     const defaultLastName = nonUSDReimbursementAccountDraft?.[lastNameInputID] ?? '';
+
+    const validate = useCallback(
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+            return ValidationUtils.getFieldRequiredErrors(values, stepFields);
+        },
+        [stepFields],
+    );
 
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
         fieldIds: stepFields,
@@ -37,6 +46,7 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
             formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
+            validate={validate}
             style={[styles.mh5, styles.flexGrow1]}
         >
             <Text style={[styles.textHeadlineLineHeightXXL]}>{translate(isUserEnteringHisOwnData ? 'ownershipInfoStep.whatsYourName' : 'ownershipInfoStep.whatsTheOwnersName')}</Text>

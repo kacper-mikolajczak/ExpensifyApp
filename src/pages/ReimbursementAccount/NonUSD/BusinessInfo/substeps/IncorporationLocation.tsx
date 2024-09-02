@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
+import InputWrapper from '@components/Form/InputWrapper';
 import PushRowWithModal from '@components/PushRowWithModal';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
@@ -14,8 +15,8 @@ import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
 type IncorporationLocationProps = SubStepProps;
 
-const BUSINESS_INFO_STEP_KEY = INPUT_IDS.BUSINESS_INFO_STEP;
-const STEP_FIELDS = [BUSINESS_INFO_STEP_KEY.INCORPORATION_COUNTRY];
+const {INCORPORATION_COUNTRY} = INPUT_IDS.BUSINESS_INFO_STEP;
+const STEP_FIELDS = [INCORPORATION_COUNTRY];
 
 function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) {
     const {translate} = useLocalize();
@@ -23,12 +24,12 @@ function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) 
 
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
-    const businessStepCountryDraftValue = nonUSDReimbursementAccountDraft?.[BUSINESS_INFO_STEP_KEY.INCORPORATION_COUNTRY] ?? '';
+    const businessStepCountryDraftValue = nonUSDReimbursementAccountDraft?.[INCORPORATION_COUNTRY] ?? '';
     const countryStepCountryDraftValue = nonUSDReimbursementAccountDraft?.[INPUT_IDS.COUNTRY_STEP.COUNTRY] ?? '';
     const countryInitialValue =
         businessStepCountryDraftValue !== '' && businessStepCountryDraftValue !== countryStepCountryDraftValue ? businessStepCountryDraftValue : countryStepCountryDraftValue;
 
-    const [selectedCountry, setSelectedCountry] = useState(countryInitialValue);
+    const [selectedCountry, setSelectedCountry] = useState<string>(countryInitialValue);
 
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
         fieldIds: STEP_FIELDS,
@@ -37,9 +38,13 @@ function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) 
     });
 
     const handleSelectingCountry = (country: string) => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[BUSINESS_INFO_STEP_KEY.INCORPORATION_COUNTRY]: country});
+        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[INCORPORATION_COUNTRY]: country});
         setSelectedCountry(country);
     };
+
+    useEffect(() => {
+        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[INCORPORATION_COUNTRY]: selectedCountry});
+    }, [selectedCountry]);
 
     return (
         <FormProvider
@@ -50,13 +55,17 @@ function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) 
             submitButtonStyles={[styles.mh5]}
         >
             <Text style={[styles.textHeadlineLineHeightXXL, styles.mh5, styles.mb3]}>{translate('businessInfoStep.whereWasTheBusinessIncorporated')}</Text>
-            <PushRowWithModal
+            {/* TODO add state selector for US and CA */}
+            <InputWrapper
+                InputComponent={PushRowWithModal}
                 optionsList={CONST.ALL_COUNTRIES}
                 selectedOption={selectedCountry}
                 onOptionChange={handleSelectingCountry}
                 description={translate('common.country')}
                 modalHeaderTitle={translate('countryStep.selectCountry')}
                 searchInputTitle={translate('countryStep.findCountry')}
+                value={selectedCountry}
+                inputID={INCORPORATION_COUNTRY}
             />
         </FormProvider>
     );

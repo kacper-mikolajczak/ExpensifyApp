@@ -12,6 +12,7 @@ import useThemeStyles from '@hooks/useThemeStyles';
 import Navigation from '@navigation/Navigation';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
+import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 import DirectorCheck from './DirectorCheck';
 import EnterEmail from './EnterEmail';
 import HangTight from './HangTight';
@@ -32,15 +33,18 @@ type SignerInfoProps = {
 const SUBSTEP = CONST.NON_USD_BANK_ACCOUNT.SIGNER_INFO_STEP.SUBSTEP;
 
 const bodyContent: Array<ComponentType<SubStepProps>> = [Name, JobTitle, DateOfBirth, UploadDocuments, Confirmation];
+const userIsOwnerBodyContent: Array<ComponentType<SubStepProps>> = [JobTitle, UploadDocuments, Confirmation];
 
 function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
+    const isUserOwner = nonUSDReimbursementAccountDraft?.[INPUT_IDS.OWNERSHIP_INFO_STEP.OWNS_MORE_THAN_25_PERCENT] ?? false;
 
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_DIRECTOR);
     const [isUserDirector, setIsUserDirector] = useState(false);
@@ -69,7 +73,15 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
         setCurrentSubStep(SUBSTEP.ENTER_EMAIL);
     };
 
-    const {componentToRender: SignerDetailsForm, isEditing, screenIndex, nextScreen, prevScreen, moveTo, goToTheLastStep} = useSubStep({bodyContent, startFrom: 0, onFinished: submit});
+    const {
+        componentToRender: SignerDetailsForm,
+        isEditing,
+        screenIndex,
+        nextScreen,
+        prevScreen,
+        moveTo,
+        goToTheLastStep,
+    } = useSubStep({bodyContent: isUserOwner ? userIsOwnerBodyContent : bodyContent, startFrom: 0, onFinished: submit});
 
     const handleBackButtonPress = () => {
         if (isEditing) {

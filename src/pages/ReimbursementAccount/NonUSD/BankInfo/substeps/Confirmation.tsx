@@ -13,7 +13,7 @@ import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 
-const ACCOUNT_DETAILS_STEP_KEY = INPUT_IDS.BANK_INFO_STEP;
+const {ACCOUNT_NUMBER, ROUTING_CODE, BANK_STATEMENT} = INPUT_IDS.BANK_INFO_STEP;
 
 function Confirmation({onNext, onMove}: SubStepProps) {
     const {translate} = useLocalize();
@@ -36,7 +36,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     <Text style={[styles.mutedTextLabel, styles.ph5, styles.mb5]}>{translate('bankInfoStep.thisBankAccount')}</Text>
                     <MenuItemWithTopDescription
                         description={translate('bankInfoStep.accountNumber')}
-                        title={nonUSDReimbursementAccountDraft?.[ACCOUNT_DETAILS_STEP_KEY.ACCOUNT_NUMBER] ?? ''}
+                        title={nonUSDReimbursementAccountDraft?.[ACCOUNT_NUMBER] ?? ''}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(0);
@@ -44,7 +44,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('bankInfoStep.routingNumber')}
-                        title={nonUSDReimbursementAccountDraft?.[ACCOUNT_DETAILS_STEP_KEY.ROUTING_CODE] ?? ''}
+                        title={nonUSDReimbursementAccountDraft?.[ROUTING_CODE] ?? ''}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(0);
@@ -53,7 +53,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     {currency === CONST.CURRENCY.AUD && (
                         <MenuItemWithTopDescription
                             description={translate('bankInfoStep.bankStatement')}
-                            title={nonUSDReimbursementAccountDraft?.[ACCOUNT_DETAILS_STEP_KEY.BANK_STATEMENT] ?? 'default.pdf'}
+                            title={nonUSDReimbursementAccountDraft?.[BANK_STATEMENT] ?? 'default.pdf'}
                             shouldShowRightIcon
                             onPress={() => {
                                 onMove(1);

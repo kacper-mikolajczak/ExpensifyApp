@@ -40,19 +40,9 @@ const INPUT_IDS = {
     },
     OWNERSHIP_INFO_STEP: {
         OWNS_MORE_THAN_25_PERCENT: 'ownsMoreThan25Percent',
-        HAS_OTHER_BENEFICIAL_OWNERS: 'hasOtherBeneficialOwners',
+        HAS_OTHER_OWNERS: 'hasOtherOwners',
+        OWNERS: 'owners',
         ENTITY_CHART: 'entityChart',
-        BENEFICIAL_OWNERS: 'beneficialOwners',
-        OWNED_PERCENTAGE: 'ownedPercentage',
-        FIRST_NAME: 'firstName',
-        LAST_NAME: 'lastName',
-        DOB: 'dob',
-        STREET: 'street',
-        CITY: 'city',
-        STATE: 'state',
-        ZIP_CODE: 'zipCode',
-        COUNTRY: 'country',
-        SSN_LAST_4: 'ssnLast4',
     },
     SIGNER_INFO_STEP: {
         IS_DIRECTOR: 'isDirector',
@@ -101,14 +91,14 @@ type BusinessInfoStep = {
     [INPUT_IDS.BUSINESS_INFO_STEP.CITY]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.STATE]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.ZIP_CODE]: string;
-    [INPUT_IDS.BUSINESS_INFO_STEP.COUNTRY]: Country;
+    [INPUT_IDS.BUSINESS_INFO_STEP.COUNTRY]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.PHONE]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.COUNTRY_CODE]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.REGISTRATION_NUMBER]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.BUSINESS_TYPE]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.BUSINESS_CATEGORY]: string;
     [INPUT_IDS.BUSINESS_INFO_STEP.PAYMENT_VOLUME]: string;
-    [INPUT_IDS.BUSINESS_INFO_STEP.INCORPORATION_COUNTRY]: Country;
+    [INPUT_IDS.BUSINESS_INFO_STEP.INCORPORATION_COUNTRY]: Country | '';
     [INPUT_IDS.BUSINESS_INFO_STEP.INCORPORATION_STATE]: string;
 };
 
@@ -121,20 +111,9 @@ type OwnershipInfoStepExtraProps = {
 
 type OwnershipInfoStepBaseProps = {
     [INPUT_IDS.OWNERSHIP_INFO_STEP.OWNS_MORE_THAN_25_PERCENT]: boolean;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.HAS_OTHER_BENEFICIAL_OWNERS]: boolean;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.BENEFICIAL_OWNERS]: string;
+    [INPUT_IDS.OWNERSHIP_INFO_STEP.HAS_OTHER_OWNERS]: boolean;
+    [INPUT_IDS.OWNERSHIP_INFO_STEP.OWNERS]: string;
     [INPUT_IDS.OWNERSHIP_INFO_STEP.ENTITY_CHART]: string;
-
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.OWNED_PERCENTAGE]: string;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.FIRST_NAME]: string;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.LAST_NAME]: string;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.DOB]: string;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.STREET]: string;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.CITY]: string;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.STATE]: string;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.ZIP_CODE]: string;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.COUNTRY]: Country;
-    [INPUT_IDS.OWNERSHIP_INFO_STEP.SSN_LAST_4]: string;
 };
 
 type OwnershipInfoStep = OwnershipInfoStepBaseProps & OwnershipInfoStepExtraProps;

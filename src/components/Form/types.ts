@@ -19,6 +19,7 @@ import type SingleChoiceQuestion from '@components/SingleChoiceQuestion';
 import type StateSelector from '@components/StateSelector';
 import type TextInput from '@components/TextInput';
 import type TextPicker from '@components/TextPicker';
+import type UploadFile from '@components/UploadFile';
 import type ValuePicker from '@components/ValuePicker';
 import type BusinessTypePicker from '@pages/ReimbursementAccount/BusinessInfo/substeps/TypeBusiness/BusinessTypePicker';
 import type DimensionTypeSelector from '@pages/workspace/accounting/intacct/import/DimensionTypeSelector';
@@ -57,7 +58,8 @@ type ValidInputs =
     | typeof NetSuiteCustomListPicker
     | typeof NetSuiteCustomFieldMappingPicker
     | typeof NetSuiteMenuWithTopDescriptionForm
-    | typeof PushRowWithModal;
+    | typeof PushRowWithModal
+    | typeof UploadFile;
 
 type ValueTypeKey = 'string' | 'boolean' | 'date' | 'country' | 'reportFields' | 'disabledListValues';
 type ValueTypeMap = {

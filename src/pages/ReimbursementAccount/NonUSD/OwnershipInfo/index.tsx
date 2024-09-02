@@ -10,6 +10,7 @@ import useLocalize from '@hooks/useLocalize';
 import useSubStep from '@hooks/useSubStep';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
@@ -31,9 +32,15 @@ type OwnershipInfoProps = {
     onSubmit: () => void;
 };
 
+const OWNERSHIP_INFO_STEP_KEY = INPUT_IDS.OWNERSHIP_INFO_STEP;
+const {FIRST_NAME, LAST_NAME, OWNERSHIP_PERCENTAGE, DOB, SSN_LAST_4, STREET, CITY, STATE, ZIP_CODE, COUNTRY} = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INFO_STEP.OWNER_DATA;
 const SUBSTEP = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INFO_STEP.SUBSTEP;
 
-type OwnerDetailsFormProps = SubStepProps & {ownerBeingModifiedID: string; setOwnerBeingModifiedID?: (id: string) => void; isUserEnteringHisOwnData: boolean};
+type OwnerDetailsFormProps = SubStepProps & {
+    ownerBeingModifiedID: string;
+    setOwnerBeingModifiedID?: (id: string) => void;
+    isUserEnteringHisOwnData: boolean;
+};
 
 const bodyContent: Array<ComponentType<OwnerDetailsFormProps>> = [Name, OwnershipPercentage, DateOfBirth, Address, Last4SSN, Confirmation];
 
@@ -49,6 +56,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const [isUserOwner, setIsUserOwner] = useState(false);
     const [isAnyoneElseOwner, setIsAnyoneElseOwner] = useState(false);
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_USER_OWNER);
+    const [ownedPercentageSum, setOwnedPercentageSum] = useState(0);
     const companyName = nonUSDReimbursementAccountDraft?.[INPUT_IDS.BUSINESS_INFO_STEP.NAME] ?? '';
 
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
@@ -56,9 +64,22 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
 
-    const canAddMoreOwners = true;
+    const canAddMoreOwners = ownedPercentageSum <= 75;
 
     const submit = () => {
+        const ownerFields = [FIRST_NAME, LAST_NAME, OWNERSHIP_PERCENTAGE, DOB, SSN_LAST_4, STREET, CITY, STATE, ZIP_CODE, COUNTRY];
+        const owners = ownerKeys.map((ownerKey) =>
+            ownerFields.reduce((acc, fieldName) => {
+                acc[fieldName] = nonUSDReimbursementAccountDraft?.[`owner_${ownerKey}_${fieldName}`] ?? undefined;
+                return acc;
+            }, {} as Record<string, string | undefined>),
+        );
+
+        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {
+            [OWNERSHIP_INFO_STEP_KEY.OWNS_MORE_THAN_25_PERCENT]: isUserOwner,
+            [OWNERSHIP_INFO_STEP_KEY.HAS_OTHER_OWNERS]: isAnyoneElseOwner,
+            [OWNERSHIP_INFO_STEP_KEY.OWNERS]: JSON.stringify(owners),
+        });
         onSubmit();
     };
 
@@ -69,7 +90,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     };
 
     const handleOwnerDetailsFormSubmit = () => {
-        const shouldAddMoreOwners = !ownerKeys.find((ownerID) => ownerID === ownerBeingModifiedID) && canAddMoreOwners;
+        const shouldAddMoreOwners = ownerKeys.find((ownerID) => ownerID === ownerBeingModifiedID || (!canAddMoreOwners && ownerID === '')) === undefined;
 
         if (shouldAddMoreOwners) {
             addOwner(ownerBeingModifiedID);
@@ -264,7 +285,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
             {currentSubStep === SUBSTEP.ARE_THERE_MORE_OWNERS && (
                 <OwnerCheck
                     title={translate('ownershipInfoStep.areThereOther', {companyName})}
-                    defaultValue={isUserOwner}
+                    defaultValue={false}
                     onSelectedValue={handleNextSubStep}
                 />
             )}
@@ -277,7 +298,6 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
                     handleOwnerEdit={handleOwnerEdit}
                     handleOwnershipChartEdit={handleOwnershipChartEdit}
                     ownerKeys={ownerKeys}
-                    isAnyoneElseOwner={isAnyoneElseOwner}
                 />
             )}
         </ScreenWrapper>
