@@ -114,7 +114,7 @@ function Confirmation({onNext}: SubStepProps) {
                         validate={validate}
                         onSubmit={onNext}
                         style={[styles.flexGrow1]}
-                        submitButtonStyles={[styles.mh5]}
+                        submitButtonStyles={[styles.mh5, styles.pb0, styles.mbn1]}
                         isSubmitDisabled={disableSubmit}
                     >
                         <InputWrapper

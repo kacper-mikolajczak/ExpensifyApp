@@ -85,8 +85,11 @@ function PushRowModal({isVisible, selectedOption, onOptionChange, onClose, optio
             type={CONST.MODAL.MODAL_TYPE.RIGHT_DOCKED}
             onModalHide={onClose}
             shouldUseCustomBackdrop
+            fullscreen
+            useNativeDriver
         >
             <ScreenWrapper
+                includePaddingTop={false}
                 includeSafeAreaPaddingBottom={false}
                 testID={PushRowModal.displayName}
             >

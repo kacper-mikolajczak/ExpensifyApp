@@ -106,7 +106,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                             onMove(6);
                         }}
                     />
-                    <View style={[styles.ph5, styles.pb5, styles.flexGrow1, styles.justifyContentEnd]}>
+                    <View style={[styles.p5, styles.flexGrow1, styles.justifyContentEnd]}>
                         <Button
                             success
                             style={[styles.w100]}
