@@ -498,9 +498,23 @@ function isValidSubscriptionSize(subscriptionSize: string): boolean {
 /**
  * Validates the given value if it is correct ownership percentage.
  */
-function isValidOwnershipPercentage(value: string): boolean {
+function isValidOwnershipPercentage(value: string, totalOwnedPercentage: Record<string, number>, ownerBeingModifiedID: string): boolean {
     const parsedValue = Number(value);
-    return !Number.isNaN(parsedValue) && parsedValue >= 25 && parsedValue <= 100;
+    const isValidNumber = !Number.isNaN(parsedValue) && parsedValue >= 25 && parsedValue <= 100;
+
+    let totalOwnedPercentageSum = 0;
+    const totalOwnedPercentageKeys = Object.keys(totalOwnedPercentage);
+    totalOwnedPercentageKeys.forEach((key) => {
+        if (key === ownerBeingModifiedID) {
+            return;
+        }
+
+        totalOwnedPercentageSum += totalOwnedPercentage[key];
+    });
+
+    const isTotalSumValid = totalOwnedPercentageSum + parsedValue <= 100;
+
+    return isValidNumber && isTotalSumValid;
 }
 
 export {

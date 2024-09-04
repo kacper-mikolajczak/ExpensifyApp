@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
 import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
@@ -41,8 +41,14 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
 
     const shouldDisplayStateSelector = defaultValues.country === CONST.COUNTRY.US || defaultValues.country === CONST.COUNTRY.CA;
 
-    const stepFields = [inputKeys.street, inputKeys.city, inputKeys.state, inputKeys.zipCode, countryInputKey];
-    const stepFieldsWithoutState = [inputKeys.street, inputKeys.city, inputKeys.zipCode, countryInputKey];
+    const stepFields = useMemo(
+        () => [inputKeys.street, inputKeys.city, inputKeys.state, inputKeys.zipCode, countryInputKey],
+        [countryInputKey, inputKeys.city, inputKeys.state, inputKeys.street, inputKeys.zipCode],
+    );
+    const stepFieldsWithoutState = useMemo(
+        () => [inputKeys.street, inputKeys.city, inputKeys.zipCode, countryInputKey],
+        [countryInputKey, inputKeys.city, inputKeys.street, inputKeys.zipCode],
+    );
 
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
         fieldIds: stepFields,

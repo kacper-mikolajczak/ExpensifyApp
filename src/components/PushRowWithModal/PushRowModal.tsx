@@ -95,7 +95,7 @@ function PushRowModal({isVisible, selectedOption, onOptionChange, onClose, optio
                     onBackButtonPress={onClose}
                 />
                 <SelectionList
-                    headerMessage={searchbarInputText.trim() && !searchbarInputText.length ? translate('common.noResultsFound') : ''}
+                    headerMessage={searchbarInputText.trim().length && !optionListItems.length ? translate('common.noResultsFound') : ''}
                     textInputLabel={searchInputTitle}
                     textInputValue={searchbarInputText}
                     onChangeText={filterShownOptions}

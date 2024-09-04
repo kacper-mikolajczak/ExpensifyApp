@@ -40,6 +40,8 @@ type OwnerDetailsFormProps = SubStepProps & {
     ownerBeingModifiedID: string;
     setOwnerBeingModifiedID?: (id: string) => void;
     isUserEnteringHisOwnData: boolean;
+    totalOwnedPercentage: Record<string, number>;
+    setTotalOwnedPercentage: (ownedPercentage: Record<string, number>) => void;
 };
 
 const bodyContent: Array<ComponentType<OwnerDetailsFormProps>> = [Name, OwnershipPercentage, DateOfBirth, Address, Last4SSN, Confirmation];
@@ -50,13 +52,13 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
 
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const [ownerKeys, setOwnerKeys] = useState<string[]>([]);
-    const [ownerBeingModifiedID, setOwnerBeingModifiedID] = useState('');
+    const [ownerBeingModifiedID, setOwnerBeingModifiedID] = useState('currentUser');
     const [isEditingCreatedOwner, setIsEditingCreatedOwner] = useState(false);
     const [isUserEnteringHisOwnData, setIsUserEnteringHisOwnData] = useState(false);
     const [isUserOwner, setIsUserOwner] = useState(false);
     const [isAnyoneElseOwner, setIsAnyoneElseOwner] = useState(false);
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_USER_OWNER);
-    const [ownedPercentageSum, setOwnedPercentageSum] = useState(0);
+    const [totalOwnedPercentage, setTotalOwnedPercentage] = useState<Record<string, number>>({});
     const companyName = nonUSDReimbursementAccountDraft?.[INPUT_IDS.BUSINESS_INFO_STEP.NAME] ?? '';
 
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
@@ -64,7 +66,8 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
 
-    const canAddMoreOwners = ownedPercentageSum <= 75;
+    const totalOwnedPercentageSum = Object.values(totalOwnedPercentage).reduce((acc, value) => acc + value, 0);
+    const canAddMoreOwners = totalOwnedPercentageSum <= 75;
 
     const submit = () => {
         const ownerFields = [FIRST_NAME, LAST_NAME, OWNERSHIP_PERCENTAGE, DOB, SSN_LAST_4, STREET, CITY, STATE, ZIP_CODE, COUNTRY];
@@ -90,14 +93,20 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     };
 
     const handleOwnerDetailsFormSubmit = () => {
-        const shouldAddMoreOwners = ownerKeys.find((ownerID) => ownerID === ownerBeingModifiedID || (!canAddMoreOwners && ownerID === '')) === undefined;
+        const isFreshOwner = ownerKeys.find((ownerID) => ownerID === ownerBeingModifiedID && ownerID !== 'currentUser') === undefined;
 
-        if (shouldAddMoreOwners) {
+        if (isFreshOwner) {
             addOwner(ownerBeingModifiedID);
         }
 
-        const isLastOwnerThatCanBeAdded = false;
-        setCurrentSubStep(isEditingCreatedOwner || isLastOwnerThatCanBeAdded ? SUBSTEP.OWNERS_LIST : SUBSTEP.ARE_THERE_MORE_OWNERS);
+        let nextSubStep;
+        if (isEditingCreatedOwner || !canAddMoreOwners) {
+            nextSubStep = currency === CONST.CURRENCY.AUD ? SUBSTEP.OWNERSHIP_CHART : SUBSTEP.OWNERS_LIST;
+        } else {
+            nextSubStep = SUBSTEP.ARE_THERE_MORE_OWNERS;
+        }
+
+        setCurrentSubStep(nextSubStep);
         setIsEditingCreatedOwner(false);
     };
 
@@ -198,7 +207,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
 
             // User is not an owner and no one else is an owner
             if (!isUserOwner && !value) {
-                if (currency === 'AUD') {
+                if (currency === CONST.CURRENCY.AUD) {
                     setCurrentSubStep(SUBSTEP.OWNERSHIP_CHART);
                     return;
                 }
@@ -279,6 +288,8 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
                     ownerBeingModifiedID={ownerBeingModifiedID}
                     setOwnerBeingModifiedID={setOwnerBeingModifiedID}
                     isUserEnteringHisOwnData={isUserEnteringHisOwnData}
+                    totalOwnedPercentage={totalOwnedPercentage}
+                    setTotalOwnedPercentage={setTotalOwnedPercentage}
                 />
             )}
 

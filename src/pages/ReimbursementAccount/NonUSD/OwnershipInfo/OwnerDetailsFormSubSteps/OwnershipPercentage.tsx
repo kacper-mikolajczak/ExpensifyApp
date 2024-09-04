@@ -13,11 +13,16 @@ import * as ValidationUtils from '@libs/ValidationUtils';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 
-type OwnershipPercentageProps = SubStepProps & {isUserEnteringHisOwnData: boolean; ownerBeingModifiedID: string};
+type OwnershipPercentageProps = SubStepProps & {
+    isUserEnteringHisOwnData: boolean;
+    ownerBeingModifiedID: string;
+    totalOwnedPercentage: Record<string, number>;
+    setTotalOwnedPercentage: (ownedPercentage: Record<string, number>) => void;
+};
 
 const {OWNERSHIP_PERCENTAGE, PREFIX} = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INFO_STEP.OWNER_DATA;
 
-function OwnershipPercentage({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID}: OwnershipPercentageProps) {
+function OwnershipPercentage({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID, totalOwnedPercentage, setTotalOwnedPercentage}: OwnershipPercentageProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
@@ -29,13 +34,18 @@ function OwnershipPercentage({onNext, isEditing, isUserEnteringHisOwnData, owner
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
             const errors = ValidationUtils.getFieldRequiredErrors(values, [ownershipPercentageInputID]);
 
-            if (values[ownershipPercentageInputID] && !ValidationUtils.isValidOwnershipPercentage(values[ownershipPercentageInputID])) {
+            if (values[ownershipPercentageInputID] && !ValidationUtils.isValidOwnershipPercentage(values[ownershipPercentageInputID], totalOwnedPercentage, ownerBeingModifiedID)) {
                 errors[ownershipPercentageInputID] = translate('bankAccount.error.ownershipPercentage');
             }
 
+            setTotalOwnedPercentage({
+                ...totalOwnedPercentage,
+                [ownerBeingModifiedID]: Number(values[ownershipPercentageInputID]),
+            });
+
             return errors;
         },
-        [ownershipPercentageInputID, translate],
+        [ownerBeingModifiedID, ownershipPercentageInputID, setTotalOwnedPercentage, totalOwnedPercentage, translate],
     );
 
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({

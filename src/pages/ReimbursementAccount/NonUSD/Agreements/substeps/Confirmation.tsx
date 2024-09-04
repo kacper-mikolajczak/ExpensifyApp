@@ -42,9 +42,9 @@ function Confirmation({onNext}: SubStepProps) {
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
     const defaultValues = {
-        [AUTHORIZED]: nonUSDReimbursementAccountDraft?.[AUTHORIZED] ?? false,
-        [CERTIFY]: nonUSDReimbursementAccountDraft?.[CERTIFY] ?? false,
-        [TERMS]: nonUSDReimbursementAccountDraft?.[TERMS] ?? false,
+        [AUTHORIZED]: !!nonUSDReimbursementAccountDraft?.[AUTHORIZED],
+        [CERTIFY]: !!nonUSDReimbursementAccountDraft?.[CERTIFY],
+        [TERMS]: !!nonUSDReimbursementAccountDraft?.[TERMS],
     };
 
     const validate = useCallback(

@@ -5,6 +5,7 @@ import type {ValueOf} from 'type-fest';
 import useLocalize from '@hooks/useLocalize';
 import useTheme from '@hooks/useTheme';
 import useThemeStyles from '@hooks/useThemeStyles';
+import variables from '@styles/variables';
 import CONST from '@src/CONST';
 import type {FileObject} from './AttachmentModal';
 import AttachmentPicker from './AttachmentPicker';
@@ -31,9 +32,6 @@ type UploadFileProps = {
     /** Array containing accepted file types */
     acceptedFileTypes: Array<ValueOf<typeof CONST.API_ATTACHMENT_VALIDATIONS.ALLOWED_RECEIPT_EXTENSIONS>>;
 
-    /** Max file size in MB */
-    maxFileSize: number;
-
     /** Styles to be assigned to Container */
     style?: StyleProp<ViewStyle>;
 
@@ -44,7 +42,7 @@ type UploadFileProps = {
     onInputChange?: (value: string) => void;
 };
 
-function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedFileTypes, maxFileSize, style, errorText = '', onInputChange = () => {}}: UploadFileProps) {
+function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedFileTypes, style, errorText = '', onInputChange = () => {}}: UploadFileProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const theme = useTheme();
@@ -59,8 +57,8 @@ function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedF
             {uploadedFileName !== '' ? (
                 <View style={[styles.flexRow, styles.alignItemsCenter, styles.justifyContentCenter, styles.border, styles.p4]}>
                     <Icon
-                        height={20}
-                        width={14}
+                        height={variables.iconSizeNormal}
+                        width={variables.iconSizeSemiSmall}
                         src={Expensicons.Paperclip}
                         fill={theme.textSupporting}
                     />
@@ -71,10 +69,9 @@ function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedF
                         accessibilityLabel={translate('common.remove')}
                     >
                         <Icon
-                            height={16}
-                            width={16}
                             src={Expensicons.Close}
                             fill={theme.textSupporting}
+                            small
                         />
                     </PressableWithFeedback>
                 </View>
