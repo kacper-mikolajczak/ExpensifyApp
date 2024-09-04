@@ -71,7 +71,6 @@ function UploadOwnershipChart({onSubmit}: UploadOwnershipChartProps) {
                     onUpload={handleSelectFile}
                     onRemove={handleRemoveFile}
                     acceptedFileTypes={[...CONST.NON_USD_BANK_ACCOUNT.ALLOWED_FILE_TYPES]}
-                    maxFileSize={CONST.NON_USD_BANK_ACCOUNT.MAX_FILE_SIZE_MB}
                     value={uploadedOwnershipChartStatement}
                     inputID={ENTITY_CHART}
                 />

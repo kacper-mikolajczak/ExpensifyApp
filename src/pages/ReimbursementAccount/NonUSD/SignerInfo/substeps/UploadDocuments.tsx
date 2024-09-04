@@ -86,7 +86,6 @@ function UploadDocuments({onNext, isEditing}: UploadDocumentsProps) {
                     onUpload={handleSelectIDFile}
                     onRemove={handleRemoveIDFile}
                     acceptedFileTypes={[...CONST.NON_USD_BANK_ACCOUNT.ALLOWED_FILE_TYPES]}
-                    maxFileSize={CONST.NON_USD_BANK_ACCOUNT.MAX_FILE_SIZE_MB}
                     value={uploadedID}
                     inputID={ID}
                 />
@@ -98,7 +97,6 @@ function UploadDocuments({onNext, isEditing}: UploadDocumentsProps) {
                     onUpload={handleSelectProofOfAddressFile}
                     onRemove={handleRemoveProofOfAddressFile}
                     acceptedFileTypes={[...CONST.NON_USD_BANK_ACCOUNT.ALLOWED_FILE_TYPES]}
-                    maxFileSize={CONST.NON_USD_BANK_ACCOUNT.MAX_FILE_SIZE_MB}
                     value={uploadedProofOfAddress}
                     inputID={PROOF_OF_ADDRESS}
                 />
