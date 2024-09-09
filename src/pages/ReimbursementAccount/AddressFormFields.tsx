@@ -32,7 +32,7 @@ type AddressFormProps = {
     errors?: AddressErrors;
 
     /** The map for inputID of the inputs */
-    inputKeys: Address;
+    inputKeys: Record<string, string>;
 
     /** Saves a draft of the input value when used in a form */
     shouldSaveDraft?: boolean;

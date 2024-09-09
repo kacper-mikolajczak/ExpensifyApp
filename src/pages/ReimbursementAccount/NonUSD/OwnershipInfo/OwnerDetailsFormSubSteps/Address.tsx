@@ -11,6 +11,7 @@ import * as ValidationUtils from '@libs/ValidationUtils';
 import AddressFormFields from '@pages/ReimbursementAccount/AddressFormFields';
 import WhyLink from '@pages/ReimbursementAccount/NonUSD/WhyLink';
 import CONST from '@src/CONST';
+import type {Country} from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 
 type NameProps = SubStepProps & {isUserEnteringHisOwnData: boolean; ownerBeingModifiedID: string};
@@ -22,21 +23,21 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
     const styles = useThemeStyles();
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
+    const countryInputKey: `owner_${string}_${string}` = `${PREFIX}_${ownerBeingModifiedID}_${COUNTRY}`;
     const inputKeys = {
         street: `${PREFIX}_${ownerBeingModifiedID}_${STREET}`,
         city: `${PREFIX}_${ownerBeingModifiedID}_${CITY}`,
         state: `${PREFIX}_${ownerBeingModifiedID}_${STATE}`,
         zipCode: `${PREFIX}_${ownerBeingModifiedID}_${ZIP_CODE}`,
-        country: `${PREFIX}_${ownerBeingModifiedID}_${COUNTRY}`,
+        country: countryInputKey,
     } as const;
-    const countryInputKey: `owner_${string}_${string}` = `${PREFIX}_${ownerBeingModifiedID}_${COUNTRY}`;
 
     const defaultValues = {
         street: nonUSDReimbursementAccountDraft?.[inputKeys.street] ?? '',
         city: nonUSDReimbursementAccountDraft?.[inputKeys.city] ?? '',
         state: nonUSDReimbursementAccountDraft?.[inputKeys.state] ?? '',
         zipCode: nonUSDReimbursementAccountDraft?.[inputKeys.zipCode] ?? '',
-        country: nonUSDReimbursementAccountDraft?.[inputKeys.country] ?? '',
+        country: (nonUSDReimbursementAccountDraft?.[inputKeys.country] ?? '') as Country | '',
     };
 
     const shouldDisplayStateSelector = defaultValues.country === CONST.COUNTRY.US || defaultValues.country === CONST.COUNTRY.CA;
