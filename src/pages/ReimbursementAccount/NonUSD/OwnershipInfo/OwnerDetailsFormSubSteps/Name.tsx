@@ -30,9 +30,19 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
 
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
-            return ValidationUtils.getFieldRequiredErrors(values, stepFields);
+            const errors = ValidationUtils.getFieldRequiredErrors(values, stepFields);
+
+            if (values[firstNameInputID] && !ValidationUtils.isValidLegalName(values[firstNameInputID])) {
+                errors[firstNameInputID] = translate('bankAccount.error.firstName');
+            }
+
+            if (values[lastNameInputID] && !ValidationUtils.isValidLegalName(values[lastNameInputID])) {
+                errors[lastNameInputID] = translate('bankAccount.error.lastName');
+            }
+
+            return errors;
         },
-        [stepFields],
+        [firstNameInputID, lastNameInputID, stepFields, translate],
     );
 
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({

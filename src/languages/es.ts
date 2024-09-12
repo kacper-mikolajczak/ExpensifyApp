@@ -1,4 +1,5 @@
 import {Str} from 'expensify-common';
+import PROVINCES from '@pages/ReimbursementAccount/NonUSD/mockedCanadianProvinces';
 import CONST from '@src/CONST';
 import type {DelegateRole} from '@src/types/onyx/Account';
 import type {ConnectionName, PolicyConnectionSyncStage, SageIntacctMappingName} from '@src/types/onyx/Policy';
@@ -124,6 +125,13 @@ import type {
     WeSentYouMagicSignInLinkParams,
     ZipCodeExampleFormatParams,
 } from './types';
+
+type ProvinceValue = {
+    provinceISO: string;
+    provinceName: string;
+};
+
+type Provinces = Record<keyof typeof PROVINCES, ProvinceValue>;
 
 /* eslint-disable max-len */
 export default {
@@ -4501,6 +4509,7 @@ export default {
             stateName: 'Distrito de Columbia',
         },
     },
+    allProvinces: PROVINCES as Provinces,
     allCountries: {
         AF: 'Afganistán',
         AL: 'Albania',

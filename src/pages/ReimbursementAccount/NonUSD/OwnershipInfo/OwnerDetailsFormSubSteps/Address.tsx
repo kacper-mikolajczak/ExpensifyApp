@@ -65,6 +65,10 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
                 errors.street = translate('bankAccount.error.addressStreet');
             }
 
+            if (values.zipCode && !ValidationUtils.isValidZipCode(values.zipCode)) {
+                errors.zipCode = translate('bankAccount.error.zipCode');
+            }
+
             return errors;
         },
         [shouldDisplayStateSelector, stepFields, stepFieldsWithoutState, translate],

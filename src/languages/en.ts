@@ -1,5 +1,6 @@
 import {CONST as COMMON_CONST, Str} from 'expensify-common';
 import {startCase} from 'lodash';
+import PROVINCES from '@pages/ReimbursementAccount/NonUSD/mockedCanadianProvinces';
 import CONST from '@src/CONST';
 import type {Country} from '@src/CONST';
 import type {DelegateRole} from '@src/types/onyx/Account';
@@ -131,7 +132,13 @@ type StateValue = {
     stateName: string;
 };
 
+type ProvinceValue = {
+    provinceISO: string;
+    provinceName: string;
+};
+
 type States = Record<keyof typeof COMMON_CONST.STATES, StateValue>;
+type Provinces = Record<keyof typeof PROVINCES, ProvinceValue>;
 
 type AllCountries = Record<Country, string>;
 
@@ -2062,9 +2069,12 @@ export default {
         selectIncorporationType: 'Select incorporation type',
         selectBusinessCategory: 'Select business category',
         selectAnnualPaymentVolume: 'Select annual payment volume',
+        selectIncorporationCountry: 'Select incorporation country',
+        selectIncorporationState: 'Select incorporation state',
         findIncorporationType: 'Find incorporation type',
         findBusinessCategory: 'Find business category',
         findAnnualPaymentVolume: 'Find annual payment volume',
+        findIncorporationState: 'Find incorporation state',
     },
     beneficialOwnerInfoStep: {
         doYouOwn25percent: 'Do you own 25% or more of',
@@ -4239,6 +4249,7 @@ export default {
         logIn: 'Log In',
     },
     allStates: COMMON_CONST.STATES as States,
+    allProvinces: PROVINCES as Provinces,
     allCountries: CONST.ALL_COUNTRIES as AllCountries,
     accessibilityHints: {
         navigateToChatsList: 'Navigate back to chats list',

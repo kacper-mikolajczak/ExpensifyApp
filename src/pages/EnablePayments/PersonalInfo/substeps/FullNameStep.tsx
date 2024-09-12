@@ -40,6 +40,7 @@ function FullNameStep({onNext, isEditing}: SubStepProps) {
             if (values.legalLastName && !ValidationUtils.isValidLegalName(values.legalLastName)) {
                 errors.legalLastName = translate('bankAccount.error.lastName');
             }
+
             return errors;
         },
         [translate],

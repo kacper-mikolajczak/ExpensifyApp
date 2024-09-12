@@ -28,9 +28,15 @@ function Last4SSN({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifi
 
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
-            return ValidationUtils.getFieldRequiredErrors(values, [last4SSNInputID]);
+            const errors = ValidationUtils.getFieldRequiredErrors(values, [last4SSNInputID]);
+
+            if (values[last4SSNInputID] && !ValidationUtils.isValidSSNLastFour(values[last4SSNInputID])) {
+                errors[last4SSNInputID] = translate('bankAccount.error.ssnLast4');
+            }
+
+            return errors;
         },
-        [last4SSNInputID],
+        [last4SSNInputID, translate],
     );
 
     const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({

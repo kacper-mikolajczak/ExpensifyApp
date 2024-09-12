@@ -56,6 +56,10 @@ function Address({onNext, isEditing}: AddressProps) {
                 errors.street = translate('bankAccount.error.addressStreet');
             }
 
+            if (values.zipCode && !ValidationUtils.isValidZipCode(values.zipCode)) {
+                errors.zipCode = translate('bankAccount.error.zipCode');
+            }
+
             return errors;
         },
         [shouldDisplayStateSelector, translate],

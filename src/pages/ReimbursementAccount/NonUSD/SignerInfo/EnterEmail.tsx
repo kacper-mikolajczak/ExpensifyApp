@@ -1,3 +1,4 @@
+import {Str} from 'expensify-common';
 import React, {useCallback} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
@@ -34,9 +35,18 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
 
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
-            return ValidationUtils.getFieldRequiredErrors(values, shouldGatherBothEmails ? [DIRECTOR_EMAIL_ADDRESS, SECOND_DIRECTOR_EMAIL_ADDRESS] : [DIRECTOR_EMAIL_ADDRESS]);
+            const errors = ValidationUtils.getFieldRequiredErrors(values, shouldGatherBothEmails ? [DIRECTOR_EMAIL_ADDRESS, SECOND_DIRECTOR_EMAIL_ADDRESS] : [DIRECTOR_EMAIL_ADDRESS]);
+            if (values[DIRECTOR_EMAIL_ADDRESS] && !Str.isValidEmail(values[DIRECTOR_EMAIL_ADDRESS])) {
+                errors[DIRECTOR_EMAIL_ADDRESS] = translate('bankAccount.error.firstName');
+            }
+
+            if (shouldGatherBothEmails && values[SECOND_DIRECTOR_EMAIL_ADDRESS] && !Str.isValidEmail(values[SECOND_DIRECTOR_EMAIL_ADDRESS])) {
+                errors[SECOND_DIRECTOR_EMAIL_ADDRESS] = translate('bankAccount.error.lastName');
+            }
+
+            return errors;
         },
-        [shouldGatherBothEmails],
+        [shouldGatherBothEmails, translate],
     );
 
     return (
