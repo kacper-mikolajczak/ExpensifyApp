@@ -7,6 +7,7 @@ import type AmountForm from '@components/AmountForm';
 import type AmountPicker from '@components/AmountPicker';
 import type AmountTextInput from '@components/AmountTextInput';
 import type CheckboxWithLabel from '@components/CheckboxWithLabel';
+import type CountryPicker from '@components/CountryPicker';
 import type CountrySelector from '@components/CountrySelector';
 import type CurrencySelector from '@components/CurrencySelector';
 import type DatePicker from '@components/DatePicker';
@@ -17,6 +18,7 @@ import type PushRowWithModal from '@components/PushRowWithModal';
 import type RadioButtons from '@components/RadioButtons';
 import type RoomNameInput from '@components/RoomNameInput';
 import type SingleChoiceQuestion from '@components/SingleChoiceQuestion';
+import type StatePicker from '@components/StatePicker';
 import type StateSelector from '@components/StateSelector';
 import type TextInput from '@components/TextInput';
 import type TextPicker from '@components/TextPicker';
@@ -60,6 +62,8 @@ type ValidInputs =
     | typeof NetSuiteCustomListPicker
     | typeof NetSuiteCustomFieldMappingPicker
     | typeof NetSuiteMenuWithTopDescriptionForm
+    | typeof CountryPicker
+    | typeof StatePicker
     | typeof PushRowWithModal
     | typeof UploadFile;
 
