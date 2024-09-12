@@ -159,7 +159,7 @@ function AddressStep({privatePersonalDetails}: CustomSubStepProps) {
                 role={CONST.ROLE.PRESENTATION}
                 autoCapitalize="characters"
                 defaultValue={zipcode}
-                maxLength={CONST.BANK_ACCOUNT.MAX_LENGTH.ZIP_CODE}
+                maxLength={CONST.USD_BANK_ACCOUNT.MAX_LENGTH.ZIP_CODE}
                 hint={zipFormat}
                 onValueChange={handleAddressChange}
                 containerStyles={styles.mt6}
