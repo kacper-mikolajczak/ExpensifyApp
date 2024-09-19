@@ -2215,7 +2215,7 @@ export default {
     },
     signerInfoStep: {
         signerInfo: 'Signer info',
-        areYouDirector: 'Are you a director or senior officer at',
+        areYouDirector: ({companyName}) => `Are you a director or senior officer at ${companyName}?`,
         regulationRequiresUs: 'Regulation requires us to verify if the signer has the authority to take this action on behalf of the business.',
         whatsYourName: "What's your legal name",
         legalFirstName: 'Legal first name',

@@ -60,11 +60,13 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_USER_OWNER);
     const [totalOwnedPercentage, setTotalOwnedPercentage] = useState<Record<string, number>>({});
     const companyName = nonUSDReimbursementAccountDraft?.[INPUT_IDS.BUSINESS_INFO_STEP.NAME] ?? '';
+    const entityChart = nonUSDReimbursementAccountDraft?.[OWNERSHIP_INFO_STEP_KEY.ENTITY_CHART] ?? '';
 
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
+    const shouldAskForEntityChart = currency === CONST.CURRENCY.AUD && entityChart === '';
 
     const totalOwnedPercentageSum = Object.values(totalOwnedPercentage).reduce((acc, value) => acc + value, 0);
     const canAddMoreOwners = totalOwnedPercentageSum <= 75;
@@ -93,7 +95,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     };
 
     const handleOwnerDetailsFormSubmit = () => {
-        const isFreshOwner = ownerKeys.find((ownerID) => ownerID === ownerBeingModifiedID && ownerID !== 'currentUser') === undefined;
+        const isFreshOwner = ownerKeys.find((ownerID) => ownerID === ownerBeingModifiedID) === undefined;
 
         if (isFreshOwner) {
             addOwner(ownerBeingModifiedID);
@@ -101,7 +103,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
 
         let nextSubStep;
         if (isEditingCreatedOwner || !canAddMoreOwners) {
-            nextSubStep = currency === CONST.CURRENCY.AUD ? SUBSTEP.OWNERSHIP_CHART : SUBSTEP.OWNERS_LIST;
+            nextSubStep = shouldAskForEntityChart ? SUBSTEP.OWNERSHIP_CHART : SUBSTEP.OWNERS_LIST;
         } else {
             nextSubStep = SUBSTEP.ARE_THERE_MORE_OWNERS;
         }
@@ -231,7 +233,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
                 return;
             }
 
-            if (currency === 'AUD') {
+            if (shouldAskForEntityChart) {
                 setCurrentSubStep(SUBSTEP.OWNERSHIP_CHART);
                 return;
             }

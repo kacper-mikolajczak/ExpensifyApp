@@ -45,6 +45,7 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
     const isUserOwner = nonUSDReimbursementAccountDraft?.[INPUT_IDS.OWNERSHIP_INFO_STEP.OWNS_MORE_THAN_25_PERCENT] ?? false;
+    const companyName = nonUSDReimbursementAccountDraft?.[INPUT_IDS.BUSINESS_INFO_STEP.NAME] ?? '';
 
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_DIRECTOR);
     const [isUserDirector, setIsUserDirector] = useState(false);
@@ -126,7 +127,7 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
 
             {currentSubStep === SUBSTEP.IS_DIRECTOR && (
                 <DirectorCheck
-                    title={translate('signerInfoStep.areYouDirector')}
+                    title={translate('signerInfoStep.areYouDirector', {companyName})}
                     defaultValue={isUserDirector}
                     onSelectedValue={handleNextSubStep}
                 />

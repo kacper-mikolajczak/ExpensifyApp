@@ -29,9 +29,7 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
-
-    const isAUDAccount = currency === CONST.CURRENCY.AUD;
-    const shouldGatherBothEmails = isAUDAccount && !isUserDirector;
+    const shouldGatherBothEmails = currency === CONST.CURRENCY.AUD && !isUserDirector;
 
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
@@ -57,7 +55,7 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
             validate={validate}
             style={[styles.mh5, styles.flexGrow1]}
         >
-            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate(isAUDAccount ? 'signerInfoStep.enterTwoEmails' : 'signerInfoStep.enterOneEmail')}</Text>
+            <Text style={[styles.textHeadlineLineHeightXXL]}>{translate(shouldGatherBothEmails ? 'signerInfoStep.enterTwoEmails' : 'signerInfoStep.enterOneEmail')}</Text>
             <InputWrapper
                 InputComponent={TextInput}
                 label={shouldGatherBothEmails ? `${translate('common.email')} 1` : translate('common.email')}
