@@ -24,6 +24,7 @@ import type TextInput from '@components/TextInput';
 import type TextPicker from '@components/TextPicker';
 import type UploadFile from '@components/UploadFile';
 import type ValuePicker from '@components/ValuePicker';
+import type ConstantSelector from '@pages/Debug/ConstantSelector';
 import type BusinessTypePicker from '@pages/ReimbursementAccount/BusinessInfo/substeps/TypeBusiness/BusinessTypePicker';
 import type DimensionTypeSelector from '@pages/workspace/accounting/intacct/import/DimensionTypeSelector';
 import type NetSuiteCustomFieldMappingPicker from '@pages/workspace/accounting/netsuite/import/NetSuiteImportCustomFieldNew/NetSuiteCustomFieldMappingPicker';
@@ -64,6 +65,7 @@ type ValidInputs =
     | typeof NetSuiteMenuWithTopDescriptionForm
     | typeof CountryPicker
     | typeof StatePicker
+    | typeof ConstantSelector
     | typeof PushRowWithModal
     | typeof UploadFile;
 
