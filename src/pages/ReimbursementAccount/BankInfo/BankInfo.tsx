@@ -44,16 +44,16 @@ function BankInfo({onBackButtonPress, policyID}: BankInfoProps) {
 
     let setupType = reimbursementAccount?.achData?.subStep ?? '';
 
-    const shouldReinitializePlaidLink = plaidLinkToken && receivedRedirectURI && setupType !== CONST.BANK_ACCOUNT.SUBSTEP.MANUAL;
+    const shouldReinitializePlaidLink = plaidLinkToken && receivedRedirectURI && setupType !== CONST.USD_BANK_ACCOUNT.SUBSTEP.MANUAL;
     if (shouldReinitializePlaidLink) {
-        setupType = CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID;
+        setupType = CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID;
     }
 
     const bankAccountID = Number(reimbursementAccount?.achData?.bankAccountID ?? '-1');
     const submit = useCallback(
         (submitData: unknown) => {
             const data = submitData as ReimbursementAccountForm;
-            if (setupType === CONST.BANK_ACCOUNT.SETUP_TYPE.MANUAL) {
+            if (setupType === CONST.USD_BANK_ACCOUNT.SETUP_TYPE.MANUAL) {
                 BankAccounts.connectBankAccountManually(
                     bankAccountID,
                     {
@@ -67,7 +67,7 @@ function BankInfo({onBackButtonPress, policyID}: BankInfoProps) {
                     },
                     policyID,
                 );
-            } else if (setupType === CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID) {
+            } else if (setupType === CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID) {
                 BankAccounts.connectBankAccountWithPlaid(
                     bankAccountID,
                     {
@@ -86,7 +86,7 @@ function BankInfo({onBackButtonPress, policyID}: BankInfoProps) {
         [setupType, bankAccountID, policyID],
     );
 
-    const bodyContent = setupType === CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID ? plaidSubsteps : manualSubsteps;
+    const bodyContent = setupType === CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID ? plaidSubsteps : manualSubsteps;
     const {componentToRender: SubStep, isEditing, screenIndex, nextScreen, prevScreen, moveTo} = useSubStep({bodyContent, startFrom: 0, onFinished: submit});
 
     // Some services user connects to via Plaid return dummy account numbers and routing numbers e.g. Chase
@@ -96,7 +96,7 @@ function BankInfo({onBackButtonPress, policyID}: BankInfoProps) {
         if (redirectedFromPlaidToManual) {
             return;
         }
-        if (setupType === CONST.BANK_ACCOUNT.SETUP_TYPE.MANUAL && values.bankName !== '' && !redirectedFromPlaidToManual) {
+        if (setupType === CONST.USD_BANK_ACCOUNT.SETUP_TYPE.MANUAL && values.bankName !== '' && !redirectedFromPlaidToManual) {
             setRedirectedFromPlaidToManual(true);
         }
     }, [redirectedFromPlaidToManual, setupType, values]);
@@ -135,10 +135,10 @@ function BankInfo({onBackButtonPress, policyID}: BankInfoProps) {
                 onBackButtonPress={handleBackButtonPress}
                 title={translate('bankAccount.bankInfo')}
             />
-            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.BANK_ACCOUNT.STEPS_HEADER_HEIGHT}]}>
+            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.USD_BANK_ACCOUNT.STEPS_HEADER_HEIGHT}]}>
                 <InteractiveStepSubHeader
                     startStepIndex={0}
-                    stepNames={CONST.BANK_ACCOUNT.STEP_NAMES}
+                    stepNames={CONST.USD_BANK_ACCOUNT.STEP_NAMES}
                 />
             </View>
             <SubStep
