@@ -7,6 +7,7 @@ import type {
     BankAccountHandlePlaidErrorParams,
     ConnectBankAccountParams,
     DeletePaymentBankAccountParams,
+    GetCorpayBankAccountFieldsParams,
     OpenReimbursementAccountPageParams,
     ValidateBankAccountWithTransactionsParams,
     VerifyIdentityForBankAccountParams,
@@ -541,6 +542,17 @@ function validatePlaidSelection(values: FormOnyxValues<AccountFormValues>): Form
     return errorFields;
 }
 
+function getCorpayBankAccountFields(country: string, currency: string) {
+    const parameters: GetCorpayBankAccountFieldsParams = {
+        countryISO: country,
+        currency,
+        isWithdrawal: true,
+        isBusinessBankAccount: true,
+    };
+
+    return API.read(READ_COMMANDS.GET_CORPAY_BANK_ACCOUNT_FIELDS, parameters);
+}
+
 export {
     acceptACHContractForBankAccount,
     addBusinessWebsiteForDraft,
@@ -569,6 +581,7 @@ export {
     updateAddPersonalBankAccountDraft,
     clearPersonalBankAccountSetupType,
     validatePlaidSelection,
+    getCorpayBankAccountFields,
 };
 
 export type {BusinessAddress, PersonalAddress};

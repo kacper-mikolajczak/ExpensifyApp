@@ -837,6 +837,7 @@ const READ_COMMANDS = {
     GET_ROUTE: 'GetRoute',
     GET_ROUTE_FOR_DRAFT: 'GetRouteForDraft',
     GET_STATEMENT_PDF: 'GetStatementPDF',
+    GET_CORPAY_BANK_ACCOUNT_FIELDS: 'GetCorpayBankAccountFields',
     OPEN_ONFIDO_FLOW: 'OpenOnfidoFlow',
     OPEN_INITIAL_SETTINGS_PAGE: 'OpenInitialSettingsPage',
     OPEN_ENABLE_PAYMENTS_PAGE: 'OpenEnablePaymentsPage',
@@ -896,6 +897,7 @@ type ReadCommandParameters = {
     [READ_COMMANDS.GET_ROUTE]: Parameters.GetRouteParams;
     [READ_COMMANDS.GET_ROUTE_FOR_DRAFT]: Parameters.GetRouteParams;
     [READ_COMMANDS.GET_STATEMENT_PDF]: Parameters.GetStatementPDFParams;
+    [READ_COMMANDS.GET_CORPAY_BANK_ACCOUNT_FIELDS]: Parameters.GetCorpayBankAccountFieldsParams;
     [READ_COMMANDS.OPEN_ONFIDO_FLOW]: null;
     [READ_COMMANDS.OPEN_INITIAL_SETTINGS_PAGE]: null;
     [READ_COMMANDS.OPEN_ENABLE_PAYMENTS_PAGE]: null;

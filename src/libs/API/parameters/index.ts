@@ -325,3 +325,4 @@ export type {default as UpdateCompanyCard} from './UpdateCompanyCard';
 export type {default as UpdateCompanyCardNameParams} from './UpdateCompanyCardNameParams';
 export type {default as SetCompanyCardExportAccountParams} from './SetCompanyCardExportAccountParams';
 export type {default as SetMissingPersonalDetailsAndShipExpensifyCardParams} from './SetMissingPersonalDetailsAndShipExpensifyCardParams';
+export type {default as GetCorpayBankAccountFieldsParams} from './GetCorpayBankAccountFieldsParams';

@@ -11,13 +11,10 @@ const INPUT_IDS = {
         ACCOUNT_NUMBER: 'accountNumber',
         ROUTING_CODE: 'routingCode',
         SWIFT_BIC_CODE: 'swiftBicCode',
-        IBAN: 'iban',
         ACCOUNT_HOLDER_COUNTRY: 'accountHolderCountry',
         ACCOUNT_HOLDER_REGION: 'accountHolderRegion',
         ACCOUNT_HOLDER_ADDRESS_LINE1: 'accountHolderAddress1',
-        ACCOUNT_HOLDER_ADDRESS_LINE2: 'accountHolderAddress2',
         ACCOUNT_HOLDER_CITY: 'accountHolderCity',
-        ACCOUNT_HOLDER_POSTAL_CODE: 'accountHolderPostal',
         ACCOUNT_HOLDER_PHONE: 'accountHolderPhoneNumber',
         ACCOUNT_HOLDER_EMAIL: 'accountHolderEmail',
         BANK_STATEMENT: 'bankStatement',
@@ -73,13 +70,10 @@ type BankInfoStep = {
     [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_NUMBER]: string;
     [INPUT_IDS.BANK_INFO_STEP.ROUTING_CODE]: string;
     [INPUT_IDS.BANK_INFO_STEP.SWIFT_BIC_CODE]: string;
-    [INPUT_IDS.BANK_INFO_STEP.IBAN]: string;
     [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_HOLDER_COUNTRY]: Country | '';
     [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_HOLDER_REGION]: string;
     [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_HOLDER_ADDRESS_LINE1]: string;
-    [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_HOLDER_ADDRESS_LINE2]: string;
     [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_HOLDER_CITY]: string;
-    [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_HOLDER_POSTAL_CODE]: string;
     [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_HOLDER_PHONE]: string;
     [INPUT_IDS.BANK_INFO_STEP.ACCOUNT_HOLDER_EMAIL]: string;
     [INPUT_IDS.BANK_INFO_STEP.BANK_STATEMENT]: string;

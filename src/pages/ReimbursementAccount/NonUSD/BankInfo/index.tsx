@@ -1,5 +1,5 @@
 import type {ComponentType} from 'react';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import HeaderWithBackButton from '@components/HeaderWithBackButton';
@@ -9,8 +9,10 @@ import useLocalize from '@hooks/useLocalize';
 import useSubStep from '@hooks/useSubStep';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
+import * as BankAccounts from '@userActions/BankAccounts';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
+import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
 import AccountDetails from './substeps/AccountDetails';
 import Confirmation from './substeps/Confirmation';
 import UploadStatement from './substeps/UploadStatement';
@@ -31,6 +33,8 @@ function BankInfo({onBackButtonPress, onSubmit}: BankInfoProps) {
     const styles = useThemeStyles();
 
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const country = nonUSDReimbursementAccountDraft?.[INPUT_IDS.COUNTRY_STEP.COUNTRY] ?? '';
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
@@ -48,6 +52,10 @@ function BankInfo({onBackButtonPress, onSubmit}: BankInfoProps) {
         moveTo,
         goToTheLastStep,
     } = useSubStep({bodyContent: currency === CONST.CURRENCY.AUD ? bodyContentAUD : bodyContent, startFrom: 0, onFinished: submit});
+
+    useEffect(() => {
+        BankAccounts.getCorpayBankAccountFields(country, currency);
+    }, [country, currency]);
 
     const handleBackButtonPress = () => {
         if (isEditing) {

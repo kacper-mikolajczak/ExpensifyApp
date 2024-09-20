@@ -87,6 +87,8 @@ const ROUTE_NAMES = {
     NEW: 'new',
 };
 
+const SUPPORTED_FOREIGN_CURRENCIES: string[] = [CONST.CURRENCY.EUR, CONST.CURRENCY.GBP, CONST.CURRENCY.CAD, CONST.CURRENCY.AUD];
+
 /**
  * We can pass stepToOpen in the URL to force which step to show.
  * Mainly needed when user finished the flow in verifying state, and Ops ask them to modify some fields from a specific step.
@@ -483,7 +485,11 @@ function ReimbursementAccountPage({
     let errorText;
     const userHasPhonePrimaryEmail = Str.endsWith(session?.email ?? '', CONST.SMS.DOMAIN);
     const throttledDate = reimbursementAccount?.throttledDate ?? '';
-    const hasUnsupportedCurrency = (policy?.outputCurrency ?? '') !== CONST.CURRENCY.USD;
+    const policyCurrency = policy?.outputCurrency ?? '';
+    // TODO once nonUSD flow is complete update the flag below to reflect all supported currencies
+    const hasUnsupportedCurrency = policyCurrency !== CONST.CURRENCY.USD;
+    // TODO remove isDevelopment flag once nonUSD flow is complete
+    const hasForeignCurrency = SUPPORTED_FOREIGN_CURRENCIES.includes(policyCurrency) && isDevelopment;
 
     if (userHasPhonePrimaryEmail) {
         errorText = translate('bankAccount.hasPhoneLoginError');
@@ -493,7 +499,7 @@ function ReimbursementAccountPage({
         errorText = translate('bankAccount.hasCurrencyError');
     }
 
-    if (hasUnsupportedCurrency && isDevelopment) {
+    if (hasForeignCurrency) {
         switch (nonUSDBankAccountStep) {
             case CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY:
                 return (
@@ -570,53 +576,43 @@ function ReimbursementAccountPage({
         );
     }
 
-    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT) {
-        return (
-            <BankAccountStep
-                reimbursementAccount={reimbursementAccount}
-                onBackButtonPress={goBack}
-                receivedRedirectURI={getPlaidOAuthReceivedRedirectURI()}
-                plaidLinkOAuthToken={plaidLinkToken}
-                policyName={policyName}
-                policyID={policyIDParam}
-            />
-        );
-    }
-
-    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.COMPANY) {
-        return <CompanyStep onBackButtonPress={goBack} />;
-    }
-
-    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR) {
-        const shouldShowOnfido = onfidoToken && !achData?.isOnfidoSetupComplete;
-        return (
-            <RequestorStep
-                ref={requestorStepRef}
-                shouldShowOnfido={!!shouldShowOnfido}
-                onBackButtonPress={goBack}
-            />
-        );
-    }
-
-    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS) {
-        return <BeneficialOwnersStep onBackButtonPress={goBack} />;
-    }
-
-    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.ACH_CONTRACT) {
-        return <ACHContractStep onBackButtonPress={goBack} />;
-    }
-
-    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.VALIDATION) {
-        return <ConnectBankAccount onBackButtonPress={goBack} />;
-    }
-
-    if (currentStep === CONST.USD_BANK_ACCOUNT.STEP.ENABLE) {
-        return (
-            <EnableBankAccount
-                reimbursementAccount={reimbursementAccount}
-                onBackButtonPress={goBack}
-            />
-        );
+    switch (currentStep) {
+        case CONST.USD_BANK_ACCOUNT.STEP.BANK_ACCOUNT:
+            return (
+                <BankAccountStep
+                    reimbursementAccount={reimbursementAccount}
+                    onBackButtonPress={goBack}
+                    receivedRedirectURI={getPlaidOAuthReceivedRedirectURI()}
+                    plaidLinkOAuthToken={plaidLinkToken}
+                    policyName={policyName}
+                    policyID={policyIDParam}
+                />
+            );
+        case CONST.USD_BANK_ACCOUNT.STEP.COMPANY:
+            return <CompanyStep onBackButtonPress={goBack} />;
+        case CONST.USD_BANK_ACCOUNT.STEP.REQUESTOR:
+            return (
+                <RequestorStep
+                    ref={requestorStepRef}
+                    shouldShowOnfido={!!(onfidoToken && !achData?.isOnfidoSetupComplete)}
+                    onBackButtonPress={goBack}
+                />
+            );
+        case CONST.USD_BANK_ACCOUNT.STEP.BENEFICIAL_OWNERS:
+            return <BeneficialOwnersStep onBackButtonPress={goBack} />;
+        case CONST.USD_BANK_ACCOUNT.STEP.ACH_CONTRACT:
+            return <ACHContractStep onBackButtonPress={goBack} />;
+        case CONST.USD_BANK_ACCOUNT.STEP.VALIDATION:
+            return <ConnectBankAccount onBackButtonPress={goBack} />;
+        case CONST.USD_BANK_ACCOUNT.STEP.ENABLE:
+            return (
+                <EnableBankAccount
+                    reimbursementAccount={reimbursementAccount}
+                    onBackButtonPress={goBack}
+                />
+            );
+        default:
+            return null;
     }
 }
 

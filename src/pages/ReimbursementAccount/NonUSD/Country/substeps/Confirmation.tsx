@@ -30,8 +30,6 @@ const mapCurrencyToCountry = (currency: string): string => {
             return 'CA';
         case CONST.CURRENCY.GBP:
             return 'GB';
-        case CONST.CURRENCY.NZD:
-            return 'NZ';
         default:
             return '';
     }
@@ -79,8 +77,9 @@ function Confirmation({onNext}: SubStepProps) {
             return;
         }
 
+        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[COUNTRY]: currencyMappedToCountry});
         setSelectedCountry(currencyMappedToCountry);
-    }, [countryDraftValue, currency, currencyMappedToCountry]);
+    }, [currency, currencyMappedToCountry]);
 
     return (
         <SafeAreaConsumer>
