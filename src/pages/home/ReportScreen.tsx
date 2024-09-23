@@ -2,7 +2,7 @@ import {PortalHost} from '@gorhom/portal';
 import {useIsFocused} from '@react-navigation/native';
 import type {StackScreenProps} from '@react-navigation/stack';
 import lodashIsEqual from 'lodash/isEqual';
-import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {memo, Profiler, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import type {FlatList, ViewStyle} from 'react-native';
 import {InteractionManager, View} from 'react-native';
 import type {OnyxEntry} from 'react-native-onyx';
@@ -313,14 +313,22 @@ function ReportScreen({route, currentReportID = '', navigation}: ReportScreenPro
 
     if (report && (ReportUtils.isMoneyRequestReport(report) || ReportUtils.isInvoiceReport(report))) {
         headerView = (
-            <MoneyReportHeader
-                report={report}
-                policy={policy}
-                transactionThreadReportID={transactionThreadReportID}
-                reportActions={reportActions}
-                shouldUseNarrowLayout={shouldUseNarrowLayout}
-                onBackButtonPress={onBackButtonPress}
-            />
+            <Profiler
+                id="MoneyReport"
+                onRender={(...p) => {
+                    console.log('WWW', ...p);
+                    // performance.mark('React: ' + i, {startTime: performance.now() - t});
+                }}
+            >
+                <MoneyReportHeader
+                    report={report}
+                    policy={policy}
+                    transactionThreadReportID={transactionThreadReportID}
+                    reportActions={reportActions}
+                    shouldUseNarrowLayout={shouldUseNarrowLayout}
+                    onBackButtonPress={onBackButtonPress}
+                />
+            </Profiler>
         );
     }
 
