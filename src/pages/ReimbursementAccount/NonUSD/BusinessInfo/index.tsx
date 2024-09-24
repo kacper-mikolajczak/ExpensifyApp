@@ -1,13 +1,9 @@
 import type {ComponentType} from 'react';
 import React from 'react';
-import {View} from 'react-native';
-import HeaderWithBackButton from '@components/HeaderWithBackButton';
-import InteractiveStepSubHeader from '@components/InteractiveStepSubHeader';
-import ScreenWrapper from '@components/ScreenWrapper';
+import InteractiveStepWrapper from '@components/InteractiveStepWrapper';
 import useLocalize from '@hooks/useLocalize';
 import useSubStep from '@hooks/useSubStep';
 import type {SubStepProps} from '@hooks/useSubStep/types';
-import useThemeStyles from '@hooks/useThemeStyles';
 import CONST from '@src/CONST';
 import Address from './substeps/Address';
 import BusinessType from './substeps/BusinessType';
@@ -30,7 +26,6 @@ const bodyContent: Array<ComponentType<SubStepProps>> = [Name, Address, PhoneNum
 
 function BusinessInfo({onBackButtonPress, onSubmit}: BusinessInfoProps) {
     const {translate} = useLocalize();
-    const styles = useThemeStyles();
 
     const submit = () => {
         onSubmit();
@@ -52,28 +47,19 @@ function BusinessInfo({onBackButtonPress, onSubmit}: BusinessInfoProps) {
     };
 
     return (
-        <ScreenWrapper
-            testID={BusinessInfo.displayName}
-            includeSafeAreaPaddingBottom={false}
-            shouldEnablePickerAvoiding={false}
-            shouldEnableMaxHeight
+        <InteractiveStepWrapper
+            wrapperID={BusinessInfo.displayName}
+            handleBackButtonPress={handleBackButtonPress}
+            headerTitle={translate('businessInfoStep.businessInfoTitle')}
+            stepNames={CONST.NON_USD_BANK_ACCOUNT.STEP_NAMES}
+            startStepIndex={2}
         >
-            <HeaderWithBackButton
-                onBackButtonPress={handleBackButtonPress}
-                title={translate('bankAccount.bankInfo')}
-            />
-            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.NON_USD_BANK_ACCOUNT.STEP_HEADER_HEIGHT}]}>
-                <InteractiveStepSubHeader
-                    startStepIndex={2}
-                    stepNames={CONST.NON_USD_BANK_ACCOUNT.STEP_NAMES}
-                />
-            </View>
             <SubStep
                 isEditing={isEditing}
                 onNext={nextScreen}
                 onMove={moveTo}
             />
-        </ScreenWrapper>
+        </InteractiveStepWrapper>
     );
 }
 

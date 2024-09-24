@@ -1,14 +1,10 @@
 import type {ComponentType} from 'react';
 import React, {useEffect} from 'react';
-import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
-import HeaderWithBackButton from '@components/HeaderWithBackButton';
-import InteractiveStepSubHeader from '@components/InteractiveStepSubHeader';
-import ScreenWrapper from '@components/ScreenWrapper';
+import InteractiveStepWrapper from '@components/InteractiveStepWrapper';
 import useLocalize from '@hooks/useLocalize';
 import useSubStep from '@hooks/useSubStep';
 import type {SubStepProps} from '@hooks/useSubStep/types';
-import useThemeStyles from '@hooks/useThemeStyles';
 import * as BankAccounts from '@userActions/BankAccounts';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
@@ -30,7 +26,6 @@ const bodyContentAUD: Array<ComponentType<SubStepProps>> = [AccountDetails, Uplo
 
 function BankInfo({onBackButtonPress, onSubmit}: BankInfoProps) {
     const {translate} = useLocalize();
-    const styles = useThemeStyles();
 
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
@@ -71,28 +66,19 @@ function BankInfo({onBackButtonPress, onSubmit}: BankInfoProps) {
     };
 
     return (
-        <ScreenWrapper
-            testID={BankInfo.displayName}
-            includeSafeAreaPaddingBottom={false}
-            shouldEnablePickerAvoiding={false}
-            shouldEnableMaxHeight
+        <InteractiveStepWrapper
+            wrapperID={BankInfo.displayName}
+            handleBackButtonPress={handleBackButtonPress}
+            headerTitle={translate('bankAccount.bankInfo')}
+            stepNames={CONST.NON_USD_BANK_ACCOUNT.STEP_NAMES}
+            startStepIndex={1}
         >
-            <HeaderWithBackButton
-                onBackButtonPress={handleBackButtonPress}
-                title={translate('bankAccount.bankInfo')}
-            />
-            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.NON_USD_BANK_ACCOUNT.STEP_HEADER_HEIGHT}]}>
-                <InteractiveStepSubHeader
-                    startStepIndex={1}
-                    stepNames={CONST.NON_USD_BANK_ACCOUNT.STEP_NAMES}
-                />
-            </View>
             <SubStep
                 isEditing={isEditing}
                 onNext={nextScreen}
                 onMove={moveTo}
             />
-        </ScreenWrapper>
+        </InteractiveStepWrapper>
     );
 }
 

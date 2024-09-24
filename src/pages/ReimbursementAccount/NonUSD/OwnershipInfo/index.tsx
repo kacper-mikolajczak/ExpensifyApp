@@ -1,15 +1,11 @@
 import {Str} from 'expensify-common';
 import type {ComponentType} from 'react';
 import React, {useState} from 'react';
-import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
-import HeaderWithBackButton from '@components/HeaderWithBackButton';
-import InteractiveStepSubHeader from '@components/InteractiveStepSubHeader';
-import ScreenWrapper from '@components/ScreenWrapper';
+import InteractiveStepWrapper from '@components/InteractiveStepWrapper';
 import useLocalize from '@hooks/useLocalize';
 import useSubStep from '@hooks/useSubStep';
 import type {SubStepProps} from '@hooks/useSubStep/types';
-import useThemeStyles from '@hooks/useThemeStyles';
 import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
@@ -48,7 +44,6 @@ const bodyContent: Array<ComponentType<OwnerDetailsFormProps>> = [Name, Ownershi
 
 function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const {translate} = useLocalize();
-    const styles = useThemeStyles();
 
     const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const [ownerKeys, setOwnerKeys] = useState<string[]>([]);
@@ -249,23 +244,13 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     };
 
     return (
-        <ScreenWrapper
-            testID={OwnershipInfo.displayName}
-            includeSafeAreaPaddingBottom={false}
-            shouldEnablePickerAvoiding={false}
-            shouldEnableMaxHeight
+        <InteractiveStepWrapper
+            wrapperID={OwnershipInfo.displayName}
+            handleBackButtonPress={handleBackButtonPress}
+            headerTitle={translate('ownershipInfoStep.ownerInfo')}
+            stepNames={CONST.NON_USD_BANK_ACCOUNT.STEP_NAMES}
+            startStepIndex={3}
         >
-            <HeaderWithBackButton
-                onBackButtonPress={handleBackButtonPress}
-                title={translate('ownershipInfoStep.ownerInfo')}
-            />
-            <View style={[styles.ph5, styles.mb5, styles.mt3, {height: CONST.NON_USD_BANK_ACCOUNT.STEP_HEADER_HEIGHT}]}>
-                <InteractiveStepSubHeader
-                    startStepIndex={3}
-                    stepNames={CONST.NON_USD_BANK_ACCOUNT.STEP_NAMES}
-                />
-            </View>
-
             {currentSubStep === SUBSTEP.IS_USER_OWNER && (
                 <OwnerCheck
                     title={translate('ownershipInfoStep.doYouOwn', {companyName})}
@@ -313,7 +298,7 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
                     ownerKeys={ownerKeys}
                 />
             )}
-        </ScreenWrapper>
+        </InteractiveStepWrapper>
     );
 }
 

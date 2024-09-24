@@ -118,7 +118,7 @@ function Confirmation({onNext}: SubStepProps) {
                     >
                         <InputWrapper
                             InputComponent={PushRowWithModal}
-                            optionsList={CONST.ALL_COUNTRIES}
+                            optionsList={shouldAllowChange ? CONST.ALL_EUROPEAN_COUNTRIES : CONST.ALL_COUNTRIES}
                             selectedOption={selectedCountry}
                             onOptionChange={handleSelectingCountry}
                             description={translate('common.country')}

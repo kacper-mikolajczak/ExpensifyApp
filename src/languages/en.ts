@@ -2021,6 +2021,7 @@ export default {
         weNeedThisToVerify: 'We need this to verify your wallet.',
     },
     businessInfoStep: {
+        businessInfoTitle: 'Business info',
         businessInfo: 'Company info',
         enterTheNameOfYourBusiness: "What's the name of your company?",
         businessName: 'Legal company name',
@@ -2244,6 +2245,7 @@ export default {
         weAreWaiting: "We're waiting for others to verify their identities as directors or senior officers of the business.",
     },
     agreementsStep: {
+        agreements: 'Agreements',
         pleaseConfirm: 'Please confirm the agreements below',
         iAmAuthorized: 'I am authorized to use the business bank account for business spend.',
         iCertify: 'I certify that the information provided is true and accurate.',

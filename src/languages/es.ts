@@ -2052,6 +2052,7 @@ export default {
         weNeedThisToVerify: 'Necesitamos esto para verificar tu billetera.',
     },
     businessInfoStep: {
+        businessInfoTitle: 'Business info',
         businessInfo: 'Información de la empresa',
         enterTheNameOfYourBusiness: '¿Cuál es el nombre de tu empresa?',
         businessName: 'Nombre de la empresa',
@@ -2275,6 +2276,7 @@ export default {
         weAreWaiting: "We're waiting for others to verify their identities as directors or senior officers of the business.",
     },
     agreementsStep: {
+        agreements: 'Agreements',
         pleaseConfirm: 'Please confirm the agreements below',
         iAmAuthorized: 'I am authorized to use the business bank account for business spend.',
         iCertify: 'I certify that the information provided is true and accurate.',
