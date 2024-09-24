@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {View} from 'react-native';
-import type {OnyxEntry} from 'react-native-onyx';
+import type {OnyxCollection, OnyxEntry} from 'react-native-onyx';
 import {useOnyx} from 'react-native-onyx';
 import useLocalize from '@hooks/useLocalize';
 import useNetwork from '@hooks/useNetwork';
@@ -71,15 +71,13 @@ function MoneyReportHeader({policy, report: moneyRequestReport, transactionThrea
         }
         return reportActions.find((action): action is OnyxTypes.ReportAction<typeof CONST.REPORT.ACTIONS.TYPE.IOU> => action.reportActionID === transactionThreadReport.parentReportActionID);
     }, [reportActions, transactionThreadReport?.parentReportActionID]);
-    const [transactions] = useOnyx(ONYXKEYS.COLLECTION.TRANSACTION);
+    const [transactions] = useOnyx(ONYXKEYS.COLLECTION.TRANSACTION, {
+        collectionSelector: (t) => TransactionUtils.getAllReportTransactions(moneyRequestReport?.reportID, t as OnyxCollection<OnyxTypes.Transaction>),
+    }) as unknown as [OnyxTypes.Transaction[]]; // temporary casting due to Onyx fix not being present
     const [dismissedHoldUseExplanation, dismissedHoldUseExplanationResult] = useOnyx(ONYXKEYS.NVP_DISMISSED_HOLD_USE_EXPLANATION, {initialValue: true});
     const isLoadingHoldUseExplained = isLoadingOnyxValue(dismissedHoldUseExplanationResult);
-    const transaction =
-        transactions?.[
-            `${ONYXKEYS.COLLECTION.TRANSACTION}${
-                ReportActionsUtils.isMoneyRequestAction(requestParentReportAction) ? ReportActionsUtils.getOriginalMessage(requestParentReportAction)?.IOUTransactionID ?? -1 : -1
-            }`
-        ] ?? undefined;
+    const transactionID = ReportActionsUtils.isMoneyRequestAction(requestParentReportAction) ? ReportActionsUtils.getOriginalMessage(requestParentReportAction)?.IOUTransactionID ?? -1 : -1;
+    const transaction = transactions.find((t) => t.transactionID === transactionID);
 
     const styles = useThemeStyles();
     const theme = useTheme();
@@ -98,16 +96,14 @@ function MoneyReportHeader({policy, report: moneyRequestReport, transactionThrea
     const [isHoldMenuVisible, setIsHoldMenuVisible] = useState(false);
     const [paymentType, setPaymentType] = useState<PaymentMethodType>();
     const [requestType, setRequestType] = useState<ActionHandledType>();
-    // eslint-disable-next-line react-compiler/react-compiler, react-hooks/exhaustive-deps
-    const allTransactions = useMemo(() => TransactionUtils.getAllReportTransactions(moneyRequestReport?.reportID), [moneyRequestReport?.reportID, transactions]);
     const canAllowSettlement = ReportUtils.hasUpdatedTotal(moneyRequestReport, policy);
     const policyType = policy?.type;
     const isDraft = ReportUtils.isOpenExpenseReport(moneyRequestReport);
     const connectedIntegration = PolicyUtils.getConnectedIntegration(policy);
     const navigateBackToAfterDelete = useRef<Route>();
     const hasScanningReceipt = ReportUtils.getTransactionsWithReceipts(moneyRequestReport?.reportID).some((t) => TransactionUtils.isReceiptBeingScanned(t));
-    const hasOnlyPendingTransactions = allTransactions.length > 0 && allTransactions.every((t) => TransactionUtils.isExpensifyCardTransaction(t) && TransactionUtils.isPending(t));
-    const transactionIDs = allTransactions.map((t) => t.transactionID);
+    const hasOnlyPendingTransactions = transactions.length > 0 && transactions.every((t) => TransactionUtils.isExpensifyCardTransaction(t) && TransactionUtils.isPending(t));
+    const transactionIDs = transactions.map((t) => t.transactionID);
     const hasAllPendingRTERViolations = TransactionUtils.allHavePendingRTERViolation([transaction?.transactionID ?? '-1']);
     const hasOnlyHeldExpenses = ReportUtils.hasOnlyHeldExpenses(moneyRequestReport.reportID);
     const isPayAtEndExpense = TransactionUtils.isPayAtEndExpense(transaction);
