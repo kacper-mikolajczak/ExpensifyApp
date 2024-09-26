@@ -465,6 +465,7 @@ const CONST = {
         },
         STEP_NAMES: ['1', '2', '3', '4', '5', '6'],
         STEP_HEADER_HEIGHT: 40,
+        BANK_INFO_STEP_ACCOUNT_HOLDER_KEY_PREFIX: 'accountHolder',
         OWNERSHIP_INFO_STEP: {
             SUBSTEP: {
                 IS_USER_OWNER: 1,
