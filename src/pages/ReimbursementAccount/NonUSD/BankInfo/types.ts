@@ -6,7 +6,7 @@ type CorpayFormField = {
     isRequired: boolean;
     errorMessage: string;
     label: string;
-    regEx: string;
+    regEx?: string;
     validationRules: Array<{errorMessage: string; regEx: string}>;
     defaultValue?: string;
     detailedRule?: Array<{isRequired: boolean; value: Array<{errorMessage: string; regEx: string; ruleDescription: string}>}>;

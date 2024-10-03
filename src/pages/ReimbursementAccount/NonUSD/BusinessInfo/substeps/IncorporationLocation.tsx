@@ -6,36 +6,40 @@ import InputWrapper from '@components/Form/InputWrapper';
 import PushRowWithModal from '@components/PushRowWithModal';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
-import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
+import useReimbursementAccountStepFormSubmit from '@hooks/useReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import PROVINCES from '@pages/ReimbursementAccount/NonUSD/mockedCanadianProvinces';
 import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 
 type IncorporationLocationProps = SubStepProps;
 
-const {INCORPORATION_COUNTRY, INCORPORATION_STATE} = INPUT_IDS.BUSINESS_INFO_STEP;
-const STEP_FIELDS = [INCORPORATION_COUNTRY, INCORPORATION_STATE];
+const {FORMATION_INCORPORATION_COUNTRY_CODE, FORMATION_INCORPORATION_STATE} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
+const STEP_FIELDS = [FORMATION_INCORPORATION_COUNTRY_CODE, FORMATION_INCORPORATION_STATE];
 
 function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
-    const businessStepCountryDraftValue = nonUSDReimbursementAccountDraft?.[INCORPORATION_COUNTRY] ?? '';
-    const countryStepCountryDraftValue = nonUSDReimbursementAccountDraft?.[INPUT_IDS.COUNTRY_STEP.COUNTRY] ?? '';
+    const businessStepCountryDraftValue =
+        reimbursementAccount?.achData?.additionalData?.corpay?.[FORMATION_INCORPORATION_COUNTRY_CODE] ?? reimbursementAccountDraft?.[FORMATION_INCORPORATION_COUNTRY_CODE] ?? '';
+
+    const countryStepCountryDraftValue = reimbursementAccountDraft?.[INPUT_IDS.ADDITIONAL_DATA.COUNTRY] ?? '';
     const countryInitialValue =
         businessStepCountryDraftValue !== '' && businessStepCountryDraftValue !== countryStepCountryDraftValue ? businessStepCountryDraftValue : countryStepCountryDraftValue;
-    const selectedIncorporationStateInitialValue: string = nonUSDReimbursementAccountDraft?.[INCORPORATION_STATE] ?? '';
+    const selectedIncorporationStateInitialValue: string =
+        reimbursementAccount?.achData?.additionalData?.corpay?.[FORMATION_INCORPORATION_STATE] ?? reimbursementAccountDraft?.[FORMATION_INCORPORATION_STATE] ?? '';
 
     const [selectedCountry, setSelectedCountry] = useState<string>(countryInitialValue);
     const [selectedIncorporationState, setSelectedIncorporationState] = useState<string>(selectedIncorporationStateInitialValue);
 
-    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
+    const handleSubmit = useReimbursementAccountStepFormSubmit({
         fieldIds: STEP_FIELDS,
         onNext,
         shouldSaveDraft: isEditing,
@@ -43,21 +47,21 @@ function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) 
 
     const handleSelectingCountry = (country: string) => {
         if (!isEditing) {
-            FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[INCORPORATION_COUNTRY]: country});
+            FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {[FORMATION_INCORPORATION_COUNTRY_CODE]: country});
         }
         setSelectedCountry(country);
     };
 
     const handleSelectingIncorporationState = (state: string) => {
         if (!isEditing) {
-            FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[INCORPORATION_STATE]: state});
+            FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {[FORMATION_INCORPORATION_STATE]: state});
         }
         setSelectedIncorporationState(state);
     };
 
     useEffect(() => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[INCORPORATION_COUNTRY]: selectedCountry});
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[INCORPORATION_STATE]: selectedIncorporationState});
+        FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {[FORMATION_INCORPORATION_COUNTRY_CODE]: selectedCountry});
+        FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {[FORMATION_INCORPORATION_STATE]: selectedIncorporationState});
     }, [selectedIncorporationState, selectedCountry]);
 
     const provincesListOptions = (Object.keys(PROVINCES) as Array<keyof typeof PROVINCES>).reduce((acc, key) => {
@@ -72,7 +76,7 @@ function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) 
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
             style={[styles.flexGrow1]}
@@ -89,7 +93,7 @@ function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) 
                     modalHeaderTitle={translate('businessInfoStep.selectIncorporationState')}
                     searchInputTitle={translate('businessInfoStep.findIncorporationState')}
                     value={selectedIncorporationState}
-                    inputID={INCORPORATION_STATE}
+                    inputID={FORMATION_INCORPORATION_STATE}
                 />
             )}
             <InputWrapper
@@ -101,7 +105,7 @@ function IncorporationLocation({onNext, isEditing}: IncorporationLocationProps) 
                 modalHeaderTitle={translate('countryStep.selectCountry')}
                 searchInputTitle={translate('countryStep.findCountry')}
                 value={selectedCountry}
-                inputID={INCORPORATION_COUNTRY}
+                inputID={FORMATION_INCORPORATION_COUNTRY_CODE}
             />
         </FormProvider>
     );

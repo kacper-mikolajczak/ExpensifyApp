@@ -10,13 +10,26 @@ import useLocalize from '@hooks/useLocalize';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import {annualVolumeRange, applicantType, natureOfBusiness} from '@pages/ReimbursementAccount/NonUSD/BusinessInfo/mockedCorpayLists';
-import getSubStepValues from '@pages/ReimbursementAccount/NonUSD/utils/getSubStepValues';
-import CONST from '@src/CONST';
+import getSubstepValues from '@pages/ReimbursementAccount/utils/getSubstepValues';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 
-const BUSINESS_INFO_STEP_KEYS = INPUT_IDS.BUSINESS_INFO_STEP;
-const {NAME, REGISTRATION_NUMBER, STREET, CITY, STATE, ZIP_CODE, PHONE, INCORPORATION_COUNTRY, PAYMENT_VOLUME, BUSINESS_TYPE, BUSINESS_CATEGORY} = INPUT_IDS.BUSINESS_INFO_STEP;
+const BUSINESS_INFO_STEP_KEYS = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
+const {
+    COMPANY_NAME,
+    BUSINESS_REGISTRATION_INCORPORATION_NUMBER,
+    COMPANY_STREET,
+    COMPANY_CITY,
+    COMPANY_STATE,
+    COMPANY_ZIP_CODE,
+    BUSINESS_CONTACT_NUMBER,
+    COUNTRY_CODE,
+    FORMATION_INCORPORATION_COUNTRY_CODE,
+    FORMATION_INCORPORATION_STATE,
+    ANNUAL_VOLUME,
+    APPLICANT_TYPE_ID,
+    BUSINESS_CATEGORY,
+} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
 
 const displayStringValue = (list: Array<{id: string; name: string; stringValue: string}>, matchingName: string) => {
     return list.find((item) => item.name === matchingName)?.stringValue ?? '';
@@ -25,13 +38,15 @@ const displayStringValue = (list: Array<{id: string; name: string; stringValue: 
 function Confirmation({onNext, onMove}: SubStepProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
-    const values = useMemo(() => getSubStepValues(BUSINESS_INFO_STEP_KEYS, nonUSDReimbursementAccountDraft), [nonUSDReimbursementAccountDraft]);
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
-    const paymentVolume = useMemo(() => displayStringValue(annualVolumeRange, values[PAYMENT_VOLUME]), [values]);
+    const values = useMemo(() => getSubstepValues(BUSINESS_INFO_STEP_KEYS, reimbursementAccountDraft, reimbursementAccount), [reimbursementAccount, reimbursementAccountDraft]);
+
+    const paymentVolume = useMemo(() => displayStringValue(annualVolumeRange, values[ANNUAL_VOLUME]), [values]);
     const businessCategory = useMemo(() => displayStringValue(natureOfBusiness, values[BUSINESS_CATEGORY]), [values]);
-    const businessType = useMemo(() => displayStringValue(applicantType, values[BUSINESS_TYPE]), [values]);
+    const businessType = useMemo(() => displayStringValue(applicantType, values[APPLICANT_TYPE_ID]), [values]);
 
     return (
         <SafeAreaConsumer>
@@ -43,7 +58,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     <Text style={[styles.textHeadlineLineHeightXXL, styles.ph5, styles.mb3]}>{translate('businessInfoStep.letsDoubleCheck')}</Text>
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.legalBusinessName')}
-                        title={values[NAME]}
+                        title={values[COMPANY_NAME]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(0);
@@ -51,7 +66,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.registrationNumber')}
-                        title={values[REGISTRATION_NUMBER]}
+                        title={values[BUSINESS_REGISTRATION_INCORPORATION_NUMBER]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);
@@ -59,7 +74,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.businessAddress')}
-                        title={`${values[STREET]}, ${values[CITY]}, ${values[STATE]}, ${values[ZIP_CODE]}`}
+                        title={`${values[COMPANY_STREET]}, ${values[COMPANY_CITY]}, ${values[COMPANY_STATE]}, ${values[COMPANY_ZIP_CODE]}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);
@@ -67,8 +82,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('common.phoneNumber')}
-                        // TODO default value for country code
-                        title={`${CONST.COUNTRY_PHONE_NUMBER_CODES.AF}${values[PHONE]}`}
+                        title={`${values[COUNTRY_CODE]}${values[BUSINESS_CONTACT_NUMBER]}`}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(2);
@@ -84,7 +98,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('businessInfoStep.incorporation')}
-                        title={values[INCORPORATION_COUNTRY]}
+                        title={values[FORMATION_INCORPORATION_COUNTRY_CODE]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(4);

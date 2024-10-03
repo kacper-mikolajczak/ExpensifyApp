@@ -2,10 +2,11 @@ import React, {useCallback, useMemo} from 'react';
 import {View} from 'react-native';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
-import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
+import type {FormInputErrors, FormOnyxKeys, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
+import useReimbursementAccountStepFormSubmit from '@hooks/useReimbursementAccountStepFormSubmit';
 import useThemeStyles from '@hooks/useThemeStyles';
 import type {BankInfoSubStepProps} from '@pages/ReimbursementAccount/NonUSD/BankInfo/types';
 import CONST from '@src/CONST';
@@ -19,6 +20,8 @@ function BankAccountDetails({onNext, isEditing, corpayFields}: BankInfoSubStepPr
         return corpayFields.filter((field) => !field.id.includes(CONST.NON_USD_BANK_ACCOUNT.BANK_INFO_STEP_ACCOUNT_HOLDER_KEY_PREFIX));
     }, [corpayFields]);
 
+    const fieldIds = bankAccountDetailsFields.map((field) => field.id);
+
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
             const errors: FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> = {};
@@ -31,6 +34,10 @@ function BankAccountDetails({onNext, isEditing, corpayFields}: BankInfoSubStepPr
                 }
 
                 field.validationRules.forEach((rule) => {
+                    if (rule.regEx) {
+                        return;
+                    }
+
                     if (new RegExp(rule.regEx).test(values[fieldID] ? String(values[fieldID]) : '')) {
                         return;
                     }
@@ -44,9 +51,11 @@ function BankAccountDetails({onNext, isEditing, corpayFields}: BankInfoSubStepPr
         [bankAccountDetailsFields, translate],
     );
 
-    const handleSubmit = () => {
-        onNext();
-    };
+    const handleSubmit = useReimbursementAccountStepFormSubmit({
+        fieldIds: fieldIds as Array<FormOnyxKeys<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>>,
+        onNext,
+        shouldSaveDraft: isEditing,
+    });
 
     const inputs = useMemo(() => {
         return bankAccountDetailsFields.map((field) => {

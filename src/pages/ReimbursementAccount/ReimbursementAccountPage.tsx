@@ -496,58 +496,58 @@ function ReimbursementAccountPage({
     } else if (throttledDate) {
         errorText = translate('bankAccount.hasBeenThrottledError');
     } else if (hasUnsupportedCurrency) {
-        errorText = translate('bankAccount.hasCurrencyError');
-    }
-
-    if (hasForeignCurrency) {
-        switch (nonUSDBankAccountStep) {
-            case CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY:
-                return (
-                    <Country
-                        onBackButtonPress={nonUSDBankAccountsGoBack}
-                        onSubmit={handleNextNonUSDBankAccountStep}
-                    />
-                );
-            case CONST.NON_USD_BANK_ACCOUNT.STEP.BANK_INFO:
-                return (
-                    <BankInfo
-                        onBackButtonPress={nonUSDBankAccountsGoBack}
-                        onSubmit={handleNextNonUSDBankAccountStep}
-                    />
-                );
-            case CONST.NON_USD_BANK_ACCOUNT.STEP.BUSINESS_INFO:
-                return (
-                    <BusinessInfo
-                        onBackButtonPress={nonUSDBankAccountsGoBack}
-                        onSubmit={handleNextNonUSDBankAccountStep}
-                    />
-                );
-            case CONST.NON_USD_BANK_ACCOUNT.STEP.OWNERSHIP_INFO:
-                return (
-                    <OwnershipInfo
-                        onBackButtonPress={nonUSDBankAccountsGoBack}
-                        onSubmit={handleNextNonUSDBankAccountStep}
-                    />
-                );
-            case CONST.NON_USD_BANK_ACCOUNT.STEP.SIGNER_INFO:
-                return (
-                    <SignerInfo
-                        onBackButtonPress={nonUSDBankAccountsGoBack}
-                        onSubmit={handleNextNonUSDBankAccountStep}
-                    />
-                );
-            case CONST.NON_USD_BANK_ACCOUNT.STEP.AGREEMENTS:
-                return (
-                    <Agreements
-                        onBackButtonPress={nonUSDBankAccountsGoBack}
-                        onSubmit={handleNextNonUSDBankAccountStep}
-                    />
-                );
-            case CONST.NON_USD_BANK_ACCOUNT.STEP.FINISH:
-                return <Finish />;
-            default:
-                return null;
+        if (hasForeignCurrency) {
+            switch (nonUSDBankAccountStep) {
+                case CONST.NON_USD_BANK_ACCOUNT.STEP.COUNTRY:
+                    return (
+                        <Country
+                            onBackButtonPress={nonUSDBankAccountsGoBack}
+                            onSubmit={handleNextNonUSDBankAccountStep}
+                        />
+                    );
+                case CONST.NON_USD_BANK_ACCOUNT.STEP.BANK_INFO:
+                    return (
+                        <BankInfo
+                            onBackButtonPress={nonUSDBankAccountsGoBack}
+                            onSubmit={handleNextNonUSDBankAccountStep}
+                        />
+                    );
+                case CONST.NON_USD_BANK_ACCOUNT.STEP.BUSINESS_INFO:
+                    return (
+                        <BusinessInfo
+                            onBackButtonPress={nonUSDBankAccountsGoBack}
+                            onSubmit={handleNextNonUSDBankAccountStep}
+                        />
+                    );
+                case CONST.NON_USD_BANK_ACCOUNT.STEP.OWNERSHIP_INFO:
+                    return (
+                        <OwnershipInfo
+                            onBackButtonPress={nonUSDBankAccountsGoBack}
+                            onSubmit={handleNextNonUSDBankAccountStep}
+                        />
+                    );
+                case CONST.NON_USD_BANK_ACCOUNT.STEP.SIGNER_INFO:
+                    return (
+                        <SignerInfo
+                            onBackButtonPress={nonUSDBankAccountsGoBack}
+                            onSubmit={handleNextNonUSDBankAccountStep}
+                        />
+                    );
+                case CONST.NON_USD_BANK_ACCOUNT.STEP.AGREEMENTS:
+                    return (
+                        <Agreements
+                            onBackButtonPress={nonUSDBankAccountsGoBack}
+                            onSubmit={handleNextNonUSDBankAccountStep}
+                        />
+                    );
+                case CONST.NON_USD_BANK_ACCOUNT.STEP.FINISH:
+                    return <Finish />;
+                default:
+                    return null;
+            }
         }
+
+        errorText = translate('bankAccount.hasCurrencyError');
     }
 
     if (errorText) {
