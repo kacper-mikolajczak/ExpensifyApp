@@ -111,14 +111,10 @@ function WorkspaceWorkflowsPage({policy, route}: WorkspaceWorkflowsPageProps) {
     }, [policy, route.params.policyID, availableMembers, usedApproverEmails]);
 
     const optionItems: ToggleSettingOptionRowProps[] = useMemo(() => {
-        const {accountNumber, addressName, bankName, bankAccountID} = policy?.achAccount ?? {};
+        const {addressName, bankName, bankAccountID} = policy?.achAccount ?? {};
         const shouldShowBankAccount = !!bankAccountID && policy?.reimbursementChoice === CONST.POLICY.REIMBURSEMENT_CHOICES.REIMBURSEMENT_YES;
         const bankIcon = getBankIcon({bankName: bankName as BankName, isCard: false, styles});
 
-        let bankDisplayName = bankName ?? addressName;
-        if (accountNumber && bankDisplayName !== accountNumber) {
-            bankDisplayName += ` ${accountNumber.slice(-5)}`;
-        }
         const hasReimburserError = !!policy?.errorFields?.reimburser;
         const hasApprovalError = !!policy?.errorFields?.approvalMode;
         const hasDelayedSubmissionError = !!policy?.errorFields?.autoReporting ?? !!policy?.errorFields?.autoReportingFrequency;
@@ -173,7 +169,7 @@ function WorkspaceWorkflowsPage({policy, route}: WorkspaceWorkflowsPageProps) {
                             >
                                 <ApprovalWorkflowSection
                                     approvalWorkflow={workflow}
-                                    onPress={() => Navigation.navigate(ROUTES.WORKSPACE_WORKFLOWS_APPROVALS_EDIT.getRoute(route.params.policyID, workflow.approvers[0].email))}
+                                    onPress={() => Navigation.navigate(ROUTES.WORKSPACE_WORKFLOWS_APPROVALS_EDIT.getRoute(route.params.policyID, workflow.approvers.at(0)?.email ?? ''))}
                                 />
                             </OfflineWithFeedback>
                         ))}
@@ -183,7 +179,6 @@ function WorkspaceWorkflowsPage({policy, route}: WorkspaceWorkflowsPageProps) {
                             icon={Expensicons.Plus}
                             iconHeight={20}
                             iconWidth={20}
-                            iconFill={theme.success}
                             style={[styles.sectionMenuItemTopDescription, styles.mt6, styles.mbn3]}
                             onPress={addApprovalAction}
                         />
@@ -289,7 +284,6 @@ function WorkspaceWorkflowsPage({policy, route}: WorkspaceWorkflowsPageProps) {
         preferredLocale,
         onPressAutoReportingFrequency,
         approvalWorkflows,
-        theme.success,
         theme.spinner,
         addApprovalAction,
         isOffline,
