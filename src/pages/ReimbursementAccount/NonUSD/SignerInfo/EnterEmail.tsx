@@ -11,7 +11,7 @@ import useThemeStyles from '@hooks/useThemeStyles';
 import * as ValidationUtils from '@libs/ValidationUtils';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 
 type EnterEmailProps = {
     onSubmit: () => void;
@@ -19,7 +19,7 @@ type EnterEmailProps = {
     isUserDirector: boolean;
 };
 
-const {DIRECTOR_EMAIL_ADDRESS, SECOND_DIRECTOR_EMAIL_ADDRESS} = INPUT_IDS.SIGNER_INFO_STEP;
+const {SIGNER_EMAIL, SECOND_SIGNER_EMAIL} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
 
 function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
     const {translate} = useLocalize();
@@ -32,14 +32,14 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
     const shouldGatherBothEmails = currency === CONST.CURRENCY.AUD && !isUserDirector;
 
     const validate = useCallback(
-        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
-            const errors = ValidationUtils.getFieldRequiredErrors(values, shouldGatherBothEmails ? [DIRECTOR_EMAIL_ADDRESS, SECOND_DIRECTOR_EMAIL_ADDRESS] : [DIRECTOR_EMAIL_ADDRESS]);
-            if (values[DIRECTOR_EMAIL_ADDRESS] && !Str.isValidEmail(values[DIRECTOR_EMAIL_ADDRESS])) {
-                errors[DIRECTOR_EMAIL_ADDRESS] = translate('bankAccount.error.firstName');
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
+            const errors = ValidationUtils.getFieldRequiredErrors(values, shouldGatherBothEmails ? [SIGNER_EMAIL, SECOND_SIGNER_EMAIL] : [SIGNER_EMAIL]);
+            if (values[SIGNER_EMAIL] && !Str.isValidEmail(values[SIGNER_EMAIL])) {
+                errors[SIGNER_EMAIL] = translate('bankAccount.error.firstName');
             }
 
-            if (shouldGatherBothEmails && values[SECOND_DIRECTOR_EMAIL_ADDRESS] && !Str.isValidEmail(values[SECOND_DIRECTOR_EMAIL_ADDRESS])) {
-                errors[SECOND_DIRECTOR_EMAIL_ADDRESS] = translate('bankAccount.error.lastName');
+            if (shouldGatherBothEmails && values[SECOND_SIGNER_EMAIL] && !Str.isValidEmail(values[SECOND_SIGNER_EMAIL])) {
+                errors[SECOND_SIGNER_EMAIL] = translate('bankAccount.error.lastName');
             }
 
             return errors;
@@ -49,7 +49,7 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate('common.next')}
             onSubmit={onSubmit}
             validate={validate}
@@ -61,7 +61,7 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
                 label={shouldGatherBothEmails ? `${translate('common.email')} 1` : translate('common.email')}
                 aria-label={shouldGatherBothEmails ? `${translate('common.email')} 1` : translate('common.email')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={DIRECTOR_EMAIL_ADDRESS}
+                inputID={SIGNER_EMAIL}
                 containerStyles={[styles.mt6]}
             />
             {shouldGatherBothEmails && (
@@ -70,7 +70,7 @@ function EnterEmail({onSubmit, isUserDirector}: EnterEmailProps) {
                     label={`${translate('common.email')} 2`}
                     aria-label={`${translate('common.email')} 2`}
                     role={CONST.ROLE.PRESENTATION}
-                    inputID={SECOND_DIRECTOR_EMAIL_ADDRESS}
+                    inputID={SECOND_SIGNER_EMAIL}
                     containerStyles={[styles.mt6]}
                 />
             )}

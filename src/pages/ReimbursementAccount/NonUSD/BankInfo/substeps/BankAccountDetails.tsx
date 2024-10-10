@@ -60,7 +60,10 @@ function BankAccountDetails({onNext, isEditing, corpayFields}: BankInfoSubStepPr
     const inputs = useMemo(() => {
         return bankAccountDetailsFields.map((field) => {
             return (
-                <View style={[styles.flex2, styles.mb6]}>
+                <View
+                    style={[styles.flex2, styles.mb6]}
+                    key={field.id}
+                >
                     <InputWrapper
                         InputComponent={TextInput}
                         inputID={field.id}

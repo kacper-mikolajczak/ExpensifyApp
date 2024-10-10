@@ -45,6 +45,7 @@ function Confirmation({onNext, onMove, corpayFields}: BankInfoSubStepProps) {
 
                             onMove(0);
                         }}
+                        key={field.id}
                     />
                 );
             }),

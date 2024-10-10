@@ -21,13 +21,13 @@ type UploadFileProps = {
     buttonText: string;
 
     /** Name of currently uploaded file */
-    uploadedFileName: string;
+    uploadedFiles: FileObject[];
 
     /** Handler that fires when file is selected for upload */
-    onUpload: (fileURL: string) => void;
+    onUpload: (files: FileObject[]) => void;
 
     /** Handler that fires when file is removed */
-    onRemove: () => void;
+    onRemove: (fileUri: string) => void;
 
     /** Array containing accepted file types */
     acceptedFileTypes: Array<ValueOf<typeof CONST.API_ATTACHMENT_VALIDATIONS.ALLOWED_RECEIPT_EXTENSIONS>>;
@@ -39,32 +39,53 @@ type UploadFileProps = {
     errorText?: string;
 
     /** Function called whenever option changes */
-    onInputChange?: (value: string) => void;
+    onInputChange?: (value: FileObject[]) => void;
 };
 
-function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedFileTypes, style, errorText = '', onInputChange = () => {}}: UploadFileProps) {
+function UploadFile({buttonText, uploadedFiles, onUpload, onRemove, acceptedFileTypes, style, errorText = '', onInputChange = () => {}}: UploadFileProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const theme = useTheme();
 
-    const handleFileUpload = (file: FileObject) => {
-        onInputChange(file?.name ?? '');
-        onUpload(file?.name ?? '');
+    const handleFileUpload = (files: FileObject[]) => {
+        onInputChange(files);
+        onUpload(files);
     };
 
     return (
         <View style={[styles.alignItemsStart, style]}>
-            {uploadedFileName !== '' ? (
-                <View style={[styles.flexRow, styles.alignItemsCenter, styles.justifyContentCenter, styles.border, styles.p4]}>
+            <AttachmentPicker
+                acceptedFileTypes={acceptedFileTypes}
+                fileLimit={CONST.NON_USD_BANK_ACCOUNT.FILE_LIMIT}
+                totalFilesSizeLimitInMB={CONST.NON_USD_BANK_ACCOUNT.TOTAL_FILES_SIZE_LIMIT_IN_MB}
+            >
+                {({openPicker}) => (
+                    <Button
+                        medium
+                        text={buttonText}
+                        accessibilityLabel={buttonText}
+                        onPress={() => {
+                            openPicker({
+                                onPicked: handleFileUpload,
+                            });
+                        }}
+                    />
+                )}
+            </AttachmentPicker>
+            {uploadedFiles.map((file) => (
+                <View
+                    style={[styles.flexRow, styles.alignItemsCenter, styles.justifyContentCenter, styles.border, styles.p4, styles.mt3]}
+                    key={file.uri}
+                >
                     <Icon
                         height={variables.iconSizeNormal}
                         width={variables.iconSizeSemiSmall}
                         src={Expensicons.Paperclip}
                         fill={theme.textSupporting}
                     />
-                    <Text style={[styles.ml4, styles.mr3, styles.textBold]}>{uploadedFileName}</Text>
+                    <Text style={[styles.ml4, styles.mr3, styles.textBold]}>{file.name}</Text>
                     <PressableWithFeedback
-                        onPress={onRemove}
+                        onPress={() => onRemove(file?.uri ?? '')}
                         role={CONST.ROLE.BUTTON}
                         accessibilityLabel={translate('common.remove')}
                     >
@@ -75,23 +96,7 @@ function UploadFile({buttonText, uploadedFileName, onUpload, onRemove, acceptedF
                         />
                     </PressableWithFeedback>
                 </View>
-            ) : (
-                <AttachmentPicker acceptedFileTypes={acceptedFileTypes}>
-                    {({openPicker}) => (
-                        <Button
-                            medium
-                            style={[styles.mb6]}
-                            text={buttonText}
-                            accessibilityLabel={buttonText}
-                            onPress={() => {
-                                openPicker({
-                                    onPicked: handleFileUpload,
-                                });
-                            }}
-                        />
-                    )}
-                </AttachmentPicker>
-            )}
+            ))}
             {errorText !== '' && (
                 <DotIndicatorMessage
                     textStyles={[styles.formError]}

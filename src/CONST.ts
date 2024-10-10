@@ -499,7 +499,8 @@ const CONST = {
             },
         },
         ALLOWED_FILE_TYPES: ['pdf', 'jpg', 'jpeg', 'png'],
-        MAX_FILE_SIZE_MB: 5,
+        FILE_LIMIT: 10,
+        TOTAL_FILES_SIZE_LIMIT_IN_MB: 5,
     },
     INCORPORATION_TYPES: {
         LLC: 'LLC',

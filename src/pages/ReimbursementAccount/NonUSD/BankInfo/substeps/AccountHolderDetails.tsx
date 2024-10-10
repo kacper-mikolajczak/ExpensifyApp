@@ -84,7 +84,10 @@ function AccountHolderDetails({onNext, isEditing, corpayFields}: BankInfoSubStep
         return accountHolderDetailsFields.map((field) => {
             if (field.id === 'accountHolderCountry') {
                 return (
-                    <View style={[styles.mb6, styles.mhn5]}>
+                    <View
+                        style={[styles.mb6, styles.mhn5]}
+                        key={field.id}
+                    >
                         <InputWrapper
                             InputComponent={PushRowWithModal}
                             optionsList={CONST.ALL_COUNTRIES}
@@ -101,7 +104,10 @@ function AccountHolderDetails({onNext, isEditing, corpayFields}: BankInfoSubStep
             }
 
             return (
-                <View style={[styles.flex2, styles.mb6]}>
+                <View
+                    style={[styles.flex2, styles.mb6]}
+                    key={field.id}
+                >
                     <InputWrapper
                         InputComponent={TextInput}
                         inputID={field.id}
