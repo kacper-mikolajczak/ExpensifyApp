@@ -22,12 +22,7 @@ import CONST from '@src/CONST';
 import type {TranslationPaths} from '@src/languages/types';
 import type IconAsset from '@src/types/utils/IconAsset';
 import launchCamera from './launchCamera/launchCamera';
-import type BaseAttachmentPickerProps from './types';
-
-type AttachmentPickerProps = BaseAttachmentPickerProps & {
-    /** If this value is true, then we exclude Camera option. */
-    shouldHideCameraOption?: boolean;
-};
+import type AttachmentPickerProps from './types';
 
 type Item = {
     /** The icon associated with the item. */
@@ -117,6 +112,7 @@ function AttachmentPicker({
     children,
     shouldHideCameraOption = false,
     shouldValidateImage = true,
+    shouldHideGalleryOption = false,
     fileLimit = 1,
     totalFilesSizeLimitInMB = 0,
 }: AttachmentPickerProps) {
@@ -237,16 +233,18 @@ function AttachmentPicker({
     const menuItemData: Item[] = useMemo(() => {
         const data: Item[] = [
             {
-                icon: Expensicons.Gallery,
-                textTranslationKey: 'attachmentPicker.chooseFromGallery',
-                pickAttachment: () => showImagePicker(launchImageLibrary),
-            },
-            {
                 icon: Expensicons.Paperclip,
                 textTranslationKey: 'attachmentPicker.chooseDocument',
                 pickAttachment: showDocumentPicker,
             },
         ];
+        if (!shouldHideGalleryOption) {
+            data.unshift({
+                icon: Expensicons.Gallery,
+                textTranslationKey: 'attachmentPicker.chooseFromGallery',
+                pickAttachment: () => showImagePicker(launchImageLibrary),
+            });
+        }
         if (!shouldHideCameraOption) {
             data.unshift({
                 icon: Expensicons.Camera,
@@ -256,7 +254,7 @@ function AttachmentPicker({
         }
 
         return data;
-    }, [showDocumentPicker, showImagePicker, shouldHideCameraOption]);
+    }, [showDocumentPicker, shouldHideGalleryOption, shouldHideCameraOption, showImagePicker]);
 
     const [focusedIndex, setFocusedIndex] = useArrowKeyFocusManager({initialFocusedIndex: -1, maxIndex: menuItemData.length - 1, isActive: isVisible});
 

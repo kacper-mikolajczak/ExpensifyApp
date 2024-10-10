@@ -187,6 +187,9 @@ type ACHData = Partial<BeneficialOwnersStepProps & CompanyStepProps & RequestorS
     /** Unique identifier for this account in Plaid */
     plaidAccountID?: string;
 
+    /** Bank Account setup type (plaid or manual) */
+    setupType?: string;
+
     /** Additional data for the non USD account in setup */
     additionalData?: AdditionalData;
 };
