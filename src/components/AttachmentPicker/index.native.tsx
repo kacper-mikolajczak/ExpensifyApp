@@ -395,7 +395,7 @@ function AttachmentPicker({
 
             return Promise.all(filesToProcess);
         },
-        [validateAndCompleteAttachmentSelection, showImageCorruptionAlert, shouldValidateImage, showGeneralAlert],
+        [totalFilesSizeLimitInMB, totalFilesSizeLimitInBytes, showFilesTooBigAlert, shouldValidateImage, validateAndCompleteAttachmentSelection, showGeneralAlert, showImageCorruptionAlert],
     );
 
     /**
