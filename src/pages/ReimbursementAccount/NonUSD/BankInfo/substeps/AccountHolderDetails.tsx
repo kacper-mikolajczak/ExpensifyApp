@@ -120,7 +120,7 @@ function AccountHolderDetails({onNext, isEditing, corpayFields}: BankInfoSubStep
                 </View>
             );
         });
-    }, [accountHolderDetailsFields, styles.flex2, styles.mb6, styles.mhn5, isEditing, selectedCountry, translate]);
+    }, [accountHolderDetailsFields, styles.flex2, styles.mb6, styles.mhn5, defaultValues, isEditing, selectedCountry, translate]);
 
     return (
         <FormProvider

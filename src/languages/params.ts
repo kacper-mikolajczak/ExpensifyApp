@@ -537,6 +537,22 @@ type ImportedTypesParams = {
     importedTypes: string[];
 };
 
+type CurrencyCodeParams = {
+    currencyCode: string;
+};
+
+type FileLimitParams = {
+    fileLimit: number;
+};
+
+type LastFourDigitsParams = {
+    lastFourDigits: string;
+};
+
+type CompanyNameParams = {
+    companyName: string;
+};
+
 export type {
     AuthenticationErrorParams,
     ImportMembersSuccessfullDescriptionParams,
@@ -735,4 +751,8 @@ export type {
     OptionalParam,
     AssignCardParams,
     ImportedTypesParams,
+    CurrencyCodeParams,
+    FileLimitParams,
+    LastFourDigitsParams,
+    CompanyNameParams,
 };

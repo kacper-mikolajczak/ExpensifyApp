@@ -1,13 +1,14 @@
 import React, {useCallback, useState} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
+import type {FileObject} from '@components/AttachmentModal';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
 import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import UploadFile from '@components/UploadFile';
 import useLocalize from '@hooks/useLocalize';
-import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
+import useReimbursementAccountStepFormSubmit from '@hooks/useReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import * as ValidationUtils from '@libs/ValidationUtils';
@@ -15,62 +16,63 @@ import WhyLink from '@pages/ReimbursementAccount/NonUSD/WhyLink';
 import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 
 type UploadDocumentsProps = SubStepProps;
 
-const {ID, PROOF_OF_ADDRESS} = INPUT_IDS.SIGNER_INFO_STEP;
-const STEP_FIELDS = [ID, PROOF_OF_ADDRESS];
+const {SIGNER_ADDRESS_PROOF, SIGNER_COPY_OF_ID} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
+const STEP_FIELDS = [SIGNER_COPY_OF_ID, SIGNER_ADDRESS_PROOF];
 
 function UploadDocuments({onNext, isEditing}: UploadDocumentsProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+
     const defaultValues = {
-        [ID]: nonUSDReimbursementAccountDraft?.[ID] ?? '',
-        [PROOF_OF_ADDRESS]: nonUSDReimbursementAccountDraft?.[PROOF_OF_ADDRESS] ?? '',
+        [SIGNER_COPY_OF_ID]: reimbursementAccount?.achData?.additionalData?.corpay?.[SIGNER_COPY_OF_ID] ?? reimbursementAccountDraft?.[SIGNER_COPY_OF_ID] ?? [],
+        [SIGNER_ADDRESS_PROOF]: reimbursementAccount?.achData?.additionalData?.corpay?.[SIGNER_ADDRESS_PROOF] ?? reimbursementAccountDraft?.[SIGNER_ADDRESS_PROOF] ?? [],
     };
 
-    const [uploadedID, setUploadedID] = useState(defaultValues[ID]);
-    const [uploadedProofOfAddress, setUploadedProofOfAddress] = useState(defaultValues[PROOF_OF_ADDRESS]);
+    const [uploadedIDs, setUploadedID] = useState<FileObject[]>(defaultValues[SIGNER_ADDRESS_PROOF]);
+    const [uploadedProofsOfAddress, setUploadedProofOfAddress] = useState<FileObject[]>(defaultValues[SIGNER_ADDRESS_PROOF]);
 
-    const validate = useCallback(
-        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
-            return ValidationUtils.getFieldRequiredErrors(values, STEP_FIELDS);
-        },
-        [],
-    );
+    const validate = useCallback((values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
+        return ValidationUtils.getFieldRequiredErrors(values, STEP_FIELDS);
+    }, []);
 
-    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
+    const handleSubmit = useReimbursementAccountStepFormSubmit({
         fieldIds: STEP_FIELDS,
         onNext,
         shouldSaveDraft: isEditing,
     });
 
-    const handleSelectIDFile = (fileName: string) => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[ID]: fileName});
-        setUploadedID(fileName);
+    const handleSelectIDFile = (files: FileObject[]) => {
+        FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {[SIGNER_ADDRESS_PROOF]: [...uploadedIDs, ...files]});
+        setUploadedID((prev) => [...prev, ...files]);
     };
 
-    const handleRemoveIDFile = () => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[ID]: ''});
-        setUploadedID('');
+    const handleRemoveIDFile = (fileUri: string) => {
+        const newUploadedIDs = uploadedIDs.filter((file) => file.uri !== fileUri);
+        FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {[SIGNER_ADDRESS_PROOF]: newUploadedIDs});
+        setUploadedID(newUploadedIDs);
     };
 
-    const handleSelectProofOfAddressFile = (fileName: string) => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[PROOF_OF_ADDRESS]: fileName});
-        setUploadedProofOfAddress(fileName);
+    const handleSelectProofOfAddressFile = (files: FileObject[]) => {
+        FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {[SIGNER_ADDRESS_PROOF]: [...uploadedProofsOfAddress, ...files]});
+        setUploadedProofOfAddress((prev) => [...prev, ...files]);
     };
 
-    const handleRemoveProofOfAddressFile = () => {
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {[PROOF_OF_ADDRESS]: ''});
-        setUploadedProofOfAddress('');
+    const handleRemoveProofOfAddressFile = (fileUri: string) => {
+        const newUploadedProofsOfAddress = uploadedProofsOfAddress.filter((file) => file.uri !== fileUri);
+        FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {[SIGNER_ADDRESS_PROOF]: newUploadedProofsOfAddress});
+        setUploadedProofOfAddress(newUploadedProofsOfAddress);
     };
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate('common.next')}
             onSubmit={handleSubmit}
             validate={validate}
@@ -82,23 +84,23 @@ function UploadDocuments({onNext, isEditing}: UploadDocumentsProps) {
                 <InputWrapper
                     InputComponent={UploadFile}
                     buttonText={translate('signerInfoStep.chooseFile')}
-                    uploadedFileName={uploadedID}
+                    uploadedFiles={uploadedIDs}
                     onUpload={handleSelectIDFile}
                     onRemove={handleRemoveIDFile}
                     acceptedFileTypes={[...CONST.NON_USD_BANK_ACCOUNT.ALLOWED_FILE_TYPES]}
-                    value={uploadedID}
-                    inputID={ID}
+                    value={uploadedIDs}
+                    inputID={SIGNER_ADDRESS_PROOF}
                 />
                 <Text style={[styles.mutedTextLabel, styles.mb3, styles.mt6]}>{translate('signerInfoStep.proofOf')}</Text>
                 <InputWrapper
                     InputComponent={UploadFile}
                     buttonText={translate('signerInfoStep.chooseFile')}
-                    uploadedFileName={uploadedProofOfAddress}
+                    uploadedFiles={uploadedProofsOfAddress}
                     onUpload={handleSelectProofOfAddressFile}
                     onRemove={handleRemoveProofOfAddressFile}
                     acceptedFileTypes={[...CONST.NON_USD_BANK_ACCOUNT.ALLOWED_FILE_TYPES]}
-                    value={uploadedProofOfAddress}
-                    inputID={PROOF_OF_ADDRESS}
+                    value={uploadedProofsOfAddress}
+                    inputID={SIGNER_ADDRESS_PROOF}
                 />
                 <WhyLink containerStyles={[styles.mt6]} />
             </View>

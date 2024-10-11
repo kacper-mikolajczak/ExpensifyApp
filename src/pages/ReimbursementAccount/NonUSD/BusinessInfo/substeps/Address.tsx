@@ -34,7 +34,7 @@ function Address({onNext, isEditing}: AddressProps) {
 
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
     const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
-    const onyxValues = useMemo(() => getSubstepValues(INPUT_KEYS, reimbursementAccountDraft, reimbursementAccount), [INPUT_KEYS, reimbursementAccount, reimbursementAccountDraft]);
+    const onyxValues = useMemo(() => getSubstepValues(INPUT_KEYS, reimbursementAccountDraft, reimbursementAccount), [reimbursementAccount, reimbursementAccountDraft]);
 
     // TODO look into default country
     const businessStepCountryDraftValue = onyxValues[COMPANY_COUNTRY];

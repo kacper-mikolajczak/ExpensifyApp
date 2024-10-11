@@ -33,7 +33,7 @@ function Manual({onNext}: ManualProps) {
         [BANK_INFO_STEP_KEYS.ACCOUNT_NUMBER]: reimbursementAccount?.achData?.[BANK_INFO_STEP_KEYS.ACCOUNT_NUMBER] ?? '',
     };
 
-    const shouldBeReadOnlyInput = reimbursementAccount?.achData?.setupType === CONST.BANK_ACCOUNT.SETUP_TYPE.PLAID;
+    const shouldBeReadOnlyInput = reimbursementAccount?.achData?.setupType === CONST.USD_BANK_ACCOUNT.SETUP_TYPE.PLAID;
 
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
