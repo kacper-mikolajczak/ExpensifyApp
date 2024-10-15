@@ -6,7 +6,7 @@ import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
-import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
+import useReimbursementAccountStepFormSubmit from '@hooks/useReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import * as ValidationUtils from '@libs/ValidationUtils';
@@ -20,16 +20,16 @@ const {FIRST_NAME, LAST_NAME, PREFIX} = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INF
 function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID}: NameProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
     const firstNameInputID = `${PREFIX}_${ownerBeingModifiedID}_${FIRST_NAME}` as const;
     const lastNameInputID = `${PREFIX}_${ownerBeingModifiedID}_${LAST_NAME}` as const;
     const stepFields = useMemo(() => [firstNameInputID, lastNameInputID], [firstNameInputID, lastNameInputID]);
-    const defaultFirstName = nonUSDReimbursementAccountDraft?.[firstNameInputID] ?? '';
-    const defaultLastName = nonUSDReimbursementAccountDraft?.[lastNameInputID] ?? '';
+    const defaultFirstName = reimbursementAccountDraft?.[firstNameInputID] ?? '';
+    const defaultLastName = reimbursementAccountDraft?.[lastNameInputID] ?? '';
 
     const validate = useCallback(
-        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
             const errors = ValidationUtils.getFieldRequiredErrors(values, stepFields);
 
             if (values[firstNameInputID] && !ValidationUtils.isValidLegalName(values[firstNameInputID])) {
@@ -45,7 +45,7 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
         [firstNameInputID, lastNameInputID, stepFields, translate],
     );
 
-    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
+    const handleSubmit = useReimbursementAccountStepFormSubmit({
         fieldIds: stepFields,
         onNext,
         shouldSaveDraft: isEditing,
@@ -53,7 +53,7 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
             validate={validate}

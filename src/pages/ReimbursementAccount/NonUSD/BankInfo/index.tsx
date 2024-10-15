@@ -7,7 +7,7 @@ import useSubStep from '@hooks/useSubStep';
 import * as BankAccounts from '@userActions/BankAccounts';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 import AccountHolderDetails from './substeps/AccountHolderDetails';
 import BankAccountDetails from './substeps/BankAccountDetails';
 import Confirmation from './substeps/Confirmation';
@@ -21,15 +21,17 @@ type BankInfoProps = {
     onSubmit: () => void;
 };
 
+const {COUNTRY} = INPUT_IDS.ADDITIONAL_DATA;
+
 const bodyContent: Array<ComponentType<BankInfoSubStepProps>> = [BankAccountDetails, AccountHolderDetails, Confirmation];
 
 function BankInfo({onBackButtonPress, onSubmit}: BankInfoProps) {
     const {translate} = useLocalize();
 
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const [corpayFields, setCorpayFields] = useState<CorpayFormField[]>([]);
-    const country = nonUSDReimbursementAccountDraft?.[INPUT_IDS.COUNTRY_STEP.COUNTRY] ?? '';
+    const country = reimbursementAccountDraft?.[COUNTRY] ?? '';
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';

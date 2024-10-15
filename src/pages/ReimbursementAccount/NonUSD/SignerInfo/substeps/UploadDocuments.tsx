@@ -73,7 +73,7 @@ function UploadDocuments({onNext, isEditing}: UploadDocumentsProps) {
     return (
         <FormProvider
             formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
-            submitButtonText={translate('common.next')}
+            submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
             validate={validate}
             style={[styles.mh5, styles.flex1]}

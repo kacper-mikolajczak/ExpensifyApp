@@ -9,20 +9,38 @@ import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
-import getSubStepValues from '@pages/ReimbursementAccount/NonUSD/utils/getSubStepValues';
+import getSubstepValues from '@pages/ReimbursementAccount/utils/getSubstepValues';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 
-const SINGER_INFO_STEP_KEYS = INPUT_IDS.SIGNER_INFO_STEP;
-const {FIRST_NAME, LAST_NAME, JOB_TITLE, DOB, ID, PROOF_OF_ADDRESS} = INPUT_IDS.SIGNER_INFO_STEP;
+type ConfirmationProps = SubStepProps & {isSecondSigner: boolean};
 
-function Confirmation({onNext, onMove}: SubStepProps) {
+const SINGER_INFO_STEP_KEYS = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
+const {
+    SIGNER_FULL_NAME,
+    SECOND_SIGNER_FULL_NAME,
+    SIGNER_JOB_TITLE,
+    SECOND_SIGNER_JOB_TITLE,
+    SIGNER_DATE_OF_BIRTH,
+    SECOND_SIGNER_DATE_OF_BIRTH,
+    SIGNER_COPY_OF_ID,
+    SECOND_SIGNER_COPY_OF_ID,
+    SIGNER_ADDRESS_PROOF,
+    SECOND_SIGNER_ADDRESS_PROOF,
+    OWNS_MORE_THAN_25_PERCENT,
+} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
+
+function Confirmation({onNext, onMove, isSecondSigner}: ConfirmationProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
-    const isUserOwner = nonUSDReimbursementAccountDraft?.[INPUT_IDS.OWNERSHIP_INFO_STEP.OWNS_MORE_THAN_25_PERCENT] ?? false;
-    const values = useMemo(() => getSubStepValues(SINGER_INFO_STEP_KEYS, nonUSDReimbursementAccountDraft), [nonUSDReimbursementAccountDraft]);
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const isUserOwner = reimbursementAccount?.achData?.additionalData?.corpay?.[OWNS_MORE_THAN_25_PERCENT] ?? reimbursementAccountDraft?.[OWNS_MORE_THAN_25_PERCENT] ?? false;
+    const values = useMemo(() => getSubstepValues(SINGER_INFO_STEP_KEYS, reimbursementAccountDraft, reimbursementAccount), [reimbursementAccount, reimbursementAccountDraft]);
+
+    const IDs = values[isSecondSigner ? SECOND_SIGNER_COPY_OF_ID : SIGNER_COPY_OF_ID];
+    const proofs = values[isSecondSigner ? SECOND_SIGNER_ADDRESS_PROOF : SIGNER_ADDRESS_PROOF];
 
     return (
         <SafeAreaConsumer>
@@ -35,7 +53,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     {!isUserOwner && (
                         <MenuItemWithTopDescription
                             description={translate('signerInfoStep.legalName')}
-                            title={`${values[FIRST_NAME]} ${values[LAST_NAME]}`}
+                            title={`${values[isSecondSigner ? SECOND_SIGNER_FULL_NAME : SIGNER_FULL_NAME]}`}
                             shouldShowRightIcon
                             onPress={() => {
                                 onMove(0);
@@ -44,7 +62,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     )}
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.jobTitle')}
-                        title={values[JOB_TITLE]}
+                        title={values[isSecondSigner ? SECOND_SIGNER_JOB_TITLE : SIGNER_JOB_TITLE]}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(1);
@@ -53,7 +71,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     {!isUserOwner && (
                         <MenuItemWithTopDescription
                             description={translate('common.dob')}
-                            title={values[DOB]}
+                            title={values[isSecondSigner ? SECOND_SIGNER_DATE_OF_BIRTH : SIGNER_DATE_OF_BIRTH]}
                             shouldShowRightIcon
                             onPress={() => {
                                 onMove(2);
@@ -62,7 +80,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     )}
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.id')}
-                        title={values[ID]}
+                        title={IDs ? IDs.map((id) => id.name).join(', ') : ''}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);
@@ -70,7 +88,7 @@ function Confirmation({onNext, onMove}: SubStepProps) {
                     />
                     <MenuItemWithTopDescription
                         description={translate('signerInfoStep.proofOf')}
-                        title={values[PROOF_OF_ADDRESS]}
+                        title={proofs ? proofs.map((proof) => proof.name).join(', ') : ''}
                         shouldShowRightIcon
                         onPress={() => {
                             onMove(3);

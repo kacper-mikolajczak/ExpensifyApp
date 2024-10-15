@@ -6,54 +6,47 @@ import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
-import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
+import useReimbursementAccountStepFormSubmit from '@hooks/useReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import * as ValidationUtils from '@libs/ValidationUtils';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 
-type NameProps = SubStepProps;
+type NameProps = SubStepProps & {isSecondSigner: boolean};
 
-const {FIRST_NAME, LAST_NAME} = INPUT_IDS.SIGNER_INFO_STEP;
-const STEP_FIELDS = [FIRST_NAME, LAST_NAME];
+const {SIGNER_FULL_NAME, SECOND_SIGNER_FULL_NAME} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
 
-function Name({onNext, isEditing}: NameProps) {
+function Name({onNext, isEditing, isSecondSigner}: NameProps) {
+    const inputID = isSecondSigner ? SECOND_SIGNER_FULL_NAME : SIGNER_FULL_NAME;
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
-    const defaultValues = {
-        [FIRST_NAME]: nonUSDReimbursementAccountDraft?.[FIRST_NAME] ?? '',
-        [LAST_NAME]: nonUSDReimbursementAccountDraft?.[LAST_NAME] ?? '',
-    };
-
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const defaultValue = reimbursementAccount?.achData?.additionalData?.corpay?.[inputID] ?? reimbursementAccountDraft?.[inputID] ?? '';
     const validate = useCallback(
-        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
-            const errors = ValidationUtils.getFieldRequiredErrors(values, STEP_FIELDS);
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
+            const errors = ValidationUtils.getFieldRequiredErrors(values, [inputID]);
 
-            if (values[FIRST_NAME] && !ValidationUtils.isValidLegalName(values[FIRST_NAME])) {
-                errors[FIRST_NAME] = translate('bankAccount.error.firstName');
-            }
-
-            if (values[LAST_NAME] && !ValidationUtils.isValidLegalName(values[LAST_NAME])) {
-                errors[LAST_NAME] = translate('bankAccount.error.lastName');
+            if (values[inputID] && !ValidationUtils.isValidLegalName(values[inputID])) {
+                errors[inputID] = translate('bankAccount.error.fullName');
             }
 
             return errors;
         },
-        [translate],
+        [inputID, translate],
     );
 
-    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
-        fieldIds: STEP_FIELDS,
+    const handleSubmit = useReimbursementAccountStepFormSubmit({
+        fieldIds: [inputID],
         onNext,
         shouldSaveDraft: isEditing,
     });
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
             validate={validate}
@@ -62,22 +55,12 @@ function Name({onNext, isEditing}: NameProps) {
             <Text style={[styles.textHeadlineLineHeightXXL]}>{translate('signerInfoStep.whatsYourName')}</Text>
             <InputWrapper
                 InputComponent={TextInput}
-                label={translate('signerInfoStep.legalFirstName')}
-                aria-label={translate('signerInfoStep.legalFirstName')}
+                label={translate('signerInfoStep.fullName')}
+                aria-label={translate('signerInfoStep.fullName')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={FIRST_NAME}
+                inputID={inputID}
                 containerStyles={[styles.mt6]}
-                defaultValue={defaultValues[FIRST_NAME]}
-                shouldSaveDraft={!isEditing}
-            />
-            <InputWrapper
-                InputComponent={TextInput}
-                label={translate('signerInfoStep.legalLastName')}
-                aria-label={translate('signerInfoStep.legalLastName')}
-                role={CONST.ROLE.PRESENTATION}
-                inputID={LAST_NAME}
-                containerStyles={[styles.mt6]}
-                defaultValue={defaultValues[LAST_NAME]}
+                defaultValue={defaultValue}
                 shouldSaveDraft={!isEditing}
             />
         </FormProvider>

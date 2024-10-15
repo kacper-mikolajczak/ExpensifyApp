@@ -4,7 +4,7 @@ import FormProvider from '@components/Form/FormProvider';
 import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
-import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
+import useReimbursementAccountStepFormSubmit from '@hooks/useReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import * as ValidationUtils from '@libs/ValidationUtils';
@@ -21,9 +21,9 @@ const {STREET, CITY, STATE, ZIP_CODE, COUNTRY, PREFIX} = CONST.NON_USD_BANK_ACCO
 function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID}: NameProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
-    const countryInputKey: `owner_${string}_${string}` = `${PREFIX}_${ownerBeingModifiedID}_${COUNTRY}`;
+    const countryInputKey: `beneficialOwner_${string}_${string}` = `${PREFIX}_${ownerBeingModifiedID}_${COUNTRY}`;
     const inputKeys = {
         street: `${PREFIX}_${ownerBeingModifiedID}_${STREET}`,
         city: `${PREFIX}_${ownerBeingModifiedID}_${CITY}`,
@@ -33,11 +33,11 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
     } as const;
 
     const defaultValues = {
-        street: nonUSDReimbursementAccountDraft?.[inputKeys.street] ?? '',
-        city: nonUSDReimbursementAccountDraft?.[inputKeys.city] ?? '',
-        state: nonUSDReimbursementAccountDraft?.[inputKeys.state] ?? '',
-        zipCode: nonUSDReimbursementAccountDraft?.[inputKeys.zipCode] ?? '',
-        country: (nonUSDReimbursementAccountDraft?.[inputKeys.country] ?? '') as Country | '',
+        street: reimbursementAccountDraft?.[inputKeys.street] ?? '',
+        city: reimbursementAccountDraft?.[inputKeys.city] ?? '',
+        state: reimbursementAccountDraft?.[inputKeys.state] ?? '',
+        zipCode: reimbursementAccountDraft?.[inputKeys.zipCode] ?? '',
+        country: (reimbursementAccountDraft?.[inputKeys.country] ?? '') as Country | '',
     };
 
     const shouldDisplayStateSelector = defaultValues.country === CONST.COUNTRY.US || defaultValues.country === CONST.COUNTRY.CA;
@@ -51,32 +51,32 @@ function Name({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID
         [countryInputKey, inputKeys.city, inputKeys.street, inputKeys.zipCode],
     );
 
-    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
+    const handleSubmit = useReimbursementAccountStepFormSubmit({
         fieldIds: stepFields,
         onNext,
         shouldSaveDraft: isEditing,
     });
 
     const validate = useCallback(
-        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
             const errors = ValidationUtils.getFieldRequiredErrors(values, shouldDisplayStateSelector ? stepFields : stepFieldsWithoutState);
 
-            if (values.street && !ValidationUtils.isValidAddress(values.street)) {
-                errors.street = translate('bankAccount.error.addressStreet');
+            if (values[inputKeys.street] && !ValidationUtils.isValidAddress(values[inputKeys.street])) {
+                errors[inputKeys.street] = translate('bankAccount.error.addressStreet');
             }
 
-            if (values.zipCode && !ValidationUtils.isValidZipCode(values.zipCode)) {
-                errors.zipCode = translate('bankAccount.error.zipCode');
+            if (values[inputKeys.zipCode] && !ValidationUtils.isValidZipCode(values[inputKeys.zipCode])) {
+                errors[inputKeys.zipCode] = translate('bankAccount.error.zipCode');
             }
 
             return errors;
         },
-        [shouldDisplayStateSelector, stepFields, stepFieldsWithoutState, translate],
+        [inputKeys.street, inputKeys.zipCode, shouldDisplayStateSelector, stepFields, stepFieldsWithoutState, translate],
     );
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
             validate={validate}

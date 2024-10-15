@@ -1,6 +1,6 @@
 import type {OnyxEntry} from 'react-native-onyx';
 import CONST from '@src/CONST';
-import type {NonUSDReimbursementAccountForm} from '@src/types/form';
+import type {ReimbursementAccountForm} from '@src/types/form';
 
 type OwnerValues = {
     firstName: string;
@@ -15,8 +15,8 @@ type OwnerValues = {
     country: string;
 };
 
-function getValuesForOwner(ownerBeingModifiedID: string, nonUSDReimbursementAccountDraft: OnyxEntry<NonUSDReimbursementAccountForm>): OwnerValues {
-    if (!nonUSDReimbursementAccountDraft) {
+function getValuesForOwner(ownerBeingModifiedID: string, reimbursementAccountDraft: OnyxEntry<ReimbursementAccountForm>): OwnerValues {
+    if (!reimbursementAccountDraft) {
         return {
             firstName: '',
             lastName: '',
@@ -47,16 +47,16 @@ function getValuesForOwner(ownerBeingModifiedID: string, nonUSDReimbursementAcco
     } as const;
 
     return {
-        firstName: nonUSDReimbursementAccountDraft[INPUT_KEYS.firstName] ?? '',
-        lastName: nonUSDReimbursementAccountDraft[INPUT_KEYS.lastName] ?? '',
-        ownershipPercentage: nonUSDReimbursementAccountDraft[INPUT_KEYS.ownershipPercentage] ?? '',
-        dob: nonUSDReimbursementAccountDraft[INPUT_KEYS.dob] ?? '',
-        ssnLast4: nonUSDReimbursementAccountDraft[INPUT_KEYS.ssnLast4] ?? '',
-        street: nonUSDReimbursementAccountDraft[INPUT_KEYS.street] ?? '',
-        city: nonUSDReimbursementAccountDraft[INPUT_KEYS.city] ?? '',
-        state: nonUSDReimbursementAccountDraft[INPUT_KEYS.state] ?? '',
-        zipCode: nonUSDReimbursementAccountDraft[INPUT_KEYS.zipCode] ?? '',
-        country: nonUSDReimbursementAccountDraft[INPUT_KEYS.country] ?? '',
+        firstName: reimbursementAccountDraft[INPUT_KEYS.firstName] ?? '',
+        lastName: reimbursementAccountDraft[INPUT_KEYS.lastName] ?? '',
+        ownershipPercentage: reimbursementAccountDraft[INPUT_KEYS.ownershipPercentage] ?? '',
+        dob: reimbursementAccountDraft[INPUT_KEYS.dob] ?? '',
+        ssnLast4: reimbursementAccountDraft[INPUT_KEYS.ssnLast4] ?? '',
+        street: reimbursementAccountDraft[INPUT_KEYS.street] ?? '',
+        city: reimbursementAccountDraft[INPUT_KEYS.city] ?? '',
+        state: reimbursementAccountDraft[INPUT_KEYS.state] ?? '',
+        zipCode: reimbursementAccountDraft[INPUT_KEYS.zipCode] ?? '',
+        country: reimbursementAccountDraft[INPUT_KEYS.country] ?? '',
     };
 }
 

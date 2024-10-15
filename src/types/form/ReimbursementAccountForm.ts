@@ -90,6 +90,7 @@ const INPUT_IDS = {
             COMPANY_DIRECTORS_FULL_NAME: 'companyDirectorsFullName',
             COMPANY_DIRECTORS_JOB_TITLE: 'companyDirectorsJobTitle',
             COMPANY_DIRECTORS_OCCUPATION: 'companyDirectorsOccupation',
+            OWNS_MORE_THAN_25_PERCENT: 'ownsMoreThan25Percent',
             ANY_INDIVIDUAL_OWN_25_PERCENT_OR_MORE: 'anyIndividualOwn25PercentOrMore',
             BENEFICIAL_OWNERS: 'beneficialOwners',
             ENTITY_CHART: 'entityChart',

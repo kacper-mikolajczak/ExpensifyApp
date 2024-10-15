@@ -18,8 +18,8 @@ function Confirmation({onNext, onMove, ownerBeingModifiedID}: ConfirmationProps)
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
-    const values = getValuesForOwner(ownerBeingModifiedID, nonUSDReimbursementAccountDraft);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const values = getValuesForOwner(ownerBeingModifiedID, reimbursementAccountDraft);
 
     return (
         <SafeAreaConsumer>

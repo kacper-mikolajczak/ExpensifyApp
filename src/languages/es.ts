@@ -1953,6 +1953,7 @@ const translations = {
             noDefaultDepositAccountOrDebitCardAvailable: 'Por favor, añade una cuenta bancaria para depósitos o una tarjeta de débito.',
             validationAmounts: 'Los importes de validación que introduciste son incorrectos. Por favor, comprueba tu cuenta bancaria e inténtalo de nuevo.',
             ownershipPercentage: 'Please enter a valid percentage number that is greater than 25',
+            fullName: 'Please enter a valid full name.',
         },
     },
     addPersonalBankAccountPage: {
@@ -2357,8 +2358,7 @@ const translations = {
         areYouDirector: ({companyName}: CompanyNameParams) => `Are you a director or senior officer at ${companyName}?`,
         regulationRequiresUs: 'Regulation requires us to verify if the signer has the authority to take this action on behalf of the business.',
         whatsYourName: "What's your legal name",
-        legalFirstName: 'Legal first name',
-        legalLastName: 'Legal last name',
+        fullName: 'Legal full name',
         whatsYourJobTitle: "What's your job title?",
         jobTitle: 'Job title',
         whatsYourDOB: "What's your date of birth?",

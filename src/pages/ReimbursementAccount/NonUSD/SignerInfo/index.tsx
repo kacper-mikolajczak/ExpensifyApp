@@ -8,7 +8,7 @@ import type {SubStepProps} from '@hooks/useSubStep/types';
 import Navigation from '@navigation/Navigation';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 import DirectorCheck from './DirectorCheck';
 import EnterEmail from './EnterEmail';
 import HangTight from './HangTight';
@@ -26,27 +26,32 @@ type SignerInfoProps = {
     onSubmit: () => void;
 };
 
-const SUBSTEP = CONST.NON_USD_BANK_ACCOUNT.SIGNER_INFO_STEP.SUBSTEP;
+type SignerDetailsFormProps = SubStepProps & {isSecondSigner: boolean};
 
-const bodyContent: Array<ComponentType<SubStepProps>> = [Name, JobTitle, DateOfBirth, UploadDocuments, Confirmation];
-const userIsOwnerBodyContent: Array<ComponentType<SubStepProps>> = [JobTitle, UploadDocuments, Confirmation];
+const SUBSTEP = CONST.NON_USD_BANK_ACCOUNT.SIGNER_INFO_STEP.SUBSTEP;
+const {OWNS_MORE_THAN_25_PERCENT, COMPANY_NAME} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
+
+const bodyContent: Array<ComponentType<SignerDetailsFormProps>> = [Name, JobTitle, DateOfBirth, UploadDocuments, Confirmation];
+const userIsOwnerBodyContent: Array<ComponentType<SignerDetailsFormProps>> = [JobTitle, UploadDocuments, Confirmation];
 
 function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
     const {translate} = useLocalize();
 
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
-    const isUserOwner = nonUSDReimbursementAccountDraft?.[INPUT_IDS.OWNERSHIP_INFO_STEP.OWNS_MORE_THAN_25_PERCENT] ?? false;
-    const companyName = nonUSDReimbursementAccountDraft?.[INPUT_IDS.BUSINESS_INFO_STEP.NAME] ?? '';
+    // TODO set this based on param from redirect or BE response
+    const isSecondSigner = false;
+    const isUserOwner = reimbursementAccount?.achData?.additionalData?.corpay?.[OWNS_MORE_THAN_25_PERCENT] ?? reimbursementAccountDraft?.[OWNS_MORE_THAN_25_PERCENT] ?? false;
+    const companyName = reimbursementAccount?.achData?.additionalData?.corpay?.[COMPANY_NAME] ?? reimbursementAccountDraft?.[COMPANY_NAME] ?? '';
 
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_DIRECTOR);
     const [isUserDirector, setIsUserDirector] = useState(false);
 
     const submit = () => {
-        if (currency === 'AUD') {
+        if (currency === CONST.CURRENCY.AUD) {
             setCurrentSubStep(SUBSTEP.ENTER_EMAIL);
         } else {
             onSubmit();
@@ -77,7 +82,7 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
         prevScreen,
         moveTo,
         goToTheLastStep,
-    } = useSubStep({bodyContent: isUserOwner ? userIsOwnerBodyContent : bodyContent, startFrom: 0, onFinished: submit});
+    } = useSubStep<SignerDetailsFormProps>({bodyContent: isUserOwner ? userIsOwnerBodyContent : bodyContent, startFrom: 0, onFinished: submit});
 
     const handleBackButtonPress = () => {
         if (isEditing) {
@@ -123,6 +128,7 @@ function SignerInfo({onBackButtonPress, onSubmit}: SignerInfoProps) {
                     isEditing={isEditing}
                     onNext={nextScreen}
                     onMove={moveTo}
+                    isSecondSigner={isSecondSigner}
                 />
             )}
 

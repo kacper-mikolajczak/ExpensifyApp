@@ -43,7 +43,7 @@ function DirectorCheck({title, onSelectedValue, defaultValue}: DirectorCheckProp
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate('common.confirm')}
             onSubmit={handleSubmit}
             style={[styles.mh5, styles.flexGrow1]}

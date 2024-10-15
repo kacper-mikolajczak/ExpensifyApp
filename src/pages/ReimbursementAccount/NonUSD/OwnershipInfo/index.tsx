@@ -9,7 +9,7 @@ import type {SubStepProps} from '@hooks/useSubStep/types';
 import * as FormActions from '@userActions/FormActions';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 import OwnerCheck from './OwnerCheck';
 import Address from './OwnerDetailsFormSubSteps/Address';
 import Confirmation from './OwnerDetailsFormSubSteps/Confirmation';
@@ -28,8 +28,8 @@ type OwnershipInfoProps = {
     onSubmit: () => void;
 };
 
-const OWNERSHIP_INFO_STEP_KEY = INPUT_IDS.OWNERSHIP_INFO_STEP;
-const {FIRST_NAME, LAST_NAME, OWNERSHIP_PERCENTAGE, DOB, SSN_LAST_4, STREET, CITY, STATE, ZIP_CODE, COUNTRY} = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INFO_STEP.OWNER_DATA;
+const {OWNS_MORE_THAN_25_PERCENT, ANY_INDIVIDUAL_OWN_25_PERCENT_OR_MORE, BENEFICIAL_OWNERS, COMPANY_NAME, ENTITY_CHART} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
+const {FIRST_NAME, LAST_NAME, OWNERSHIP_PERCENTAGE, DOB, SSN_LAST_4, STREET, CITY, STATE, ZIP_CODE, COUNTRY, PREFIX} = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INFO_STEP.OWNER_DATA;
 const SUBSTEP = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INFO_STEP.SUBSTEP;
 
 type OwnerDetailsFormProps = SubStepProps & {
@@ -45,7 +45,9 @@ const bodyContent: Array<ComponentType<OwnerDetailsFormProps>> = [Name, Ownershi
 function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const {translate} = useLocalize();
 
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+
     const [ownerKeys, setOwnerKeys] = useState<string[]>([]);
     const [ownerBeingModifiedID, setOwnerBeingModifiedID] = useState('currentUser');
     const [isEditingCreatedOwner, setIsEditingCreatedOwner] = useState(false);
@@ -54,14 +56,13 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
     const [isAnyoneElseOwner, setIsAnyoneElseOwner] = useState(false);
     const [currentSubStep, setCurrentSubStep] = useState<number>(SUBSTEP.IS_USER_OWNER);
     const [totalOwnedPercentage, setTotalOwnedPercentage] = useState<Record<string, number>>({});
-    const companyName = nonUSDReimbursementAccountDraft?.[INPUT_IDS.BUSINESS_INFO_STEP.NAME] ?? '';
-    const entityChart = nonUSDReimbursementAccountDraft?.[OWNERSHIP_INFO_STEP_KEY.ENTITY_CHART] ?? '';
+    const companyName = reimbursementAccount?.achData?.additionalData?.corpay?.[COMPANY_NAME] ?? reimbursementAccountDraft?.[COMPANY_NAME] ?? '';
+    const entityChart = reimbursementAccount?.achData?.additionalData?.corpay?.[ENTITY_CHART] ?? reimbursementAccountDraft?.[ENTITY_CHART] ?? [];
 
-    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
-    const shouldAskForEntityChart = currency === CONST.CURRENCY.AUD && entityChart === '';
+    const shouldAskForEntityChart = currency === CONST.CURRENCY.AUD && entityChart.length === 0;
 
     const totalOwnedPercentageSum = Object.values(totalOwnedPercentage).reduce((acc, value) => acc + value, 0);
     const canAddMoreOwners = totalOwnedPercentageSum <= 75;
@@ -70,15 +71,15 @@ function OwnershipInfo({onBackButtonPress, onSubmit}: OwnershipInfoProps) {
         const ownerFields = [FIRST_NAME, LAST_NAME, OWNERSHIP_PERCENTAGE, DOB, SSN_LAST_4, STREET, CITY, STATE, ZIP_CODE, COUNTRY];
         const owners = ownerKeys.map((ownerKey) =>
             ownerFields.reduce((acc, fieldName) => {
-                acc[fieldName] = nonUSDReimbursementAccountDraft?.[`owner_${ownerKey}_${fieldName}`] ?? undefined;
+                acc[fieldName] = reimbursementAccountDraft ? reimbursementAccountDraft?.[`${PREFIX}_${ownerKey}_${fieldName}`] : undefined;
                 return acc;
             }, {} as Record<string, string | undefined>),
         );
 
-        FormActions.setDraftValues(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM, {
-            [OWNERSHIP_INFO_STEP_KEY.OWNS_MORE_THAN_25_PERCENT]: isUserOwner,
-            [OWNERSHIP_INFO_STEP_KEY.HAS_OTHER_OWNERS]: isAnyoneElseOwner,
-            [OWNERSHIP_INFO_STEP_KEY.OWNERS]: JSON.stringify(owners),
+        FormActions.setDraftValues(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM, {
+            [OWNS_MORE_THAN_25_PERCENT]: isUserOwner,
+            [ANY_INDIVIDUAL_OWN_25_PERCENT_OR_MORE]: isAnyoneElseOwner,
+            [BENEFICIAL_OWNERS]: JSON.stringify(owners),
         });
         onSubmit();
     };

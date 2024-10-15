@@ -6,7 +6,7 @@ import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
-import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
+import useReimbursementAccountStepFormSubmit from '@hooks/useReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import * as ValidationUtils from '@libs/ValidationUtils';
@@ -21,13 +21,13 @@ const {SSN_LAST_4, PREFIX} = CONST.NON_USD_BANK_ACCOUNT.OWNERSHIP_INFO_STEP.OWNE
 function Last4SSN({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifiedID}: Last4SSNProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
 
     const last4SSNInputID = `${PREFIX}_${ownerBeingModifiedID}_${SSN_LAST_4}` as const;
-    const defaultLast4SSN = nonUSDReimbursementAccountDraft?.[last4SSNInputID] ?? '';
+    const defaultLast4SSN = reimbursementAccountDraft?.[last4SSNInputID] ?? '';
 
     const validate = useCallback(
-        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
             const errors = ValidationUtils.getFieldRequiredErrors(values, [last4SSNInputID]);
 
             if (values[last4SSNInputID] && !ValidationUtils.isValidSSNLastFour(values[last4SSNInputID])) {
@@ -39,7 +39,7 @@ function Last4SSN({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifi
         [last4SSNInputID, translate],
     );
 
-    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
+    const handleSubmit = useReimbursementAccountStepFormSubmit({
         fieldIds: [last4SSNInputID],
         onNext,
         shouldSaveDraft: isEditing,
@@ -47,7 +47,7 @@ function Last4SSN({onNext, isEditing, isUserEnteringHisOwnData, ownerBeingModifi
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
             validate={validate}

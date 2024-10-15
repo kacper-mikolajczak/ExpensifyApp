@@ -486,7 +486,7 @@ const CONST = {
             },
             OWNER_DATA: {
                 OWNER_KEYS: 'ownerKeys',
-                PREFIX: 'owner',
+                PREFIX: 'beneficialOwner',
                 FIRST_NAME: 'firstName',
                 LAST_NAME: 'lastName',
                 OWNERSHIP_PERCENTAGE: 'ownershipPercentage',

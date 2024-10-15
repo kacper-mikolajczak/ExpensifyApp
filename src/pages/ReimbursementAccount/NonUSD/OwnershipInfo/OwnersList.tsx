@@ -14,7 +14,7 @@ import useThemeStyles from '@hooks/useThemeStyles';
 import getValuesForOwner from '@pages/ReimbursementAccount/NonUSD/utils/getValuesForOwner';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 
 type OwnersListProps = {
     /** Method called when user confirms data */
@@ -30,23 +30,25 @@ type OwnersListProps = {
     ownerKeys: string[];
 };
 
+const {ENTITY_CHART} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
+
 function OwnersList({handleConfirmation, ownerKeys, handleOwnerEdit, handleOwnershipChartEdit}: OwnersListProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const {isOffline} = useNetwork();
 
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
-    const ownershipChartValue = nonUSDReimbursementAccountDraft?.[INPUT_IDS.OWNERSHIP_INFO_STEP.ENTITY_CHART] ?? '';
-
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const ownershipChartValue = reimbursementAccount?.achData?.additionalData?.corpay?.[ENTITY_CHART] ?? reimbursementAccountDraft?.[ENTITY_CHART] ?? [];
+
     const policyID = reimbursementAccount?.achData?.policyID ?? '-1';
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`);
     const currency = policy?.outputCurrency ?? '';
 
     const owners =
-        nonUSDReimbursementAccountDraft &&
+        reimbursementAccountDraft &&
         ownerKeys.map((ownerKey) => {
-            const ownerData = getValuesForOwner(ownerKey, nonUSDReimbursementAccountDraft);
+            const ownerData = getValuesForOwner(ownerKey, reimbursementAccountDraft);
 
             return (
                 <MenuItem
@@ -86,7 +88,7 @@ function OwnersList({handleConfirmation, ownerKeys, handleOwnerEdit, handleOwner
                     {currency === CONST.CURRENCY.AUD && (
                         <MenuItemWithTopDescription
                             description={translate('ownershipInfoStep.certified')}
-                            title={ownershipChartValue}
+                            title={ownershipChartValue.map((file) => file.name).join(', ') || ''}
                             shouldShowRightIcon
                             onPress={handleOwnershipChartEdit}
                             style={[styles.mt8]}

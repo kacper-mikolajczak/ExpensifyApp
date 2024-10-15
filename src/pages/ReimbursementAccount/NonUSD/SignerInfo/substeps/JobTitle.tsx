@@ -6,41 +6,43 @@ import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useLocalize from '@hooks/useLocalize';
-import useNonUSDReimbursementAccountStepFormSubmit from '@hooks/useNonUSDReimbursementAccountStepFormSubmit';
+import useReimbursementAccountStepFormSubmit from '@hooks/useReimbursementAccountStepFormSubmit';
 import type {SubStepProps} from '@hooks/useSubStep/types';
 import useThemeStyles from '@hooks/useThemeStyles';
 import * as ValidationUtils from '@libs/ValidationUtils';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import INPUT_IDS from '@src/types/form/NonUSDReimbursementAccountForm';
+import INPUT_IDS from '@src/types/form/ReimbursementAccountForm';
 
-type JobTitleProps = SubStepProps;
+type JobTitleProps = SubStepProps & {isSecondSigner: boolean};
 
-const {JOB_TITLE} = INPUT_IDS.SIGNER_INFO_STEP;
+const {SIGNER_JOB_TITLE, SECOND_SIGNER_JOB_TITLE} = INPUT_IDS.ADDITIONAL_DATA.CORPAY;
 
-function JobTitle({onNext, isEditing}: JobTitleProps) {
+function JobTitle({onNext, isEditing, isSecondSigner}: JobTitleProps) {
+    const inputID = isSecondSigner ? SECOND_SIGNER_JOB_TITLE : SIGNER_JOB_TITLE;
     const {translate} = useLocalize();
     const styles = useThemeStyles();
 
-    const [nonUSDReimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
-    const defaultValue = nonUSDReimbursementAccountDraft?.[JOB_TITLE] ?? '';
+    const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
+    const [reimbursementAccountDraft] = useOnyx(ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM_DRAFT);
+    const defaultValue = reimbursementAccount?.achData?.additionalData?.corpay?.[inputID] ?? reimbursementAccountDraft?.[inputID] ?? '';
 
     const validate = useCallback(
-        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM> => {
-            return ValidationUtils.getFieldRequiredErrors(values, [JOB_TITLE]);
+        (values: FormOnyxValues<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM> => {
+            return ValidationUtils.getFieldRequiredErrors(values, [inputID]);
         },
-        [],
+        [inputID],
     );
 
-    const handleSubmit = useNonUSDReimbursementAccountStepFormSubmit({
-        fieldIds: [JOB_TITLE],
+    const handleSubmit = useReimbursementAccountStepFormSubmit({
+        fieldIds: [inputID],
         onNext,
         shouldSaveDraft: isEditing,
     });
 
     return (
         <FormProvider
-            formID={ONYXKEYS.FORMS.NON_USD_REIMBURSEMENT_ACCOUNT_FORM}
+            formID={ONYXKEYS.FORMS.REIMBURSEMENT_ACCOUNT_FORM}
             submitButtonText={translate(isEditing ? 'common.confirm' : 'common.next')}
             onSubmit={handleSubmit}
             validate={validate}
@@ -52,7 +54,7 @@ function JobTitle({onNext, isEditing}: JobTitleProps) {
                 label={translate('signerInfoStep.jobTitle')}
                 aria-label={translate('signerInfoStep.jobTitle')}
                 role={CONST.ROLE.PRESENTATION}
-                inputID={JOB_TITLE}
+                inputID={inputID}
                 containerStyles={[styles.mt6]}
                 defaultValue={defaultValue}
                 shouldSaveDraft={!isEditing}

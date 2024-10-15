@@ -29,7 +29,6 @@ export type {PersonalBankAccountForm} from './PersonalBankAccountForm';
 export type {PrivateNotesForm} from './PrivateNotesForm';
 export type {ProfileSettingsForm} from './ProfileSettingsForm';
 export type {ReimbursementAccountForm} from './ReimbursementAccountForm';
-export type {NonUSDReimbursementAccountForm} from './NonUSDReimbursementAccountForm';
 export type {ReportDescriptionForm} from './ReportDescriptionForm';
 export type {ReportFieldsEditForm} from './ReportFieldsEditForm';
 export type {ReportVirtualCardFraudForm} from './ReportVirtualCardFraudForm';
