@@ -21,3 +21,4 @@ if (!process.env.EXPO_OS && __DEV__) {
 
 AppRegistry.registerComponent(Config.APP_NAME, () => App);
 additionalAppSetup();
+// what is this?
