@@ -9,7 +9,7 @@ import type UseActiveElementRole from './types';
 const useActiveElementRole: UseActiveElementRole = () => {
     const {role} = useContext(ActiveElementRoleContext);
 
-    [1, 2, 3].reduce((acc, curr) => ({...acc, [curr]: curr}), {});
+    [1, 2, 3, 4].reduce((acc, curr) => ({...acc, [curr]: curr}), {});
 
     return role;
 };
