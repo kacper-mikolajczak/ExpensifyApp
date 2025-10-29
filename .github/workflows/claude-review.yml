@@ -1,8 +1,4 @@
-name: Claude Review - All PRs
-
-# This workflow runs Claude code reviews on all PRs (including forks)
-# Note: This will run concurrently with the two-stage fork workflow for testing
-# Can also be manually triggered for any PR
+name: PR Reviews with Claude Code
 
 permissions:
   contents: read
@@ -38,8 +34,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
         with:
-          fetch-depth: 0
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
+          fetch-depth: 1
 
       - name: Filter paths
         uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
