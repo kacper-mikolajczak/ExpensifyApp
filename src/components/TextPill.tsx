@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import type {StyleProp, TextStyle} from 'react-native';
 // eslint-disable-next-line no-restricted-imports
 import useThemeStyles from '@hooks/useThemeStyles';
@@ -14,6 +14,19 @@ type TextPillProps = {
 
     children: React.ReactNode;
 };
+
+const TestTextPill = memo(({color, textStyles, children}: TextPillProps) => {
+
+    return (
+        <Text style={[{backgroundColor: color ?? colors.red, borderRadius: 6}, styles.overflowHidden, styles.textStrong, styles.ph2, styles.pv1, styles.flexShrink0, textStyles]}>
+            {children}
+        </Text>
+    );
+}, {
+    equality: (prevProps, nextProps) => {
+        JSON.stringify(prevProps) === JSON.stringify(nextProps);
+    }
+});
 
 function TextPill({color, textStyles, children}: TextPillProps) {
     const styles = useThemeStyles();
