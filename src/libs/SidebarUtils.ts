@@ -522,7 +522,7 @@ function sortReportsToDisplayInLHN(
     const categories = categorizeReportsForLHN(reportsToDisplay, reportsDrafts, reportNameValuePairs, reportAttributes);
 
     // Step 2: Sort each category
-    const sortedCategories = sortCategorizedReports(categories, isInDefaultMode, localeCompare);
+    const sortedCategories = {...sortCategorizedReports(categories, isInDefaultMode, localeCompare)};
 
     // Step 3: Combine and extract IDs
     const result = combineReportCategories(
