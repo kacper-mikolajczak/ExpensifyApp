@@ -1,0 +1,36 @@
+name: Complexity Analysis
+
+permissions:
+    contents: read
+    pull-requests: write
+
+on:
+    workflow_dispatch:
+        inputs:
+            PR_NUMBER:
+                description: "Pull Request number to analyze"
+                required: true
+                type: number
+
+concurrency:
+    group: complexity-analysis-${{ github.event.inputs.PR_NUMBER }}
+    cancel-in-progress: true
+
+jobs:
+    analyze:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node
+              uses: ./.github/actions/composite/setupNode
+
+            - name: Run Complexity Analysis
+              uses: ./.github/actions/javascript/analyzeComplexity
+              with:
+                  pr_number: ${{ github.event.inputs.PR_NUMBER }}
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
