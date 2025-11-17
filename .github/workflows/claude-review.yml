@@ -33,6 +33,12 @@ jobs:
               - 'docs/**/*.md'
               - 'docs/**/*.csv'
 
+      - name: Display CLAUDE.md content
+        run: |
+          echo "CLAUDE.md content:"
+          cat CLAUDE.md
+          echo "CLAUDE.md content end"
+
       - name: Run Claude Code (code)
         if: steps.filter.outputs.code == 'true'
         uses: anthropics/claude-code-action@f30f5eecfce2f34fa72e40fa5f7bcdbdcad12eb8 # v1.0.14
