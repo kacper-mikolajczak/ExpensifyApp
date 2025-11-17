@@ -155,6 +155,49 @@ Key GitHub Actions workflows:
 - `typecheck.yml`: TypeScript validation
 - `lint.yml`: Code quality checks
 - `e2ePerformanceTests.yml`: Performance testing
+- `claude-review.yml`: AI-powered PR code review
+
+### AI Code Review
+The repository uses Claude AI for automated PR reviews through the `claude-review.yml` GitHub Action workflow.
+
+#### How It Works
+1. **Trigger**: Activates on PR open or ready-for-review events
+2. **Path Filtering**: Routes PRs to specialized reviewers based on changed files:
+   - Code changes in `src/**` → `/review-code-pr`
+   - Documentation changes in `docs/**/*.md` or `docs/**/*.csv` → `/review-helpdot-pr`
+3. **Diff Delivery**: The workflow pre-fetches the complete PR diff using `gh pr diff` and injects it directly into Claude's initial context
+4. **Review Process**: Claude analyzes the diff with access to the repository codebase and can:
+   - Read files using the file reading tools
+   - Search code with `Glob` and `Grep`
+   - Post review comments via GitHub API
+   - Add inline comments on specific lines
+
+#### PR Diff Format
+The diff is provided to Claude in the following format:
+
+```xml
+<pr_diff>
+[Complete unified diff output from gh pr diff]
+</pr_diff>
+```
+
+This ensures:
+- **Consistency**: Every review receives the diff in the same format
+- **Efficiency**: Eliminates redundant API calls during review
+- **Performance**: Reduces review latency by 20-40 seconds
+- **Cost Optimization**: Saves API token consumption by avoiding tool-use overhead for diff retrieval
+
+#### Available Tools
+Claude has access to:
+- `Task`: Task management for organizing review work
+- `Glob`, `Grep`: Code search and pattern matching
+- `Read`: File reading for context
+- `Bash(gh pr comment:*)`: Posting PR-level comments
+- `Bash(gh pr view:*)`: Viewing PR metadata
+- `Bash(.github/scripts/addPrReaction.sh:*)`: Adding reactions to PRs
+- `mcp__github_inline_comment__create_inline_comment`: Creating inline code comments
+
+**Note**: `gh pr diff` is intentionally excluded from the allowed tools since the diff is pre-fetched and provided in the initial context.
 
 ## Related Repositories
 
