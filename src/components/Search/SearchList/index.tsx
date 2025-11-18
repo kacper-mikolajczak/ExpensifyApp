@@ -192,6 +192,9 @@ function SearchList({
             }, 0),
         [flattenedItems],
     );
+    
+    const totalItems = flattenedItems.length;
+    const selectedCount = flattenedItems.filter((item) => item?.isSelected).length;
 
     const {translate} = useLocalize();
     const {isOffline} = useNetwork();
@@ -327,6 +330,13 @@ function SearchList({
                         groupBy={groupBy}
                         searchType={type}
                         onDEWModalOpen={onDEWModalOpen}
+                        userInfo={{
+                            walletTierName: userWalletTierName,
+                            isValidated: isUserValidated,
+                            billingFundID: userBillingFundID,
+                            accountID: accountID,
+                            isOffline: isOffline,
+                        }}
                         userWalletTierName={userWalletTierName}
                         isUserValidated={isUserValidated}
                         personalDetails={personalDetails}

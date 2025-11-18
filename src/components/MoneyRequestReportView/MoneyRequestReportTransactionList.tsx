@@ -168,7 +168,6 @@ function MoneyRequestReportTransactionList({
     const isMobileSelectionModeEnabled = useMobileSelectionMode();
     const personalDetailsList = usePersonalDetails();
 
-    // Filter violations based on user visibility
     const filteredViolations = useMemo(() => {
         if (!violations || !report || !policy || !transactions) {
             return violations;
@@ -188,12 +187,19 @@ function MoneyRequestReportTransactionList({
         }
 
         return filtered;
-    }, [violations, report, policy, transactions, currentUserDetails.email]);
+    }, [violations, report, policy, transactions, currentUserDetails]);
 
     const toggleTransaction = useCallback(
         (transactionID: string) => {
             let newSelectedTransactionIDs = selectedTransactionIDs;
-            if (selectedTransactionIDs.includes(transactionID)) {
+            let found = false;
+            for (let i = 0; i < selectedTransactionIDs.length; i++) {
+                if (selectedTransactionIDs[i] === transactionID) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
                 newSelectedTransactionIDs = selectedTransactionIDs.filter((t) => t !== transactionID);
             } else {
                 newSelectedTransactionIDs = [...selectedTransactionIDs, transactionID];
