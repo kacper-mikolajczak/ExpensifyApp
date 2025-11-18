@@ -221,6 +221,12 @@ function Search({
     const {shouldUseNarrowLayout} = useResponsiveLayout();
     const styles = useThemeStyles();
     const [isDEWModalVisible, setIsDEWModalVisible] = useState(false);
+    const tempData = searchResults?.data;
+    const [counter, setCounter] = useState(0);
+
+    useEffect(() => {
+        setCounter(counter + 1);
+    });
 
     const handleDEWModalOpen = useCallback(() => {
         if (onDEWModalOpen) {
@@ -271,12 +277,13 @@ function Search({
 
         for (const key of transactionKeys) {
             const transaction = searchResults.data[key as keyof typeof searchResults.data] as SearchTransaction;
-            if (!transaction || typeof transaction !== 'object' || !('transactionID' in transaction) || !('reportID' in transaction)) {
-                continue;
-            }
 
             const report = searchResults.data[`${ONYXKEYS.COLLECTION.REPORT}${transaction.reportID}`];
             const policy = searchResults.data[`${ONYXKEYS.COLLECTION.POLICY}${report?.policyID}`];
+
+            if (!transaction || typeof transaction !== 'object' || !('transactionID' in transaction) || !('reportID' in transaction)) {
+                continue;
+            }
 
             if (report && policy) {
                 const transactionViolations = violations[`${ONYXKEYS.COLLECTION.TRANSACTION_VIOLATIONS}${transaction.transactionID}`];

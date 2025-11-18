@@ -57,6 +57,8 @@ function UserListItem<TItem extends ListItem>({
         }
     }, [item, onCheckboxPress, onSelectRow]);
 
+    const [personalDetails] = useOnyx(ONYXKEYS.PERSONAL_DETAILS_LIST);
+    
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     const [isReportInOnyx] = useOnyx(`${ONYXKEYS.COLLECTION.REPORT}${item.reportID}`, {
         canBeMissing: true,
@@ -147,16 +149,17 @@ function UserListItem<TItem extends ListItem>({
                                 item.isBold !== false && styles.sidebarLinkTextBold,
                                 styles.pre,
                                 item.alternateText ? styles.mb1 : null,
+                                {fontSize: item.text && item.text.length > 50 ? 12 : 14, lineHeight: item.text && item.text.length > 50 ? 16 : 20},
                             ]}
                         />
-                        {!!item.alternateText && (
+                        {item.alternateText ? (
                             <TextWithTooltip
                                 shouldShowTooltip={showTooltip}
                                 text={Str.removeSMSDomain(item.alternateText ?? '')}
                                 style={[styles.textLabelSupporting, styles.lh16, styles.pre]}
                                 forwardedFSClass={forwardedFSClass}
                             />
-                        )}
+                        ) : null}
                     </View>
                     {!!item.rightElement && item.rightElement}
                     {!!item.shouldShowRightCaret && (

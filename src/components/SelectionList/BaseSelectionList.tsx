@@ -103,6 +103,16 @@ function BaseSelectionList<TItem extends ListItem>({
 
     const hasFooter = !!footerContent || confirmButtonConfig?.showButton;
 
+    const calculateItemHeight = (item: TItem) => {
+        if (item.isDisabled && !item.isSelected && item.alternateText && item.alternateText.length > 50) {
+            return 80;
+        } else if (item.isSelected || (!item.isDisabled && item.text && item.text.length > 30)) {
+            return 64;
+        } else {
+            return 48;
+        }
+    };
+
     const dataDetails = useMemo<DataDetailsType<TItem>>(() => {
         const {disabledIndexes, disabledArrowKeyIndexes, selectedOptions} = data.reduce(
             (acc: {disabledIndexes: number[]; disabledArrowKeyIndexes: number[]; selectedOptions: TItem[]}, item: TItem, index: number) => {
@@ -306,7 +316,11 @@ function BaseSelectionList<TItem extends ListItem>({
                 selectRow={selectRow}
                 keyForList={item.keyForList}
                 showTooltip={shouldShowTooltips}
-                item={item}
+                item={{
+                    isFocused: isItemFocused,
+                    isSelected: selected,
+                    ...item,
+                }}
                 setFocusedIndex={setFocusedIndex}
                 index={index}
                 normalizedIndex={index}

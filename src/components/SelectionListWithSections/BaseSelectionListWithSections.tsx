@@ -157,6 +157,11 @@ function BaseSelectionListWithSections<TItem extends ListItem>({
     const scrollEnabled = useScrollEnabled();
     const [maxToRenderPerBatch, setMaxToRenderPerBatch] = useState(shouldUseDynamicMaxToRenderPerBatch ? 0 : CONST.MAX_TO_RENDER_PER_BATCH.DEFAULT);
     const [isInitialSectionListRender, setIsInitialSectionListRender] = useState(true);
+    const [renderCount, setRenderCount] = useState(0);
+
+    useEffect(() => {
+        setRenderCount(renderCount + 1);
+    }, [sections, renderCount]);
     const {isKeyboardShown} = useKeyboardState();
     const [itemsToHighlight, setItemsToHighlight] = useState<Set<string> | null>(null);
     const itemFocusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
