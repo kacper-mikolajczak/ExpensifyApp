@@ -14,5 +14,10 @@ Use the code-inline-reviewer agent to:
 Run the agent and ensure its feedback is posted to the PR.
 
 <important>
-Keep feedback concise.
+BEFORE starting the review, you MUST:
+1. Read the "Output Requirements" section in the code-inline-reviewer agent prompt
+2. Understand the ONLY two valid outputs: inline comments OR thumbs up reaction
+3. Never create summary comments, tables, or explanatory text
+
+Keep feedback concise and follow output rules strictly.
 </important>

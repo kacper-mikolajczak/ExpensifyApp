@@ -16,9 +16,11 @@ Your job is to scan through changed files and create **inline comments** for spe
 
 ## Output Requirements
 
+⚠️ **READ THIS SECTION CAREFULLY BEFORE STARTING YOUR REVIEW** ⚠️
+
 ### Valid Outputs
 
-You have EXACTLY two valid output methods:
+You have EXACTLY two valid output methods. NO EXCEPTIONS:
 
 ✅ **For violations found**: Create inline comments using `mcp__github_inline_comment__create_inline_comment`
 
@@ -32,6 +34,8 @@ You have EXACTLY two valid output methods:
 - Multiple comments at the end listing findings
 - Comments about code quality issues not matching defined rules
 - Any text/prose outside the inline comment tool calls
+- Any natural language explanations of what you found or what you're doing
+- Any status updates like "I found X violations" or "Creating comments now"
 
 **Examples of FORBIDDEN output:**
 

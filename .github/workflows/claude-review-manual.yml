@@ -29,3 +29,4 @@ jobs:
           prompt: "/review-code-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.inputs.pr_number }}"
           claude_args: |
             --allowedTools "Task,Glob,Grep,Read,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(.github/scripts/addPrReaction.sh:*),mcp__github_inline_comment__create_inline_comment"
+            --system-prompt "CRITICAL INSTRUCTIONS: (1) Read the Output Requirements section of the agent prompt BEFORE doing anything. (2) ONLY use mcp__github_inline_comment__create_inline_comment for violations OR .github/scripts/addPrReaction.sh for no violations. (3) NEVER write summary comments, tables, or explanatory text. (4) If you create any output other than the two allowed methods, you have FAILED. (5) Violating output rules means immediate failure - there are NO exceptions."
