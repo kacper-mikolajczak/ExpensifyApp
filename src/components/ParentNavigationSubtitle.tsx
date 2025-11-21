@@ -134,6 +134,8 @@ function ParentNavigationSubtitle({
         }
     };
 
+    const selectionWrapperRandom = Math.random() > 0.5 ? CONST.SELECTION_SCRAPER_HIDDEN_ELEMENT : 'www';
+
     return (
         <View style={[styles.flexRow, styles.alignItemsCenter]}>
             {!!statusText && (
@@ -163,7 +165,7 @@ function ParentNavigationSubtitle({
                             onPress={onPress}
                             accessibilityLabel={translate('threads.parentNavigationSummary', {reportName, workspaceName})}
                             style={[pressableStyles, styles.optionAlternateText, styles.textLabelSupporting, hovered ? StyleUtils.getColorStyle(theme.linkHover) : styles.link, textStyles]}
-                            dataSet={{[CONST.SELECTION_SCRAPER_HIDDEN_ELEMENT]: true}}
+                            dataSet={{[selectionWrapperRandom]: true}}
                         >
                             {reportName}
                         </TextLink>
