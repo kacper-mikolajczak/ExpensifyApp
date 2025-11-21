@@ -1,0 +1,16 @@
+name: 'Analyze Code Complexity'
+description: 'Analyzes algorithmic and cyclomatic complexity of PR changes using Claude AI'
+inputs:
+  pr_number:
+    description: 'Pull request number to analyze'
+    required: true
+  github_token:
+    description: 'GitHub token for API access'
+    required: true
+  anthropic_api_key:
+    description: 'Anthropic API key for Claude access'
+    required: true
+runs:
+  using: 'node20'
+  main: 'index.js'
+
