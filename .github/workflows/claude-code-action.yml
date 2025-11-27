@@ -35,4 +35,4 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt: "Review the code in the PR and provide feedback."
+          prompt: "Review the code in PR #${{ github.event.inputs.pr_number }} of repository ${{ github.repository }} and provide feedback."
