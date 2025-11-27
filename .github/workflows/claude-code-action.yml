@@ -1,0 +1,37 @@
+name: Claude Code Action (Manual)
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to run Claude on (optional - defaults to current PR)"
+        required: false
+        type: string
+      branch:
+        description: "Branch to checkout (optional - defaults to current branch)"
+        required: false
+        type: string
+
+concurrency:
+  group: claude-code-action-${{ github.event.inputs.pr_number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-claude:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
+          fetch-depth: 1
+
+      - name: Run Claude Code Action
+        uses: anthropics/claude-code-action@a7e4c51380c42dd89b127f5e5f9be7b54020bc6b # v1.0.21
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
