@@ -38,4 +38,4 @@ jobs:
           prompt: "PR #${{ github.event.inputs.pr_number }} of repository ${{ github.repository }}"
           claude_args: |
             --allowedTools "Task,Glob,Grep,Read,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(addPrReaction.sh:*),mcp__github_inline_comment__create_inline_comment"
-            --systemPrompt "/tell-a-joke"
+            --system-prompt "/tell-a-joke"
