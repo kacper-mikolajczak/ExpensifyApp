@@ -39,3 +39,4 @@ jobs:
           claude_args: |
             --system-prompt "/tell-a-joke"
             --json-schema '{"type": "object", "properties": {"joke": {"type": "string"}}}'
+            --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*)"

@@ -1,12 +1,12 @@
 ---
-allowed-tools: Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)
+allowed-tools: Bash(gh pr comment:*),Bash(gh pr diff:*)
 description: Tell a joke based on the contents of a given PR
 ---
 
-Analyze the given PR and create a funny, contextual joke based on its contents.
+Analyze the given PR diff and create a funny, contextual joke based on its contents.
 
 Steps:
-1. Review the PR changes, description, and file modifications
+1. Review the PR changes
 2. Identify humorous aspects such as:
    - Naming choices (variable/function names)
    - Type of changes (large refactors, tiny fixes, etc.)
@@ -14,6 +14,7 @@ Steps:
    - Patterns in the code (repeated patterns, complexity)
    - PR title or description quirks
 3. Create a clean, professional joke that relates to what you found
+4. Post the joke as a comment in PR discussion
 
 Requirements:
 - Keep it lighthearted and respectful (never mean-spirited)
