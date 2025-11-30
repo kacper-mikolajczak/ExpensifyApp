@@ -3,7 +3,7 @@ allowed-tools: Bash(gh pr view:*),Bash(gh pr diff:*),mcp__github_inline_comment_
 description: Tell a joke based on the contents of a given PR
 ---
 
-Analyze the given PR diff and create a funny, contextual joke based on its contents.
+Analyze the given PR diff and create a funny, contextual joke based on its contents, then post it as a comment.
 
 Steps:
 1. Review the PR changes
