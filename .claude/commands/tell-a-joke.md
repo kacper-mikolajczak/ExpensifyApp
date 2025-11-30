@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(gh pr comment:*),Bash(gh pr diff:*)
+allowed-tools: Bash(gh pr view:*),Bash(gh pr diff:*),mcp__github_inline_comment__create_inline_comment
 description: Tell a joke based on the contents of a given PR
 ---
 
@@ -14,7 +14,7 @@ Steps:
    - Patterns in the code (repeated patterns, complexity)
    - PR title or description quirks
 3. Create a clean, professional joke that relates to what you found
-4. Post the joke as a comment in PR discussion
+4. Post the joke as an inline comment in PR discussion using `mcp__github_inline_comment__create_inline_comment` tool
 
 Requirements:
 - Keep it lighthearted and respectful (never mean-spirited)
