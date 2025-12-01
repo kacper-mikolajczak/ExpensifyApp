@@ -1,0 +1,36 @@
+name: Echo ok
+
+permissions:
+  contents: read
+
+on:
+  pull_request_target:
+    types: [opened, ready_for_review]
+
+concurrency:
+  group: echo-ok-${{ github.event.pull_request.html_url }}
+  cancel-in-progress: true
+
+jobs:
+  echo-ok:
+    if: github.event.pull_request.draft != true && !contains(github.event.pull_request.title, 'Revert')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
+        with:
+          fetch-depth: 1
+
+      - name: Add claude utility scripts to PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/.claude/scripts" >> "$GITHUB_PATH"
+
+      - name: Run Echo Ok
+        uses: anthropics/claude-code-action@a7e4c51380c42dd89b127f5e5f9be7b54020bc6b # v1.0.21
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          allowed_non_write_users: "*"
+          prompt: "/echo-ok"
+          claude_args: |
+            --allowedTools "Bash(echoOk.sh)"
