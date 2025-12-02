@@ -1,4 +1,5 @@
 ---
+tools: Bash
 description: Echo ok agent
 ---
 
