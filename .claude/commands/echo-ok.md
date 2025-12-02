@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(echoOk.sh)
+allowed-tools: Bash(echoOk.sh:*)
 description: Echo ok command
 ---
 

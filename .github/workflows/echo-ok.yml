@@ -33,4 +33,4 @@ jobs:
           allowed_non_write_users: "*"
           prompt: "/echo-ok"
           claude_args: |
-            --allowedTools "Bash(echoOk.sh)"
+            --allowedTools "Bash(echoOk.sh:*)
