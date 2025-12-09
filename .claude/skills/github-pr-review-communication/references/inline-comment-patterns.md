@@ -53,7 +53,6 @@ Creating new objects with spread operators inside `renderItem` forces React to t
   shouldAnimateInHighlight={isItemHighlighted}
 />
 ```
-```
 
 **When to use:** Code reviews with numbered rules, performance reviews, security audits.
 
@@ -101,7 +100,6 @@ description: Brief description
 keywords: [feature, related terms]
 ---
 ```
-```
 
 **When to use:** Formatting issues, missing elements, obvious bugs.
 
@@ -133,7 +131,6 @@ const reportData = useMemo(() => ({
     reportID: report.reportID,
     type: report.type,
 }), [report.reportID, report.type]);
-```
 ```
 
 **Bad:**
