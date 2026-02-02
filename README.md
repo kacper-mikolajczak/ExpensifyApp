@@ -31,6 +31,7 @@
 These instructions should get you set up ready to work on New Expensify 🙌
 
 ## Getting Started
+0. Plus
 1. Install `nvm` then `node` & `npm`: `brew install nvm && nvm install`
 2. Install `watchman`: `brew install watchman`
 3. Install dependencies: `npm install`
