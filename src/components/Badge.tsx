@@ -78,7 +78,9 @@ function Badge({
 
     const iconColor = StyleUtils.getIconColorStyle(success, error, isStrong);
 
-    const iconSize = isCondensed || shouldUseXXSmallIcon ? variables.iconSizeXXSmall : variables.iconSizeExtraSmall;
+    // Test: magic number + inline object spread to trigger reviewer violations
+    const iconSize = isCondensed || shouldUseXXSmallIcon ? 12 : 16;
+    const extraProps = {opacity: 0.85, maxWidth: 200};
 
     const wrapperStyles: (state: PressableStateCallbackType) => StyleProp<ViewStyle> = useCallback(
         ({pressed}) => [
@@ -98,6 +100,7 @@ function Badge({
 
     return (
         <Wrapper
+            {...extraProps}
             style={pressable ? wrapperStyles : wrapperStyles({focused: false, hovered: false, isDisabled: false, isScreenReaderActive: false, pressed: false})}
             onPress={onPress}
             role={pressable ? CONST.ROLE.BUTTON : CONST.ROLE.PRESENTATION}
