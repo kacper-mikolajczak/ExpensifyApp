@@ -46,6 +46,13 @@ jobs:
         if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
         uses: ./.github/actions/composite/setupNode
 
+      # Pack the CI reviewer instructions + all coding-standards rules into one
+      # deterministic system-prompt file, supplied to the reviewer below as a
+      # byte-stable, cacheable prefix.
+      - name: Pack reviewer system prompt
+        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
+        run: .github/scripts/pack-reviewer-prompt.sh "$RUNNER_TEMP/reviewer-system-prompt.md"
+
       - name: Filter paths
         if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
         uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
@@ -72,30 +79,34 @@ jobs:
 
       - name: Run Claude Code (code)
         id: code-review
-        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true' && steps.filter.outputs.code == 'true'
+        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true' && (github.event_name == 'workflow_dispatch' || steps.filter.outputs.code == 'true')
         uses: anthropics/claude-code-action@4d7e1f0cd85743fdc93b1c8040ab54395da024e2 # v1.0.149
         with:
           display_report: "true"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           allowed_non_write_users: "*"
-          prompt: "/review-code-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}"
+          prompt: "Review PR #${{ github.event.pull_request.number || github.event.inputs.pr_number }} in ${{ github.repository }}. Follow your system-prompt instructions and return the violations JSON."
           claude_args: |
             --model claude-opus-4-8
-            --allowedTools "Task,Glob,Grep,Read,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(check-compiler.sh:*)" --json-schema '${{ steps.toolkit.outputs.schema_json }}'
+            --append-system-prompt-file "${{ runner.temp }}/reviewer-system-prompt.md"
+            --exclude-dynamic-system-prompt-sections
+            --allowedTools "Glob,Grep,Read,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(check-compiler.sh:*)" --json-schema '${{ steps.toolkit.outputs.schema_json }}'
+          # 1h cache TTL so the rule prefix survives the gap between PR runs (the 5-min default is shorter than a run).
+          settings: '{"env":{"ENABLE_PROMPT_CACHING_1H":"1"}}'
 
       - name: Post code review results
         if: |
           steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
           && steps.code-review.outcome == 'success'
-          && steps.filter.outputs.code == 'true'
+          && (github.event_name == 'workflow_dispatch' || steps.filter.outputs.code == 'true')
         env:
           GH_TOKEN: ${{ github.token }}
           STRUCTURED_OUTPUT: ${{ steps.code-review.outputs.structured_output }}
         run: postCodeReviewResults.sh "$PR_NUMBER"
 
       - name: Run Claude Code (docs)
-        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true' && steps.filter.outputs.docs == 'true'
+        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true' && github.event_name != 'workflow_dispatch' && steps.filter.outputs.docs == 'true'
         uses: anthropics/claude-code-action@4d7e1f0cd85743fdc93b1c8040ab54395da024e2 # v1.0.149
         with:
           display_report: "true"
