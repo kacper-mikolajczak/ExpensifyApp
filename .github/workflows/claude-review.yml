@@ -7,9 +7,8 @@ permissions:
 on:
   pull_request_target:
     types: [opened, ready_for_review]
-  # Test-fork enablement: run the reviewer on demand against any PR number,
-  # and from any branch (so the old vs new reviewer can be A/B'd by dispatching
-  # from different branches against the same PR).
+  # Test-fork enablement: run on demand against any PR number, from any branch
+  # (so old vs new reviewer can be A/B'd by dispatching from different branches).
   workflow_dispatch:
     inputs:
       pr_number:
@@ -22,8 +21,7 @@ concurrency:
 
 jobs:
   review:
-    # Test fork: ONLY this account may trigger anything (PR author for PR events,
-    # dispatcher for manual runs). Anyone else's PR/dispatch is skipped.
+    # Test fork: ONLY this account may trigger anything.
     if: |
       github.actor == 'kacper-mikolajczak'
       && (github.event_name == 'workflow_dispatch'
@@ -38,41 +36,20 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set review authorized
-        id: set-authorized
-        run: echo "IS_AUTHORIZED=true" >> "$GITHUB_OUTPUT"
-
       - name: Setup Node
-        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
         uses: ./.github/actions/composite/setupNode
 
-      - name: Filter paths
-        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
-        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
-        id: filter
-        with:
-          filters: |
-            code:
-              - 'src/**'
-            docs:
-              - 'docs/**/*.md'
-              - 'docs/**/*.csv'
-
       - name: Setup Claude review toolkit
-        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
         id: toolkit
         uses: Expensify/GitHub-Actions/.github/actions/claude-review-toolkit@2b751e9a86d8690f53443cce0ce886079eccea76
 
       - name: Mark review as in progress
-        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          addPrReaction.sh "$PR_NUMBER" "eyes"
+        run: addPrReaction.sh "$PR_NUMBER" "eyes"
 
       - name: Run Claude Code (code)
         id: code-review
-        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true' && steps.filter.outputs.code == 'true'
         uses: anthropics/claude-code-action@4d7e1f0cd85743fdc93b1c8040ab54395da024e2 # v1.0.149
         with:
           display_report: "true"
@@ -83,33 +60,18 @@ jobs:
           claude_args: |
             --model claude-opus-4-8
             --allowedTools "Task,Glob,Grep,Read,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(check-compiler.sh:*)" --json-schema '${{ steps.toolkit.outputs.schema_json }}'
+          # 1h cache TTL so the prefix survives the gap between runs (a run is longer than the 5-min default).
+          settings: '{"env":{"ENABLE_PROMPT_CACHING_1H":"1"}}'
 
       - name: Post code review results
-        if: |
-          steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
-          && steps.code-review.outcome == 'success'
-          && steps.filter.outputs.code == 'true'
+        if: steps.code-review.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           STRUCTURED_OUTPUT: ${{ steps.code-review.outputs.structured_output }}
         run: postCodeReviewResults.sh "$PR_NUMBER"
 
-      - name: Run Claude Code (docs)
-        if: steps.set-authorized.outputs.IS_AUTHORIZED == 'true' && steps.filter.outputs.docs == 'true'
-        uses: anthropics/claude-code-action@4d7e1f0cd85743fdc93b1c8040ab54395da024e2 # v1.0.149
-        with:
-          display_report: "true"
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          allowed_non_write_users: "*"
-          prompt: "/review-helpdot-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}"
-          claude_args: |
-            --model claude-opus-4-8
-            --allowedTools "Task,Glob,Grep,Read,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),mcp__github_inline_comment__create_inline_comment"
-
       - name: Remove in-progress indicator
-        if: always() && steps.set-authorized.outputs.IS_AUTHORIZED == 'true'
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          removePrReaction.sh "$PR_NUMBER" "eyes" "github-actions[bot]"
+        run: removePrReaction.sh "$PR_NUMBER" "eyes" "github-actions[bot]"
