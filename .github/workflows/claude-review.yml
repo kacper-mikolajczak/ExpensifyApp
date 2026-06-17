@@ -15,9 +15,8 @@ on:
         description: PR number to review
         required: true
 
-concurrency:
-  group: claude-review-${{ github.event.pull_request.html_url || github.event.inputs.pr_number }}
-  cancel-in-progress: true
+# No concurrency group on the test fork: allow multiple dispatches against the
+# same PR to run in parallel (for batch A/B runs).
 
 jobs:
   review:
