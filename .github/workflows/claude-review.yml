@@ -52,6 +52,9 @@ jobs:
         uses: anthropics/claude-code-action@4d7e1f0cd85743fdc93b1c8040ab54395da024e2 # v1.0.149
         with:
           display_report: "true"
+          # Test fork only: surfaces the full result message (incl. usage token counts)
+          # in the run log. NEVER enable on the real upstream reviewer.
+          show_full_output: "true"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           allowed_non_write_users: "*"
