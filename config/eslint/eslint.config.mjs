@@ -95,6 +95,10 @@ const restrictedImportPaths = [
         message: 'forwardRef is deprecated. Please use ref as a prop instead. See: contributingGuides/STYLE.md#forwarding-refs',
     },
     {
+        name: 'prop-types',
+        message: 'Do not use prop-types. Please type component props with TypeScript instead. See: contributingGuides/STYLE.md',
+    },
+    {
         name: '@styles/index',
         importNames: ['default', 'defaultStyles'],
         message: 'Do not import styles directly. Please use the `useThemeStyles` hook instead.',
@@ -402,6 +406,11 @@ const config = defineConfig([
                 {
                     selector: 'CallExpression[callee.object.name="React"][callee.property.name="forwardRef"]',
                     message: 'forwardRef is deprecated. Please use ref as a prop instead. See: contributingGuides/STYLE.md#forwarding-refs',
+                },
+                {
+                    selector:
+                        'ClassDeclaration[superClass.name=/^(Pure)?Component$/], ClassExpression[superClass.name=/^(Pure)?Component$/], ClassDeclaration[superClass.property.name=/^(Pure)?Component$/], ClassExpression[superClass.property.name=/^(Pure)?Component$/]',
+                    message: 'Class components are deprecated. Please write a function component using hooks instead. See: contributingGuides/STYLE.md',
                 },
                 {
                     selector: 'ImportNamespaceSpecifier[parent.source.value=/^@libs/]',
