@@ -6877,6 +6877,10 @@ const staticStyles = (theme: ThemeColors) =>
 
 const dynamicStyles = (theme: ThemeColors) =>
     ({
+        cardSurface: {
+            padding: 8,
+            flex: 1,
+        },
         getSplitListItemAmountStyle: (inputMarginLeft: number, amountWidth: number | string) => ({
             marginLeft: inputMarginLeft,
             width: amountWidth,

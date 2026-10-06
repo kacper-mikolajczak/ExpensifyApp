@@ -55,7 +55,11 @@ function CenteredModalLayout({children, width, height, onBackdropPress, contentS
 
     return (
         <>
-            <CenteredModalLayoutOverlay onBackdropPress={onBackdropPress} />
+            <CenteredModalLayoutOverlay
+                onBackdropPress={() => {
+                    setTimeout(onBackdropPress, 417);
+                }}
+            />
             <View
                 pointerEvents="box-none"
                 style={[styles.flex1, styles.alignItemsCenter, styles.getCenteredModalOuterView(shouldDockToBottom)]}

@@ -631,7 +631,7 @@ const translations = {
         takePhoto: 'Take photo',
         chooseFromGallery: 'Choose from gallery',
         chooseDocument: 'Choose file',
-        attachmentTooLarge: 'Attachment is too large',
+        attachmentTooLarge: 'Attachments is too large',
         sizeExceeded: 'Attachment size is larger than 24 MB limit',
         sizeExceededWithLimit: (maxUploadSizeInMB: number) => `Attachment size is larger than ${maxUploadSizeInMB} MB limit`,
         attachmentTooSmall: 'Attachment is too small',
@@ -1288,7 +1288,7 @@ const translations = {
         odometer: 'Odometer',
     },
     spreadsheet: {
-        upload: 'Upload a spreadsheet',
+        upload: 'Upload A Spreadsheet',
         import: 'Import spreadsheet',
         dragAndDrop: '<muted-link>Drag and drop your spreadsheet here, or choose a file below. Supported formats: .csv, .txt, .xls, and .xlsx.</muted-link>',
         dragAndDropMultiLevelTag: `<muted-link>Drag and drop your spreadsheet here, or choose a file below. <a href="${CONST.IMPORT_SPREADSHEET.MULTI_LEVEL_TAGS_ARTICLE_LINK}">Learn more</a> about supported file formats.</muted-link>`,
